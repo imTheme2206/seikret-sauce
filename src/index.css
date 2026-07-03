@@ -1,0 +1,60 @@
+@import "../styles/globals.css";
+
+@theme {
+    --font-sans: "Inter", system-ui, sans-serif;
+    --font-serif: "Cinzel", serif;
+}
+
+@layer base {
+    :root {
+        @apply font-sans;
+    }
+
+    html,
+    body {
+        @apply h-full overflow-hidden;
+    }
+
+    body {
+        @apply relative m-0 bg-background text-foreground;
+    }
+}
+
+/* Thin scrollbars to match the design. */
+::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+}
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+::-webkit-scrollbar-thumb {
+    background: hsl(30, 10%, 24%);
+    border-radius: 2px;
+}
+
+@keyframes slide {
+    from {
+        background-position: 0 0;
+    }
+    to {
+        background-position: 256px 224px;
+    }
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@media (prefers-reduced-motion) {
+    *,
+    ::before,
+    ::after {
+        animation: none !important;
+    }
+}
