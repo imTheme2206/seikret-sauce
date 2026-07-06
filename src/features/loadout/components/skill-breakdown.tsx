@@ -1,3 +1,4 @@
+import { Typography } from "@/components/ui/typography";
 import { cn } from "@/lib/utils";
 import { SectionHeading } from "./section-heading";
 
@@ -21,22 +22,24 @@ export function SkillBreakdown({ skills, setGroupSkills, requestedNames }: Skill
             key={name}
             className="flex items-center border-b border-[hsl(30,10%,11%)] py-[3px]"
           >
-            <span
+            <Typography
+              as="span"
               className={cn(
-                "min-w-0 flex-1 truncate text-[11px]",
+                "min-w-0 flex-1 truncate text-xs",
                 isRequested ? "text-primary" : "text-foreground/75",
               )}
             >
               {name}
-            </span>
-            <span
+            </Typography>
+            <Typography
+              as="span"
               className={cn(
-                "ml-1.5 shrink-0 text-[11px] font-bold tabular-nums",
+                "ml-1.5 shrink-0 text-xs font-bold tabular-nums",
                 isRequested ? "text-primary" : "text-muted-foreground",
               )}
             >
               {level}
-            </span>
+            </Typography>
           </div>
         );
       })}
@@ -51,17 +54,21 @@ export function SkillBreakdown({ skills, setGroupSkills, requestedNames }: Skill
                 key={name}
                 className="flex items-center border-b border-[hsl(30,10%,11%)] py-[3px]"
               >
-                <span
+                <Typography
+                  as="span"
                   className={cn(
-                    "min-w-0 flex-1 truncate text-[11px]",
+                    "min-w-0 flex-1 truncate text-xs",
                     isRequested ? "text-primary" : "text-foreground/75",
                   )}
                 >
                   {name}
-                </span>
-                <span className="ml-1.5 shrink-0 text-[10px] tabular-nums text-muted-foreground">
+                </Typography>
+                <Typography
+                  as="span"
+                  className="ml-1.5 shrink-0 text-xs tabular-nums text-muted-foreground"
+                >
                   ×{count}
-                </span>
+                </Typography>
               </div>
             );
           })}

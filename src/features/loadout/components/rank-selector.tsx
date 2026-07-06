@@ -33,7 +33,7 @@ export function RankSelector({ value, onChange, disabled }: RankSelectorProps) {
             disabled={!opt.enabled}
             title={opt.enabled ? undefined : "Master Rank is not available yet"}
             className={cn(
-              "h-auto min-w-0 rounded-[4px] px-2 py-1 text-[11px] font-medium text-muted-foreground transition-colors hover:bg-transparent hover:text-foreground data-[state=on]:bg-secondary data-[state=on]:text-primary",
+              "h-auto min-w-0 rounded-[4px] px-2 py-1 text-xs font-medium text-muted-foreground transition-colors hover:bg-transparent hover:text-foreground data-[state=on]:bg-secondary data-[state=on]:text-primary",
               !opt.enabled &&
                 "cursor-not-allowed opacity-40 hover:text-muted-foreground",
             )}

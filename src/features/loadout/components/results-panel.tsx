@@ -1,4 +1,5 @@
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Typography } from "@/components/ui/typography";
 import { cn } from "@/lib/utils";
 import { ResultCard } from "./result-card";
 import {
@@ -43,12 +44,18 @@ export function ResultsPanel({
   return (
     <main className="flex flex-col overflow-hidden bg-[hsl(24,15%,7%)]">
       <div className="flex shrink-0 items-baseline gap-2 border-b border-border px-[18px] py-[11px]">
-        <span className="font-serif text-xs font-semibold tracking-[0.12em] text-muted-foreground">
+        <Typography
+          as="span"
+          className="text-xs font-semibold tracking-[0.12em] text-muted-foreground"
+        >
           RESULTS
-        </span>
-        <div className={cn("text-[11px]", hasResults ? "text-primary" : "text-muted-foreground")}>
+        </Typography>
+        <Typography
+          as="div"
+          className={cn("text-xs", hasResults ? "text-primary" : "text-muted-foreground")}
+        >
           {subtitle}
-        </div>
+        </Typography>
       </div>
 
       {hasResults ? (

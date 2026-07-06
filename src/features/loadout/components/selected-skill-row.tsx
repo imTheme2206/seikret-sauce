@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { Typography } from "@/components/ui/typography";
 import { X } from "lucide-react";
 import { CATEGORY_CONFIG } from "../config";
 import { TypeIcon } from "../icons";
@@ -43,9 +44,12 @@ export function SelectedSkillRow({
         <TypeIcon category={skill.category} color={color} icon={skill.icon} />
       </div>
       <div className="min-w-0 flex-1">
-        <div className="mb-[5px] truncate text-xs font-medium text-foreground">
+        <Typography
+          as="div"
+          className="mb-[5px] truncate text-xs font-medium text-foreground"
+        >
           {skill.name}
-        </div>
+        </Typography>
         <SkillLevelBlocks
           level={skill.level}
           maxLevel={skill.maxLevel}

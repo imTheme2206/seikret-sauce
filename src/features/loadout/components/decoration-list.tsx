@@ -1,3 +1,4 @@
+import { Typography } from "@/components/ui/typography";
 import { SectionHeading } from "./section-heading";
 
 interface DecorationListProps {
@@ -12,7 +13,12 @@ export function DecorationList({ decorations }: DecorationListProps) {
       {decorations.map((deco, i) => (
         <div key={`${deco}:${i}`} className="flex items-start gap-1.5 py-[3px]">
           <div className="mt-[5px] size-1 shrink-0 rounded-[1px] bg-[hsl(195,40%,40%)]" />
-          <span className="text-[11px] leading-normal text-foreground/[0.78]">{deco}</span>
+          <Typography
+            as="span"
+            className="text-xs leading-normal text-foreground/[0.78]"
+          >
+            {deco}
+          </Typography>
         </div>
       ))}
     </div>

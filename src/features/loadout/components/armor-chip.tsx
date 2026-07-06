@@ -1,3 +1,4 @@
+import { Typography } from "@/components/ui/typography";
 import { rarityColor } from "../config";
 import { SlotIcon } from "../icons";
 import { shortArmorName } from "../utils";
@@ -16,9 +17,12 @@ export function ArmorChip({ piece, slotIndex, rarity }: ArmorChipProps) {
   return (
     <div className="relative flex min-w-0 max-w-30 flex-1 flex-col items-center justify-center gap-[5px] overflow-hidden rounded-md bg-secondary px-1 py-2">
       <SlotIcon index={slotIndex} color={color} size={24} />
-      <span className="w-full truncate text-center text-[10px] text-foreground">
+      <Typography
+        as="span"
+        className="w-full truncate text-center text-xs text-foreground"
+      >
         {shortArmorName(piece)}
-      </span>
+      </Typography>
     </div>
   );
 }

@@ -31,13 +31,13 @@ export function SkillSearchBar({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder="Search skills…"
-        className="h-full flex-1 rounded-none border-0 bg-transparent px-0 text-[13px] shadow-none focus-visible:ring-0 dark:bg-transparent"
+        className="h-full flex-1 rounded-none border-0 bg-transparent px-0 text-sm shadow-none focus-visible:ring-0 dark:bg-transparent"
       />
       <Button
         type="button"
         onClick={onOptimize}
         disabled={!canOptimize}
-        className="h-full shrink-0 rounded-none border-l border-border px-4 font-serif text-xs font-bold tracking-[0.06em] disabled:bg-secondary disabled:text-muted-foreground disabled:opacity-100"
+        className="h-full shrink-0 rounded-none border-l border-border px-4 text-xs font-bold tracking-[0.06em] disabled:bg-secondary disabled:text-muted-foreground disabled:opacity-100"
       >
         {isOptimizing ? "Searching…" : "Find Sets"}
       </Button>

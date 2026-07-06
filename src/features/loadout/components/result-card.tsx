@@ -5,6 +5,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
+import { Typography } from "@/components/ui/typography";
 import { cn } from "@/lib/utils";
 import { statsSummary } from "../utils";
 import { ArmorChip } from "./armor-chip";
@@ -43,7 +44,12 @@ export function ResultCard({
           )}
         >
           <div className="flex size-[26px] shrink-0 items-center justify-center rounded-[4px] bg-secondary">
-            <span className="font-serif text-[10px] font-bold text-primary">{index + 1}</span>
+            <Typography
+              as="span"
+              className="text-xs font-bold text-primary"
+            >
+              {index + 1}
+            </Typography>
           </div>
 
           <div className="flex min-w-0 flex-1 gap-1 overflow-hidden">
@@ -57,9 +63,12 @@ export function ResultCard({
             ))}
           </div>
 
-          <span className="ml-1.5 shrink-0 whitespace-nowrap text-[10px] text-muted-foreground">
+          <Typography
+            as="span"
+            className="ml-1.5 shrink-0 whitespace-nowrap text-xs text-muted-foreground"
+          >
             {statsSummary(skillCount, result.decoNames.length, result.defense)}
-          </span>
+          </Typography>
 
           <ChevronDown
             className={cn(

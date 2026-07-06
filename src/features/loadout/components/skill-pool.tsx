@@ -2,6 +2,7 @@ import { Card } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Typography } from "@/components/ui/typography";
 import { CATEGORY_CONFIG, CATEGORY_ORDER } from "../config";
 import type { PoolSkill, SkillCategory } from "../types";
 import { SkillPoolRow } from "./skill-pool-row";
@@ -38,7 +39,7 @@ export function SkillPool({
               <TabsTrigger
                 key={category}
                 value={category}
-                className="text-[11px] font-semibold uppercase tracking-[0.06em]"
+                className="text-xs font-semibold uppercase tracking-[0.06em]"
               >
                 {CATEGORY_CONFIG[category].label}
               </TabsTrigger>
@@ -69,9 +70,12 @@ export function SkillPool({
 
 function PoolMessage({ children }: { children: React.ReactNode }) {
   return (
-    <div className="px-6 py-6 text-center text-xs text-muted-foreground col-span-full">
+    <Typography
+      as="div"
+      className="px-6 py-6 text-center text-xs text-muted-foreground col-span-full"
+    >
       {children}
-    </div>
+    </Typography>
   );
 }
 

@@ -1,5 +1,6 @@
 import { Check, Plus } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Typography } from "@/components/ui/typography";
 import { cn } from "@/lib/utils";
 import { CATEGORY_CONFIG } from "../config";
 import { TypeIcon } from "../icons";
@@ -41,17 +42,18 @@ export function SkillPoolRow({
       </div>
 
       <div className="relative flex min-w-0 flex-1 flex-col gap-0.5">
-        <span
+        <Typography
+          as="span"
           className={cn(
-            "truncate text-[13px]",
+            "truncate text-sm",
             isSelected ? "text-primary" : "text-foreground",
           )}
         >
           {skill.name}
-        </span>
+        </Typography>
         {showCategory && (
           <Badge
-            className="rounded-[3px] border-transparent px-1.5 py-px text-[9px] font-bold uppercase tracking-[0.08em]"
+            className="rounded-[3px] border-transparent px-1.5 py-px text-xs font-bold uppercase tracking-[0.08em]"
             style={{ color: config.color, background: config.badgeBg }}
           >
             {config.label}
@@ -59,9 +61,12 @@ export function SkillPoolRow({
         )}
       </div>
 
-      <span className="relative shrink-0 whitespace-nowrap text-[10px] text-muted-foreground">
+      <Typography
+        as="span"
+        className="relative shrink-0 whitespace-nowrap text-xs text-muted-foreground"
+      >
         Lv {skill.maxLevel}
-      </span>
+      </Typography>
 
       {isSelected ? (
         <div className="relative flex size-5 shrink-0 items-center justify-center rounded-[4px] bg-primary">

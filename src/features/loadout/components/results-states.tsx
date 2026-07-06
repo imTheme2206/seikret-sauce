@@ -1,4 +1,5 @@
 import { Skeleton } from "@/components/ui/skeleton";
+import { Typography } from "@/components/ui/typography";
 
 /** Non-result states for the results panel: empty prompt, searching, no-results. */
 
@@ -14,11 +15,15 @@ export function ResultsEmptyState() {
           strokeWidth="1"
         />
       </svg>
-      <p className="max-w-[270px] text-[13px] leading-[1.7] text-muted-foreground">
+      <Typography
+        className="max-w-[270px] text-sm leading-[1.7] text-muted-foreground"
+      >
         Add skills from the left panel, then click{" "}
-        <span className="font-semibold text-primary">Find Sets</span> to discover optimal armor
-        loadouts
-      </p>
+        <Typography as="span" className="font-semibold text-primary">
+          Find Sets
+        </Typography>{" "}
+        to discover optimal armor loadouts
+      </Typography>
     </div>
   );
 }
@@ -30,9 +35,11 @@ export function ResultsSearchingState() {
       aria-busy="true"
       aria-label="Searching for optimal sets"
     >
-      <p className="px-1 pb-1 text-center text-[13px] text-muted-foreground">
+      <Typography
+        className="px-1 pb-1 text-center text-sm text-muted-foreground"
+      >
         Searching for optimal sets…
-      </p>
+      </Typography>
       {Array.from({ length: 4 }, (_, i) => (
         <div
           key={i}
@@ -53,9 +60,12 @@ export function ResultsSearchingState() {
 
 export function ResultsNoResultsState() {
   return (
-    <div className="flex flex-1 items-center justify-center p-[60px] text-center text-[13px] text-muted-foreground">
+    <Typography
+      as="div"
+      className="flex flex-1 items-center justify-center p-[60px] text-center text-sm text-muted-foreground"
+    >
       No matching sets found. Try adjusting skill levels or requirements.
-    </div>
+    </Typography>
   );
 }
 
@@ -67,7 +77,9 @@ export function ResultsErrorState({ message }: { message: string }) {
         <path d="M12 7.5v5.5" stroke="hsl(8,60%,52%)" strokeWidth="1.5" strokeLinecap="round" />
         <circle cx="12" cy="16.25" r="0.9" fill="hsl(8,60%,52%)" />
       </svg>
-      <p className="max-w-[300px] text-[13px] leading-[1.7] text-[hsl(8,55%,62%)]">{message}</p>
+      <Typography className="max-w-[300px] text-sm leading-[1.7] text-[hsl(8,55%,62%)]">
+        {message}
+      </Typography>
     </div>
   );
 }

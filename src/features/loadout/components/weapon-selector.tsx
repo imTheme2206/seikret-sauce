@@ -11,6 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Typography } from "@/components/ui/typography";
 import type { WeaponSkills } from "../types";
 
 interface WeaponSelectorProps {
@@ -43,15 +44,18 @@ function SkillSelect({
 }) {
   return (
     <div className="flex items-center gap-2">
-      <span className="w-9 shrink-0 text-[11px] font-medium text-muted-foreground">
+      <Typography
+        as="span"
+        className="w-9 shrink-0 text-xs font-medium text-muted-foreground"
+      >
         {label}
-      </span>
+      </Typography>
       <Select
         value={value ?? NONE}
         onValueChange={(v) => onChange(v === NONE ? null : v)}
         disabled={disabled}
       >
-        <SelectTrigger size="sm" className="h-7 flex-1 text-[11px]">
+        <SelectTrigger size="sm" className="h-7 flex-1 text-xs">
           <SelectValue placeholder={placeholder} />
         </SelectTrigger>
         <SelectContent>
@@ -88,12 +92,17 @@ export function WeaponSelector({
       className="shrink-0 rounded-md border border-border bg-card px-3"
     >
       <AccordionItem value="weapon" className="border-b-0">
-        <AccordionTrigger className="group items-center gap-2 py-2 text-[11px] font-medium text-muted-foreground hover:no-underline">
-          <span className="shrink-0">Weapon Setting</span>
+        <AccordionTrigger className="group items-center gap-2 py-2 text-xs font-medium text-muted-foreground hover:no-underline">
+          <Typography as="span" className="shrink-0">
+            Weapon Setting
+          </Typography>
           {summary && (
-            <span className="min-w-0 flex-1 truncate text-right font-normal text-foreground/80 group-data-[state=open]:hidden">
+            <Typography
+              as="span"
+              className="min-w-0 flex-1 truncate text-right font-normal text-foreground/80 group-data-[state=open]:hidden"
+            >
               {summary}
-            </span>
+            </Typography>
           )}
         </AccordionTrigger>
         <AccordionContent className="flex flex-col gap-1.5 pb-3">

@@ -1,13 +1,9 @@
-import { LoadoutOptimizer } from "./features/loadout";
-import { ThemeProvider } from "./components/theme-provider";
+import { RouterProvider } from "@tanstack/react-router";
+import { router } from "./router";
 import "./index.css";
 
 export function App() {
-  return (
-    <ThemeProvider defaultTheme="dark" storageKey="mh-wilds-theme">
-      <LoadoutOptimizer />
-    </ThemeProvider>
-  );
+  return <RouterProvider router={router} />;
 }
 
 export default App;

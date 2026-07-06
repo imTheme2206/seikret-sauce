@@ -61,7 +61,7 @@ export function StepButton({
       disabled={disabled}
       onClick={onClick}
       className={cn(
-        "size-[22px] shrink-0 rounded-[3px] text-[15px] leading-none transition-opacity hover:bg-secondary/80",
+        "size-[22px] shrink-0 rounded-[3px] text-base leading-none transition-opacity hover:bg-secondary/80",
         disabled
           ? "cursor-default text-muted-foreground disabled:opacity-30"
           : "cursor-pointer text-foreground",
