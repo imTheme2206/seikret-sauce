@@ -1,6 +1,6 @@
 import { createRootRoute, createRoute, createRouter, Outlet } from "@tanstack/react-router";
 import { ThemeProvider } from "./components/theme-provider";
-import { AppHeader } from "./features/loadout/components/app-header";
+import { AppHeader } from "./components/app-header";
 import { LoadoutOptimizer } from "./features/loadout";
 import { TalismansTab } from "./features/talismans";
 

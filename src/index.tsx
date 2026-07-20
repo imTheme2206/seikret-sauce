@@ -9,6 +9,12 @@ const server = serve({
       return new Response(Bun.file(`public${path}`));
     },
 
+    // Weapon type artwork (public/weapons/*.webp).
+    "/weapons/*": (req) => {
+      const path = new URL(req.url).pathname;
+      return new Response(Bun.file(`public${path}`));
+    },
+
     // Serve index.html for all unmatched routes.
     "/*": index,
   },

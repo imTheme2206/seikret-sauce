@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Typography } from "@/components/ui/typography";
-import type { GroupedSkills } from "@/features/loadout/types";
+import type { GroupedSkills, SkillCategory } from "@/features/loadout/types";
 import { useAuth } from "@/hooks/use-auth";
 import { useGetSkills } from "@/hooks/use-get-skills";
 import { useState } from "react";
@@ -10,15 +10,29 @@ import { useTalismans } from "../hooks/use-talismans";
 import { TalismanCard } from "./talisman-card";
 import { TalismanForm } from "./talisman-form";
 
-/** Flattens the category buckets from `useGetSkills` into a single id -> name lookup. */
-export function toSkillNamesById(
+/** Display metadata for a skill, keyed by id for the talisman card. */
+export interface SkillMeta {
+  name: string;
+  icon: string | null;
+  category: SkillCategory;
+}
+
+/** Flattens the category buckets from `useGetSkills` into a single id -> metadata lookup. */
+export function toSkillMetaById(
   skills: GroupedSkills | undefined,
-): Map<string, string> {
-  const map = new Map<string, string>();
+): Map<string, SkillMeta> {
+  const map = new Map<string, SkillMeta>();
   if (!skills) return map;
 
-  for (const bucket of [skills.armorSkills, skills.weaponSkills]) {
-    for (const skill of bucket) map.set(skill.id, skill.name);
+  const buckets: [GroupedSkills["armorSkills"], SkillCategory][] = [
+    [skills.armorSkills, "armor"],
+    [skills.weaponSkills, "weapon"],
+    [skills.setSkills, "set"],
+    [skills.groupSkills, "group"],
+  ];
+  for (const [bucket, category] of buckets) {
+    for (const skill of bucket)
+      map.set(skill.id, { name: skill.name, icon: skill.icon, category });
   }
 
   return map;
@@ -52,7 +66,7 @@ export function TalismansTab() {
     );
   }
 
-  const skillNamesById = toSkillNamesById(
+  const skillMetaById = toSkillMetaById(
     skills as unknown as GroupedSkills | undefined,
   );
 
@@ -75,7 +89,7 @@ export function TalismansTab() {
       </aside>
 
       <ScrollArea className="h-full">
-        <div className="flex flex-col gap-2.5 p-3.5">
+        <div className="p-3.5">
           {isLoading && !isLoadingSkills && (
             <Skeleton className="h-24 w-full" />
           )}
@@ -89,15 +103,19 @@ export function TalismansTab() {
               No talismans yet.
             </Typography>
           )}
-          {talismans.map((t) => (
-            <TalismanCard
-              key={t.id}
-              talisman={t}
-              skillNamesById={skillNamesById}
-              onDelete={(id) => void handleDelete(id)}
-              isDeleting={deletingId === t.id}
-            />
-          ))}
+          {talismans.length > 0 && (
+            <div className="grid grid-cols-4 gap-2.5">
+              {talismans.map((t) => (
+                <TalismanCard
+                  key={t.id}
+                  talisman={t}
+                  skillMetaById={skillMetaById}
+                  onDelete={(id) => void handleDelete(id)}
+                  isDeleting={deletingId === t.id}
+                />
+              ))}
+            </div>
+          )}
         </div>
       </ScrollArea>
     </div>

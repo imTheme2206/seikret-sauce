@@ -9,7 +9,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Typography } from "@/components/ui/typography";
-import type { GroupedSkills } from "@/features/loadout/types";
+import type { GroupedSkills, SkillCategory } from "@/features/loadout/types";
 import { Plus, X } from "lucide-react";
 import { useState } from "react";
 import {
@@ -19,24 +19,34 @@ import {
   type TalismanSkillInput,
   type TalismanSlot,
 } from "../types";
+import { SkillIcon } from "./talisman-icons";
 
 interface FlatSkill {
   id: string;
   name: string;
   maxLevel: number;
+  icon: string | null;
+  category: SkillCategory;
 }
 
 function flattenSkills(skills: GroupedSkills | undefined): FlatSkill[] {
   if (!skills) return [];
   const byId = new Map<string, FlatSkill>();
-  for (const bucket of [
-    skills.armorSkills,
-    skills.weaponSkills,
-    skills.setSkills,
-    skills.groupSkills,
-  ]) {
+  const buckets: [(typeof skills)["armorSkills"], SkillCategory][] = [
+    [skills.armorSkills, "armor"],
+    [skills.weaponSkills, "weapon"],
+    [skills.setSkills, "set"],
+    [skills.groupSkills, "group"],
+  ];
+  for (const [bucket, category] of buckets) {
     for (const s of bucket)
-      byId.set(s.id, { id: s.id, name: s.name, maxLevel: s.maxLevel });
+      byId.set(s.id, {
+        id: s.id,
+        name: s.name,
+        maxLevel: s.maxLevel,
+        icon: s.icon,
+        category,
+      });
   }
   return [...byId.values()].sort((a, b) => a.name.localeCompare(b.name));
 }
@@ -91,9 +101,7 @@ export function TalismanForm({ skills, onCreate }: TalismanFormProps) {
   return (
     <Card className="gap-3 py-4">
       <CardHeader className="px-4">
-        <CardTitle className="text-sm">
-          New Custom Talisman
-        </CardTitle>
+        <CardTitle className="text-sm">New Custom Talisman</CardTitle>
       </CardHeader>
       <CardContent className="flex flex-col gap-3 px-4">
         <Input
@@ -127,7 +135,14 @@ export function TalismanForm({ skills, onCreate }: TalismanFormProps) {
                   <SelectContent>
                     {flatSkills.map((s) => (
                       <SelectItem key={s.id} value={s.id}>
-                        {s.name}
+                        <span className="flex items-center gap-2">
+                          <SkillIcon
+                            icon={s.icon}
+                            category={s.category}
+                            className="size-6"
+                          />
+                          {s.name}
+                        </span>
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -144,12 +159,12 @@ export function TalismanForm({ skills, onCreate }: TalismanFormProps) {
                   }
                 >
                   <SelectTrigger className="h-8 w-16 text-xs" size="sm">
-                    <SelectValue />
+                    <SelectValue placeholder="Lv." />
                   </SelectTrigger>
                   <SelectContent>
                     {Array.from({ length: maxLevel }, (_, lvl) => (
                       <SelectItem key={lvl} value={String(lvl + 1)}>
-                        Lv.{lvl + 1}
+                        {lvl + 1}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -222,12 +237,12 @@ export function TalismanForm({ skills, onCreate }: TalismanFormProps) {
                 }
               >
                 <SelectTrigger className="h-8 w-16 text-xs" size="sm">
-                  <SelectValue />
+                  <SelectValue placeholder="Lv." />
                 </SelectTrigger>
                 <SelectContent>
                   {[1, 2, 3, 4].map((lvl) => (
                     <SelectItem key={lvl} value={String(lvl)}>
-                      Lv.{lvl}
+                      {lvl}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -258,9 +273,7 @@ export function TalismanForm({ skills, onCreate }: TalismanFormProps) {
         </div>
 
         {error && (
-          <Typography className="text-xs text-destructive">
-            {error}
-          </Typography>
+          <Typography className="text-xs text-destructive">{error}</Typography>
         )}
 
         <Button onClick={() => void handleSubmit()} disabled={!canSubmit}>

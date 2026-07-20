@@ -7,8 +7,8 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { Typography } from "@/components/ui/typography";
 import { Link } from "@tanstack/react-router";
-import { BrandStar } from "../icons";
-import { AuthControl } from "./auth-control";
+import { BrandStar } from "@/components/brand-star";
+import { AuthControl } from "@/components/auth-control";
 
 const NAV_LINKS = [
   { to: "/", label: "Loadout Optimizer" },
