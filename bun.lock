@@ -2,7 +2,7 @@
   "lockfileVersion": 1,
   "workspaces": {
     "": {
-      "name": "bun-react-template",
+      "name": "seikret-sauce",
       "dependencies": {
         "@supabase/supabase-js": "^2.110.0",
         "@tanstack/react-router": "^1.170.17",

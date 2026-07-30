@@ -10,8 +10,14 @@ import {
   ShieldOff,
   Sparkles,
   Swords,
+  UserRound,
 } from "lucide-react";
 import { SlotIcon } from "@/components/gear/slot-icon";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@/components/ui/avatar";
 import { Typography } from "@/components/ui/typography";
 import { POSITION_LABELS, rarityColor } from "@/lib/mh-wilds";
 import { calculateBuild } from "../calculator";
@@ -78,6 +84,25 @@ export function BuildSetCard({ summary }: { summary: BuildSummary }) {
           <Typography className="mt-1 max-w-2xl text-sm leading-relaxed text-muted-foreground">
             {build.description || "A hunter's complete equipment record."}
           </Typography>
+          {summary.owner && (
+            <div className="mt-3 flex items-center gap-2">
+              <Avatar size="sm" className="border border-border">
+                <AvatarImage
+                  src={summary.owner.avatarUrl ?? undefined}
+                  alt={summary.owner.displayName ?? "Build owner"}
+                />
+                <AvatarFallback>
+                  <UserRound className="size-3" />
+                </AvatarFallback>
+              </Avatar>
+              <Typography
+                as="span"
+                className="text-xs font-medium text-muted-foreground"
+              >
+                {summary.owner.displayName ?? "Unknown hunter"}
+              </Typography>
+            </div>
+          )}
         </div>
         <div className="flex shrink-0 items-center gap-4 sm:flex-col sm:items-end sm:gap-2">
           <Typography

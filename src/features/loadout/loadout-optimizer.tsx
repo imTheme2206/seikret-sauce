@@ -2,6 +2,7 @@ import { useGetSkills } from "@/hooks/use-get-skills";
 import { LeftPanel } from "./components/left-panel";
 import { ResultsPanel } from "./components/results-panel";
 import { useLoadoutOptimizer } from "./hooks/use-loadout-optimizer";
+import { useSaveOptimizerResult } from "./hooks/use-save-optimizer-result";
 import type { GroupedSkills } from "./types";
 
 /**
@@ -15,6 +16,7 @@ export function LoadoutOptimizer() {
     skills: data as unknown as GroupedSkills | undefined,
     isLoadingSkills: isLoading,
   });
+  const saveResult = useSaveOptimizerResult(controller.selectedList);
 
   return (
     <div className="grid h-full grid-cols-[440px_1fr] overflow-hidden">
@@ -26,6 +28,10 @@ export function LoadoutOptimizer() {
         expanded={controller.expanded}
         requestedNames={controller.requestedNames}
         onToggle={controller.toggleExpand}
+        isSignedIn={saveResult.isSignedIn}
+        isCatalogLoading={saveResult.isCatalogLoading}
+        savingIndex={saveResult.savingIndex}
+        onSave={saveResult.saveResult}
       />
     </div>
   );

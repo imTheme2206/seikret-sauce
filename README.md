@@ -1,4 +1,11 @@
-# bun-react-tailwind-shadcn-template
+# Seikret Sauce
+
+A loadout optimizer and community build archive for Monster Hunter Wilds.
+
+Choose the skills you want, find ranked armor combinations that satisfy them,
+forge complete equipment loadouts, and share builds with other hunters.
+
+## Development
 
 To install dependencies:
 
@@ -12,10 +19,16 @@ To start a development server:
 bun dev
 ```
 
-To run for production:
+## Production
+
+Build the application:
+
+```bash
+bun run build
+```
+
+Start the production server:
 
 ```bash
 bun start
 ```
-
-This project was created using `bun init` in bun v1.2.19. [Bun](https://bun.com) is a fast all-in-one JavaScript runtime.

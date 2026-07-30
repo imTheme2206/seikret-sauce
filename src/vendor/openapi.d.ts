@@ -576,6 +576,10 @@ export interface operations {
               isStale: boolean;
               createdAt: string;
               updatedAt: string;
+              owner: {
+                displayName: string | null;
+                avatarUrl: string | null;
+              } | null;
             }[];
             nextCursor: string | null;
           };
@@ -1659,6 +1663,10 @@ export interface operations {
             isStale: boolean;
             createdAt: string;
             updatedAt: string;
+            owner: {
+              displayName: string | null;
+              avatarUrl: string | null;
+            } | null;
           }[];
         };
       };

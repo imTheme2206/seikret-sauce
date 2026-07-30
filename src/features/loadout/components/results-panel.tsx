@@ -17,6 +17,10 @@ interface ResultsPanelProps {
   expanded: Set<number>;
   requestedNames: Set<string>;
   onToggle: (index: number) => void;
+  isSignedIn: boolean;
+  isCatalogLoading: boolean;
+  savingIndex: number | null;
+  onSave: (result: LoadoutResult, index: number) => Promise<void>;
 }
 
 /** Right-hand panel: header subtitle + the list of optimised loadouts. */
@@ -27,6 +31,10 @@ export function ResultsPanel({
   expanded,
   requestedNames,
   onToggle,
+  isSignedIn,
+  isCatalogLoading,
+  savingIndex,
+  onSave,
 }: ResultsPanelProps) {
   const hasResults = status === "success";
 
@@ -69,6 +77,10 @@ export function ResultsPanel({
                 isExpanded={expanded.has(index)}
                 requestedNames={requestedNames}
                 onToggle={() => onToggle(index)}
+                isSignedIn={isSignedIn}
+                isSaving={savingIndex === index}
+                saveDisabled={isCatalogLoading || savingIndex !== null}
+                onSave={() => onSave(result, index)}
               />
             ))}
           </div>

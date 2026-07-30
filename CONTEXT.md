@@ -1,6 +1,6 @@
-# Loadout Optimizer
+# Seikret Sauce
 
-Domain language for the MH Wilds armor set-search feature: the frontend collects a player's
+Domain language for the Monster Hunter Wilds loadout optimizer: the frontend collects a player's
 desired skills and asks the backend search engine for ranked armor builds that achieve them.
 
 ## Language

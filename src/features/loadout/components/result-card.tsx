@@ -6,7 +6,8 @@ import {
 } from "@/components/ui/collapsible";
 import { Typography } from "@/components/ui/typography";
 import { cn } from "@/lib/utils";
-import { ChevronDown } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { ChevronDown, Loader2, LogIn, Save } from "lucide-react";
 import type { LoadoutResult } from "../types";
 import { statsSummary } from "../utils";
 import { ArmorChip } from "./armor-chip";
@@ -20,6 +21,10 @@ interface ResultCardProps {
   isExpanded: boolean;
   requestedNames: Set<string>;
   onToggle: () => void;
+  isSignedIn: boolean;
+  isSaving: boolean;
+  saveDisabled: boolean;
+  onSave: () => Promise<void>;
 }
 
 /** A single optimised loadout, expandable to reveal decorations + skills. */
@@ -29,6 +34,10 @@ export function ResultCard({
   isExpanded,
   requestedNames,
   onToggle,
+  isSignedIn,
+  isSaving,
+  saveDisabled,
+  onSave,
 }: ResultCardProps) {
   const skillCount = Object.keys(result.skills).length;
   const setGroupSkills = { ...result.setSkills, ...result.groupSkills };
@@ -96,6 +105,27 @@ export function ResultCard({
               elementalDefenses={result.elementalDefenses}
               freeSlots={result.freeSlots}
             />
+            <div className="flex justify-end border-t border-border pt-3">
+              <Button
+                type="button"
+                size="sm"
+                disabled={saveDisabled}
+                onClick={() => void onSave()}
+              >
+                {isSaving ? (
+                  <Loader2 className="size-4 animate-spin" />
+                ) : isSignedIn ? (
+                  <Save className="size-4" />
+                ) : (
+                  <LogIn className="size-4" />
+                )}
+                {isSaving
+                  ? "Saving…"
+                  : isSignedIn
+                    ? "Add to My Loadouts"
+                    : "Sign in to save"}
+              </Button>
+            </div>
           </div>
         </CollapsibleContent>
       </Card>

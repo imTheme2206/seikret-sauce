@@ -17,6 +17,7 @@ import { formatBuildDate } from "../utils";
 import { AlertBanner } from "../components/alert-banner";
 import { BuildPageHeader } from "../components/build-page-header";
 import { ScreenError, ScreenLoader } from "../components/builds-states";
+import { CopyBuildLinkButton } from "../components/copy-build-link-button";
 import { EquippedGearRow } from "../components/equipped-gear-row";
 import { HunterStatusPanel } from "../components/hunter-status-panel";
 
@@ -51,12 +52,15 @@ export function BuildDetailPage({ buildId }: { buildId: string }) {
           build.description || "A loadout forged for the Forbidden Lands."
         }
         action={
-          <Button
-            onClick={() => void duplicate()}
-            className="gap-2 uppercase tracking-wider"
-          >
-            <Copy className="size-4" /> Duplicate loadout
-          </Button>
+          <div className="flex flex-wrap gap-2">
+            <CopyBuildLinkButton buildId={build.id} buildName={build.name} />
+            <Button
+              onClick={() => void duplicate()}
+              className="gap-2 uppercase tracking-wider"
+            >
+              <Copy className="size-4" /> Duplicate loadout
+            </Button>
+          </div>
         }
       />
 

@@ -1,5 +1,4 @@
 import { AuthControl } from "@/components/auth-control";
-import { BrandStar } from "@/components/brand-star";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -31,7 +30,7 @@ const NAV_LINKS = [
   },
 ] as const;
 
-/** Top application bar: brand mark, page title, page nav, and the Discord auth control. */
+/** Top application bar: brand mark, product name, page nav, and the Discord auth control. */
 export function AppHeader() {
   const pathname = useRouterState({
     select: (state) => state.location.pathname,
@@ -42,15 +41,14 @@ export function AppHeader() {
     <header className="flex h-16 shrink-0 items-center gap-1 border-b border-border px-2 sm:gap-2.5 sm:px-5">
       <Link
         to="/"
-        aria-label="Go to home and Gathering Hub"
+        aria-label="Seikret Sauce home and Gathering Hub"
         className="flex shrink-0 items-center gap-2 text-primary transition-colors hover:text-primary/80"
       >
-        <BrandStar size={20} />
         <Typography
           as="span"
           className="hidden text-sm font-bold tracking-[0.12em] sm:inline"
         >
-          MH WILDS
+          SEIKRET SAUCE
         </Typography>
       </Link>
       <NavigationMenu

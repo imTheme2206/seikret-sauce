@@ -30,6 +30,7 @@ import { AlertBanner } from "./alert-banner";
 import { BuildSetCard } from "./build-set-card";
 import { BuildSummaryCard } from "./build-summary-card";
 import { BuildsEmptyState, BuildsGridSkeleton } from "./builds-states";
+import { CopyBuildLinkButton } from "./copy-build-link-button";
 
 /** Reusable build feeds for route pages and embedded feature surfaces. */
 export function BuildsHub({
@@ -130,6 +131,11 @@ function MyBuilds({ controller }: { controller: BuildsHubController }) {
             build={build}
             actions={
               <div className="flex gap-1">
+                <CopyBuildLinkButton
+                  buildId={build.id}
+                  buildName={build.name}
+                  iconOnly
+                />
                 <Button
                   variant="ghost"
                   size="icon"

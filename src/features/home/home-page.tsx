@@ -1,9 +1,8 @@
-import { Link } from "@tanstack/react-router";
-import { ArrowRight, Hammer, SlidersHorizontal, Users } from "lucide-react";
-import { BrandStar } from "@/components/brand-star";
 import { Button } from "@/components/ui/button";
 import { Typography } from "@/components/ui/typography";
 import { BuildsHub } from "@/features/builds";
+import { Link } from "@tanstack/react-router";
+import { ArrowRight, Hammer, SlidersHorizontal, Users } from "lucide-react";
 
 export function HomePage() {
   return (
@@ -11,12 +10,11 @@ export function HomePage() {
       <section className="border-b border-border bg-card px-5 py-12 md:px-10 md:py-16">
         <div className="mx-auto max-w-7xl">
           <div className="mb-5 flex items-center gap-2 text-primary">
-            <BrandStar size={16} />
             <Typography
               as="span"
               className="text-[10px] font-bold uppercase tracking-[.28em]"
             >
-              Hunter preparation desk
+              Seikret Sauce
             </Typography>
           </div>
 
