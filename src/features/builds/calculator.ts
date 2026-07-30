@@ -17,7 +17,12 @@ export function calculateBuild(snapshot: BuildSnapshot): BuildTotals {
   const resistances = { fire: 0, water: 0, thunder: 0, ice: 0, dragon: 0 };
   let defense = 0;
 
-  for (const piece of Object.values(snapshot.positions)) {
+  // The weapon carries no armor/decorations/defense — only a Set and/or Group
+  // Bonus contribution (ADR-0012) — so it's handled separately from the
+  // uniform armor+talisman loop below rather than forced into that shape.
+  const { weapon, ...gearPositions } = snapshot.positions;
+
+  for (const piece of Object.values(gearPositions)) {
     if (!piece) continue;
 
     for (const skill of piece.skills) add(rawSkills, skill.name, skill.level);
@@ -34,6 +39,9 @@ export function calculateBuild(snapshot: BuildSnapshot): BuildTotals {
         resistances[element] += piece.resistances[element];
     }
   }
+
+  if (weapon?.setBonus) add(bonusCounts, weapon.setBonus.name, 1);
+  if (weapon?.groupBonus) add(bonusCounts, weapon.groupBonus.name, 1);
 
   const activeBonuses = Object.entries(snapshot.bonusDefinitions)
     .flatMap(([name, definition]) => {

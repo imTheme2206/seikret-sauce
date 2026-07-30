@@ -1,16 +1,25 @@
 import { useState } from "react";
 import { useBuildApi } from "@/features/builds/hooks/use-build-api";
-import { useCatalog } from "@/features/builds/hooks/use-catalog";
 import { buildErrorMessage } from "@/features/builds/errors";
+import type { ImportBuildBody } from "@/features/builds/types";
 import { useAuth } from "@/hooks/use-auth";
 import { toast } from "@/hooks/use-toast";
-import { optimizerResultToBuild } from "../optimizer-to-build";
-import type { LoadoutResult, SelectedSkill } from "../types";
+import { resultName } from "../utils";
+import type { LoadoutResult, SelectedSkill, WeaponSkills } from "../types";
 
-export function useSaveOptimizerResult(selected: SelectedSkill[]) {
+/**
+ * Saves an optimizer result via `POST /api/mh-wilds/builds/import`. `result`
+ * is the raw `LoadoutResult` sent through untouched — name→id resolution and
+ * decoration packing are the backend's job now (see
+ * `docs/adr/0001-result-type-mirrors-api-dto.md` and the retired
+ * `optimizer-to-build.ts`, which used to do this on the client).
+ */
+export function useSaveOptimizerResult(
+  selected: SelectedSkill[],
+  weapon: WeaponSkills,
+) {
   const { session, signInWithDiscord } = useAuth();
-  const catalog = useCatalog();
-  const { createBuild } = useBuildApi();
+  const { importBuild } = useBuildApi();
   const [savingIndex, setSavingIndex] = useState<number | null>(null);
 
   const saveResult = async (result: LoadoutResult, index: number) => {
@@ -18,26 +27,17 @@ export function useSaveOptimizerResult(selected: SelectedSkill[]) {
       await signInWithDiscord();
       return;
     }
-    if (catalog.isLoading) return;
-    if (catalog.error) {
-      toast({
-        variant: "destructive",
-        title: "Could not prepare loadout",
-        description: "The equipment catalog is unavailable. Try again shortly.",
-      });
-      return;
-    }
 
     setSavingIndex(index);
     try {
-      const body = optimizerResultToBuild(
+      const body: ImportBuildBody = {
         result,
-        index + 1,
-        selected,
-        catalog.armors,
-        catalog.decorations,
-      );
-      await createBuild(body);
+        weapon: { setBonus: weapon.set, groupBonus: weapon.group },
+        name: resultName(selected, index + 1),
+        description: "Saved from a Seikret Sauce optimizer result.",
+        isShared: false,
+      };
+      await importBuild(body);
       toast({
         variant: "success",
         title: "Optimizer result saved",
@@ -61,7 +61,6 @@ export function useSaveOptimizerResult(selected: SelectedSkill[]) {
 
   return {
     isSignedIn: Boolean(session),
-    isCatalogLoading: catalog.isLoading,
     savingIndex,
     saveResult,
   };

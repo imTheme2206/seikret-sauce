@@ -34,15 +34,34 @@ export type SavedBuild = JsonResponse<"/api/mh-wilds/builds/{id}", "get">;
 
 export type BuildSnapshot = SavedBuild["composition"];
 export type SnapshotPositions = BuildSnapshot["positions"];
-/** The six position keys the API stores. Pinned to `@/lib/mh-wilds` in `config.ts`. */
-export type PositionKey = keyof SnapshotPositions;
+/**
+ * The six *renderable gear-row* position keys the API stores — the five body
+ * pieces plus the talisman. Pinned to `@/lib/mh-wilds` in `config.ts`.
+ *
+ * `weapon` is deliberately excluded: per ADR-0012 in the backend, a weapon
+ * contributes only a Set/Group Bonus (no armor piece, no decorations), so it
+ * doesn't fit the `EditorGearRow`/`EquippedGearRow` shape the other six do.
+ * It is modelled separately below (`SnapshotWeapon`, `EditorWeaponSelection`).
+ */
+export type PositionKey = Exclude<keyof SnapshotPositions, "weapon">;
 export type ArmorPosition = Exclude<PositionKey, "talisman">;
 export type SnapshotPiece = NonNullable<SnapshotPositions[PositionKey]>;
 export type SnapshotArmor = NonNullable<SnapshotPositions[ArmorPosition]>;
 export type SnapshotTalisman = NonNullable<SnapshotPositions["talisman"]>;
+/** A weapon's Set + Group Bonus contribution, resolved to full bonus records. */
+export type SnapshotWeapon = NonNullable<SnapshotPositions["weapon"]>;
 
 export type CreateBuildBody =
   paths["/api/mh-wilds/builds"]["post"]["requestBody"]["content"]["application/json"];
+
+/**
+ * Body for `POST /api/mh-wilds/builds/import` — the raw optimizer result plus
+ * the weapon's Set/Group Bonus *names* (the optimizer's `WeaponSkills`
+ * currency). The backend resolves names to ids and packs decorations itself;
+ * the client sends `result` untouched, per ADR-0001.
+ */
+export type ImportBuildBody =
+  paths["/api/mh-wilds/builds/import"]["post"]["requestBody"]["content"]["application/json"];
 
 /** Fields the PATCH endpoint accepts — metadata only, never the composition. */
 export interface BuildMetadataPatch {
@@ -70,6 +89,18 @@ export interface EditorTalismanSelection {
 /** Talismans come either from the scraped catalog or the hunter's own list. */
 export type TalismanSource = "custom" | "scraped";
 
+/**
+ * A weapon's Set/Group Bonus contribution, selected by id (unlike the
+ * optimizer's `WeaponSkills`, which selects by name — see
+ * `src/features/loadout/types.ts`). Always present on the draft, never `null`:
+ * each field independently means "no bonus of that kind" when `null`, mirroring
+ * `WeaponSkills`'s per-kind independence.
+ */
+export interface EditorWeaponSelection {
+  setBonusId: string | null;
+  groupBonusId: string | null;
+}
+
 /** In-progress editor state; becomes a `CreateBuildBody` on save. */
 export interface BuildDraft {
   name: string;
@@ -82,6 +113,7 @@ export interface BuildDraft {
     waist: EditorArmorSelection | null;
     legs: EditorArmorSelection | null;
     talisman: EditorTalismanSelection | null;
+    weapon: EditorWeaponSelection;
   };
 }
 

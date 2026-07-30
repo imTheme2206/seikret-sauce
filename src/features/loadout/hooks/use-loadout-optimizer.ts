@@ -5,8 +5,9 @@
  * receive everything through props (SRP + DIP).
  */
 
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { CATEGORY_CONFIG, CATEGORY_ORDER, categoryOf } from "../config";
+import { loadOptimizerParams, saveOptimizerParams } from "../persistence";
 import type {
   GroupedSkills,
   PoolSkill,
@@ -16,7 +17,6 @@ import type {
   SkillCategory,
   WeaponSkills,
 } from "../types";
-import { EMPTY_WEAPON_SKILLS } from "../types";
 import { useSearchSets } from "./use-search-sets";
 
 const EMPTY_SKILLS: GroupedSkills = {
@@ -57,13 +57,21 @@ export function useLoadoutOptimizer({
   skills = EMPTY_SKILLS,
   isLoadingSkills = false,
 }: UseLoadoutOptimizerArgs) {
-  const [selected, setSelected] = useState<SelectedSkillMap>({});
+  // Search params are restored from localStorage so a returning user keeps the
+  // skills / rank / weapon they last picked (see `../persistence`).
+  const [persisted] = useState(loadOptimizerParams);
+
+  const [selected, setSelected] = useState<SelectedSkillMap>(persisted.selected);
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState<SkillCategory>("armor");
   const [expanded, setExpanded] = useState<Set<number>>(new Set());
-  const [rank, setRank] = useState<Rank>("high");
+  const [rank, setRank] = useState<Rank>(persisted.rank);
   // The Set/Group Skills the equipped weapon contributes a Pre-owned Piece toward.
-  const [weapon, setWeapon] = useState<WeaponSkills>(EMPTY_WEAPON_SKILLS);
+  const [weapon, setWeapon] = useState<WeaponSkills>(persisted.weapon);
+
+  useEffect(() => {
+    saveOptimizerParams({ selected, rank, weapon });
+  }, [selected, rank, weapon]);
 
   const { results, status, error, search } = useSearchSets();
   const isSearching = status === "searching";

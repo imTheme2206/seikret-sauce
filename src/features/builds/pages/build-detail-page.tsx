@@ -19,6 +19,7 @@ import { BuildPageHeader } from "../components/build-page-header";
 import { ScreenError, ScreenLoader } from "../components/builds-states";
 import { CopyBuildLinkButton } from "../components/copy-build-link-button";
 import { EquippedGearRow } from "../components/equipped-gear-row";
+import { EquippedWeaponRow } from "../components/equipped-weapon-row";
 import { HunterStatusPanel } from "../components/hunter-status-panel";
 
 /** `/b/$buildId`: the public permalink for one saved build. */
@@ -117,6 +118,7 @@ export function BuildDetailPage({ buildId }: { buildId: string }) {
                 piece={build.composition.positions[position]}
               />
             ))}
+            <EquippedWeaponRow weapon={build.composition.positions.weapon} />
           </div>
           <HunterStatusPanel
             snapshot={build.composition}

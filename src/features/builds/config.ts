@@ -53,5 +53,6 @@ export const EMPTY_DRAFT: BuildDraft = {
     waist: null,
     legs: null,
     talisman: null,
+    weapon: { setBonusId: null, groupBonusId: null },
   },
 };

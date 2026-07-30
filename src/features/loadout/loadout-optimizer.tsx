@@ -16,7 +16,7 @@ export function LoadoutOptimizer() {
     skills: data as unknown as GroupedSkills | undefined,
     isLoadingSkills: isLoading,
   });
-  const saveResult = useSaveOptimizerResult(controller.selectedList);
+  const saveResult = useSaveOptimizerResult(controller.selectedList, controller.weapon);
 
   return (
     <div className="grid h-full grid-cols-[440px_1fr] overflow-hidden">
@@ -29,7 +29,6 @@ export function LoadoutOptimizer() {
         requestedNames={controller.requestedNames}
         onToggle={controller.toggleExpand}
         isSignedIn={saveResult.isSignedIn}
-        isCatalogLoading={saveResult.isCatalogLoading}
         savingIndex={saveResult.savingIndex}
         onSave={saveResult.saveResult}
       />

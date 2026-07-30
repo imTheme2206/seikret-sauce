@@ -5,6 +5,7 @@ import { buildKeyMatchers, buildKeys } from "./keys";
 import type {
   BuildMetadataPatch,
   CreateBuildBody,
+  ImportBuildBody,
   SavedBuild,
   SharedBuildPage,
 } from "../types";
@@ -30,6 +31,27 @@ export function useBuildApi() {
   ) => {
     try {
       const { data: build } = await api("/api/mh-wilds/builds")
+        .method("post")
+        .create()(body, { headers: { "Idempotency-Key": idempotencyKey } });
+      await revalidateMine();
+      return build;
+    } catch (error) {
+      throw toBuildApiError(error);
+    }
+  };
+
+  /**
+   * Imports a raw optimizer result (+ weapon bonus names) as a saved build.
+   * The backend resolves names to ids and packs decorations — see
+   * `docs/adr/0001-result-type-mirrors-api-dto.md` for why `result` is passed
+   * through untouched instead of pre-transformed on the client.
+   */
+  const importBuild = async (
+    body: ImportBuildBody,
+    idempotencyKey = crypto.randomUUID(),
+  ) => {
+    try {
+      const { data: build } = await api("/api/mh-wilds/builds/import")
         .method("post")
         .create()(body, { headers: { "Idempotency-Key": idempotencyKey } });
       await revalidateMine();
@@ -98,6 +120,7 @@ export function useBuildApi() {
 
   return {
     createBuild,
+    importBuild,
     replaceBuild,
     patchBuild,
     deleteBuild,

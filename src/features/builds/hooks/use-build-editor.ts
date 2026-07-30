@@ -114,6 +114,30 @@ export function useBuildEditor(buildId?: string) {
       ? setTalisman(value)
       : setArmor(position, value);
 
+  /** Set (or clear, with `null`) the weapon's Set or Group Bonus, by id. */
+  const setWeaponBonus = (
+    kind: "setBonusId" | "groupBonusId",
+    bonusId: string | null,
+  ) =>
+    setDraft((current) => ({
+      ...current,
+      composition: {
+        ...current.composition,
+        weapon: { ...current.composition.weapon, [kind]: bonusId },
+      },
+    }));
+
+  // A weapon can carry any Set or Group Bonus; those are the picker's options.
+  const bonusOptions = useMemo(
+    () => ({
+      set: (catalog.skills?.bonuses ?? []).filter((bonus) => bonus.kind === "set"),
+      group: (catalog.skills?.bonuses ?? []).filter(
+        (bonus) => bonus.kind === "group",
+      ),
+    }),
+    [catalog.skills],
+  );
+
   // ── Derived view data ─────────────────────────────────────────────────────
   const snapshot = useMemo(
     () =>
@@ -220,9 +244,11 @@ export function useBuildEditor(buildId?: string) {
     isLoadingCatalog: catalog.isLoading,
     isLoadingBuild: Boolean(buildId) && existing.isLoading,
     loadError: buildId ? existing.error : null,
+    bonusOptions,
     patchDraft,
     selectGear,
     assignDecoration,
+    setWeaponBonus,
     setHasRevisionConflict,
     reloadNewest,
     save,

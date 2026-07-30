@@ -18,7 +18,6 @@ interface ResultsPanelProps {
   requestedNames: Set<string>;
   onToggle: (index: number) => void;
   isSignedIn: boolean;
-  isCatalogLoading: boolean;
   savingIndex: number | null;
   onSave: (result: LoadoutResult, index: number) => Promise<void>;
 }
@@ -32,7 +31,6 @@ export function ResultsPanel({
   requestedNames,
   onToggle,
   isSignedIn,
-  isCatalogLoading,
   savingIndex,
   onSave,
 }: ResultsPanelProps) {
@@ -79,7 +77,7 @@ export function ResultsPanel({
                 onToggle={() => onToggle(index)}
                 isSignedIn={isSignedIn}
                 isSaving={savingIndex === index}
-                saveDisabled={isCatalogLoading || savingIndex !== null}
+                saveDisabled={savingIndex !== null}
                 onSave={() => onSave(result, index)}
               />
             ))}

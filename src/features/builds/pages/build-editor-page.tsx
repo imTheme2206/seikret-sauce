@@ -37,6 +37,7 @@ import { EditorGearRowCard } from "../components/editor-gear-row";
 import { HunterPanel } from "../components/hunter-panel";
 import { HunterStatusPanel } from "../components/hunter-status-panel";
 import { PanelHeading } from "../components/panel-heading";
+import { WeaponBonusRow } from "../components/weapon-bonus-row";
 
 /** `/builds/new` and `/builds/$buildId/edit`. */
 export function BuildEditorPage({ buildId }: { buildId?: string }) {
@@ -76,6 +77,12 @@ export function BuildEditorPage({ buildId }: { buildId?: string }) {
                   }
                 />
               ))}
+              <WeaponBonusRow
+                value={controller.draft.composition.weapon}
+                setBonusOptions={controller.bonusOptions.set}
+                groupBonusOptions={controller.bonusOptions.group}
+                onChange={controller.setWeaponBonus}
+              />
             </div>
           </section>
         </div>

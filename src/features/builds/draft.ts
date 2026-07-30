@@ -20,6 +20,7 @@ import type {
   SnapshotArmor,
   SnapshotPiece,
   SnapshotTalisman,
+  SnapshotWeapon,
 } from "./types";
 
 function toAssignments(piece: SnapshotPiece): DecorationAssignment[] {
@@ -52,6 +53,11 @@ export function draftFromBuild(build: SavedBuild): BuildDraft {
     };
   }
 
+  composition.weapon = {
+    setBonusId: positions.weapon?.setBonus?.bonusId ?? null,
+    groupBonusId: positions.weapon?.groupBonus?.bonusId ?? null,
+  };
+
   return {
     name: build.name,
     description: build.description ?? "",
@@ -72,6 +78,7 @@ export function snapshotFromDraft(
     decorations.map((decoration) => [decoration.id, decoration]),
   );
   const skillById = new Map((catalog?.skills ?? []).map((skill) => [skill.id, skill]));
+  const bonusById = new Map((catalog?.bonuses ?? []).map((bonus) => [bonus.id, bonus]));
 
   const decorate = (assignments: DecorationAssignment[]) =>
     assignments.flatMap((assignment) => {
@@ -146,6 +153,21 @@ export function snapshotFromDraft(
     };
   };
 
+  /** Resolves a chosen bonus id to the full record the snapshot stores. */
+  const toWeaponBonus = (bonusId: string | null) => {
+    if (!bonusId) return null;
+    const bonus = bonusById.get(bonusId);
+    return bonus
+      ? { bonusId: bonus.id, name: bonus.name, kind: bonus.kind }
+      : null;
+  };
+
+  const toWeapon = (): SnapshotWeapon | null => {
+    const setBonus = toWeaponBonus(draft.composition.weapon.setBonusId);
+    const groupBonus = toWeaponBonus(draft.composition.weapon.groupBonusId);
+    return setBonus || groupBonus ? { setBonus, groupBonus } : null;
+  };
+
   return {
     schemaVersion: 1,
     positions: {
@@ -155,6 +177,7 @@ export function snapshotFromDraft(
       waist: toArmor(draft.composition.waist),
       legs: toArmor(draft.composition.legs),
       talisman: toTalisman(),
+      weapon: toWeapon(),
     },
     skillDefinitions: Object.fromEntries(
       (catalog?.skills ?? []).map((skill) => [skill.name, skill.maxLevel]),

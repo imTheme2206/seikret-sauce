@@ -9,6 +9,7 @@ const emptyPositions: BuildSnapshot["positions"] = {
   waist: null,
   legs: null,
   talisman: null,
+  weapon: null,
 };
 
 describe("calculateBuild", () => {
@@ -72,5 +73,53 @@ describe("calculateBuild", () => {
         effectName: "Powerhouse I",
       }],
     });
+  });
+
+  test("a weapon-contributed bonus counts toward activation like a piece would", () => {
+    const snapshot: BuildSnapshot = {
+      schemaVersion: 1,
+      positions: {
+        ...emptyPositions,
+        head: {
+          armorId: "head-1",
+          name: "Doshaguma Helm",
+          type: "head",
+          rank: "high",
+          rarity: 6,
+          defense: 48,
+          resistances: { fire: 0, water: 0, thunder: 0, ice: 0, dragon: 0 },
+          slots: [],
+          skills: [],
+          bonuses: [{ bonusId: "might", name: "Doshaguma's Might", kind: "set" }],
+          decorations: [],
+        },
+        // Only one armor piece carries the bonus — activation needs the
+        // weapon's contribution to reach the threshold of 2.
+        weapon: {
+          setBonus: { bonusId: "might", name: "Doshaguma's Might", kind: "set" },
+          groupBonus: null,
+        },
+      },
+      skillDefinitions: {},
+      bonusDefinitions: {
+        "Doshaguma's Might": {
+          kind: "set",
+          thresholds: [
+            { piecesRequired: 2, effectName: "Powerhouse I", level: 1 },
+          ],
+        },
+      },
+    };
+
+    const totals = calculateBuild(snapshot);
+    expect(totals.bonusCounts["Doshaguma's Might"]).toBe(2);
+    expect(totals.activeBonuses).toEqual([{
+      name: "Doshaguma's Might",
+      kind: "set",
+      pieces: 2,
+      piecesRequired: 2,
+      effectName: "Powerhouse I",
+      level: 1,
+    }]);
   });
 });

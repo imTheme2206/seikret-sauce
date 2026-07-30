@@ -43,8 +43,18 @@ export function slotSizes(
   return slots.map((slot) => (typeof slot === "number" ? slot : slot.size));
 }
 
+/**
+ * True once any armor piece, talisman, or weapon bonus is set. `weapon` is
+ * excluded from the naive truthiness check below — it's always a present
+ * object (its two ids are independently nullable), unlike the other
+ * positions where `null` means "empty".
+ */
 export function hasAnyPiece(draft: BuildDraft): boolean {
-  return Object.values(draft.composition).some(Boolean);
+  const { weapon, ...positions } = draft.composition;
+  return (
+    Object.values(positions).some(Boolean) ||
+    Boolean(weapon.setBonusId || weapon.groupBonusId)
+  );
 }
 
 /** Trims the draft into the request body the create/replace endpoints accept. */
