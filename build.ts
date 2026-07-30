@@ -117,6 +117,41 @@ if (existsSync(outdir)) {
   await rm(outdir, { recursive: true, force: true });
 }
 
+/**
+ * Public config the browser bundle needs. Missing values are a build failure, not a
+ * runtime surprise: these are baked into the bundle, so a bad deploy is only fixable
+ * by rebuilding.
+ */
+const REQUIRED_PUBLIC_VARS = [
+  "BUN_PUBLIC_API_BASE_URL",
+  "BUN_PUBLIC_SUPABASE_URL",
+  "BUN_PUBLIC_SUPABASE_PUBLISHABLE_KEY",
+];
+
+const missing = REQUIRED_PUBLIC_VARS.filter(key => !process.env[key]);
+if (missing.length > 0) {
+  console.error(
+    `\n❌ Missing required environment ${missing.length === 1 ? "variable" : "variables"}: ${missing.join(", ")}\n` +
+      `   Locally these come from .env (see .env.example); on Vercel from\n` +
+      `   Project Settings → Environment Variables. Aborting.\n`,
+  );
+  process.exit(1);
+}
+
+/**
+ * Replace every `process.env.BUN_PUBLIC_*` reference with its literal value.
+ *
+ * `Bun.build({ env: "BUN_PUBLIC_*" })` does the same thing, but only on newer Bun
+ * releases — an older bundler ignores the option silently and leaves the lookups in
+ * the output, where `process is not defined` kills the page on load. `define` has
+ * been supported for far longer, so it is what we rely on.
+ */
+const publicEnvDefines = Object.fromEntries(
+  Object.entries(process.env)
+    .filter(([key, value]) => key.startsWith("BUN_PUBLIC_") && value !== undefined)
+    .map(([key, value]) => [`process.env.${key}`, JSON.stringify(value)]),
+);
+
 const start = performance.now();
 
 const entrypoints = [...new Bun.Glob("**.html").scanSync("src")]
@@ -131,12 +166,9 @@ const result = await Bun.build({
   minify: true,
   target: "browser",
   sourcemap: "linked",
-  // Inline `process.env.BUN_PUBLIC_*` into the browser bundle. Without this the
-  // bundler leaves the `process.env` lookups in place and they blow up at runtime
-  // (there is no `process` in the browser) — see src/lib/env.ts.
-  env: "BUN_PUBLIC_*",
   define: {
     "process.env.NODE_ENV": JSON.stringify("production"),
+    ...publicEnvDefines,
   },
   ...cliConfig,
 });
@@ -151,6 +183,27 @@ if (existsSync(publicDir)) {
     // Skip OS cruft (.DS_Store) so it never ships to the CDN.
     filter: src => !path.basename(src).startsWith("."),
   });
+}
+
+// Nothing may reach the browser still reading `process.env` — there is no `process`
+// there, and an unreplaced lookup throws on load and blanks the page. Catch it here
+// rather than in production.
+const leaked: string[] = [];
+for (const output of result.outputs) {
+  if (output.kind !== "entry-point" && output.kind !== "chunk") continue;
+  const text = await output.text();
+  const hit = text.match(/process\.env\.[A-Za-z_][A-Za-z0-9_]*/);
+  if (hit) leaked.push(`${path.relative(process.cwd(), output.path)}: ${hit[0]}`);
+}
+
+if (leaked.length > 0) {
+  console.error(
+    `\n❌ Unreplaced process.env reference(s) in the browser bundle:\n` +
+      leaked.map(l => `   - ${l}`).join("\n") +
+      `\n   These throw "process is not defined" at runtime. Add the variable to the\n` +
+      `   build environment (BUN_PUBLIC_* prefix) so it gets inlined. Aborting.\n`,
+  );
+  process.exit(1);
 }
 
 const end = performance.now();
