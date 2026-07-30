@@ -1,16 +1,12 @@
 /**
- * Self-contained SVG icon components for the Loadout Optimizer.
+ * Skill-category SVG icons for the Loadout Optimizer.
  *
  * Each icon is a pure presentational component driven entirely by props,
- * keeping icon-drawing concerns out of the layout components (SRP).
+ * keeping icon-drawing concerns out of the layout components (SRP). The
+ * equipment-position glyph is shared with the Builds feature and lives in
+ * `@/components/gear/slot-icon`.
  */
 
-import ArmsSVG from "@/svg/ArmsSvg";
-import ChestSVG from "@/svg/ChestSvg";
-import HeadSVG from "@/svg/HeadSvg";
-import LegsSVG from "@/svg/LegsSvg";
-import TalismanSVG from "@/svg/TalismanSvg";
-import WaistSVG from "@/svg/WaistSvg";
 import type { SkillCategory } from "./types";
 
 interface TypeIconProps {
@@ -91,30 +87,5 @@ export function TypeIcon({ category, color, size = 14, icon }: TypeIconProps) {
         </>
       )}
     </svg>
-  );
-}
-
-interface SlotIconProps {
-  index: number;
-  color: string;
-  size?: number;
-}
-
-/** Armour-slot glyph (head / chest / arms / waist / legs / charm) by index. */
-export function SlotIcon({ index, color, size = 11 }: SlotIconProps) {
-  const sw = "1.4";
-  const slots = [
-    <HeadSVG color={color} />,
-    <ChestSVG color={color} />,
-    <ArmsSVG color={color} />,
-    <WaistSVG color={color} />,
-    <LegsSVG color={color} />,
-    <TalismanSVG color={color} />,
-  ];
-
-  return (
-    <span className="block shrink-0" style={{ width: size, height: size }}>
-      {slots[index] ?? slots[0]}
-    </span>
   );
 }

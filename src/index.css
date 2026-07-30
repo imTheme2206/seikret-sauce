@@ -2,7 +2,6 @@
 
 @theme {
     --font-sans: "Inter", system-ui, sans-serif;
-    --font-serif: "Cinzel", serif;
 }
 
 @layer base {

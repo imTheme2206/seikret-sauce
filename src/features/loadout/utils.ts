@@ -13,10 +13,10 @@ const TIER_SYMBOLS: Record<string, string> = {
 export function shortArmorName(name: string): string {
   for (const [tier, symbol] of Object.entries(TIER_SYMBOLS)) {
     if (name.includes(tier)) {
-      return `${name.split(" ")[0]} ${symbol}`;
+      return `${name.replace(tier, "").trim()} ${symbol}`;
     }
   }
-  return name.split(" ").slice(0, 2).join(" ");
+  return name;
 }
 
 /** "5 skills · 3 decos · 240 def" */

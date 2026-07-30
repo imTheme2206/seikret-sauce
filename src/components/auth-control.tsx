@@ -28,7 +28,8 @@ export function AuthControl() {
     return (
       <Button variant="outline" size="sm" onClick={() => void signInWithDiscord()}>
         <DiscordGlyph />
-        Log in with Discord
+        <span className="hidden sm:inline">Log in with Discord</span>
+        <span className="sr-only sm:hidden">Log in with Discord</span>
       </Button>
     );
   }

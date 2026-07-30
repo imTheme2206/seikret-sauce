@@ -7,7 +7,13 @@ export function ResultsEmptyState() {
   return (
     <div className="flex flex-1 flex-col items-center justify-center gap-3.5 px-5 py-[60px] text-center">
       <svg width="52" height="52" viewBox="0 0 52 52" fill="none">
-        <circle cx="26" cy="26" r="22" stroke="var(--border)" strokeWidth="1.5" />
+        <circle
+          cx="26"
+          cy="26"
+          r="22"
+          stroke="var(--border)"
+          strokeWidth="1.5"
+        />
         <polygon
           points="26,12 28.5,20 37,20 30.5,25 33,33 26,28 19,33 21.5,25 15,20 23.5,20"
           fill="var(--secondary)"
@@ -15,9 +21,7 @@ export function ResultsEmptyState() {
           strokeWidth="1"
         />
       </svg>
-      <Typography
-        className="max-w-[270px] text-sm leading-[1.7] text-muted-foreground"
-      >
+      <Typography className="max-w-[270px] text-sm leading-[1.7] text-muted-foreground">
         Add skills from the left panel, then click{" "}
         <Typography as="span" className="font-semibold text-primary">
           Find Sets
@@ -35,12 +39,7 @@ export function ResultsSearchingState() {
       aria-busy="true"
       aria-label="Searching for optimal sets"
     >
-      <Typography
-        className="px-1 pb-1 text-center text-sm text-muted-foreground"
-      >
-        Searching for optimal sets…
-      </Typography>
-      {Array.from({ length: 4 }, (_, i) => (
+      {Array.from({ length: 10 }, (_, i) => (
         <div
           key={i}
           className="flex min-h-20 items-center gap-2.5 rounded-md border border-border bg-card px-3 py-[9px]"
@@ -73,8 +72,19 @@ export function ResultsErrorState({ message }: { message: string }) {
   return (
     <div className="flex flex-1 flex-col items-center justify-center gap-2.5 px-5 py-[60px] text-center">
       <svg width="40" height="40" viewBox="0 0 24 24" fill="none" aria-hidden>
-        <circle cx="12" cy="12" r="9" stroke="hsl(8,60%,52%)" strokeWidth="1.5" />
-        <path d="M12 7.5v5.5" stroke="hsl(8,60%,52%)" strokeWidth="1.5" strokeLinecap="round" />
+        <circle
+          cx="12"
+          cy="12"
+          r="9"
+          stroke="hsl(8,60%,52%)"
+          strokeWidth="1.5"
+        />
+        <path
+          d="M12 7.5v5.5"
+          stroke="hsl(8,60%,52%)"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+        />
         <circle cx="12" cy="16.25" r="0.9" fill="hsl(8,60%,52%)" />
       </svg>
       <Typography className="max-w-[300px] text-sm leading-[1.7] text-[hsl(8,55%,62%)]">

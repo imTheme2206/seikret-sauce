@@ -1,7 +1,7 @@
-import { Check, Plus } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Typography } from "@/components/ui/typography";
 import { cn } from "@/lib/utils";
+import { Check, Plus } from "lucide-react";
 import { CATEGORY_CONFIG } from "../config";
 import { TypeIcon } from "../icons";
 import type { PoolSkill } from "../types";
@@ -22,7 +22,7 @@ export function SkillPoolRow({
   onAdd,
 }: SkillPoolRowProps) {
   const config = CATEGORY_CONFIG[skill.category];
-
+  console.log(skill);
   return (
     <button
       type="button"
@@ -33,7 +33,7 @@ export function SkillPoolRow({
         <div className="pointer-events-none absolute inset-0 bg-[hsl(36,25%,9%)]" />
       )}
 
-      <div className="relative flex size-8 shrink-0 items-center justify-center rounded-md bg-secondary">
+      <div className="relative flex size-8 shrink-0 items-center justify-center overflow-hidden rounded-md bg-secondary [&_img]:size-5 [&_img]:object-contain">
         <TypeIcon
           category={skill.category}
           color={config.color}

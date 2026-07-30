@@ -3,6 +3,9 @@
  * varies per skill category. Adding or changing a category means editing only
  * this map (Open/Closed): components iterate over it rather than hard-coding
  * "armor / weapon / set / group" branches.
+ *
+ * Game-wide facts (positions, rarity colours, elements) live in
+ * `@/lib/mh-wilds` because the Builds feature renders them too.
  */
 
 import type { GroupedSkills, Skill, SkillCategory } from "./types";
@@ -53,29 +56,6 @@ export const CATEGORY_CONFIG: Record<SkillCategory, CategoryConfig> = {
 
 /** Ordered list of categories (tab order). */
 export const CATEGORY_ORDER: SkillCategory[] = ["armor", "weapon", "set", "group"];
-
-/**
- * In-game armour rarity colours for MH Wilds (rarity 1–8), keyed by rarity.
- * Source: Monster Hunter Wiki "Help:Item Colors" (MHWilds section).
- */
-export const RARITY_COLORS: Record<number, string> = {
-  1: "#969696",
-  2: "#DEDEDE",
-  3: "#A4C43B",
-  4: "#47A33F",
-  5: "#5CAEBB",
-  6: "#575FD9",
-  7: "#9272E3",
-  8: "#C76D46",
-};
-
-/** Neutral accent for slots without a rarity (rarity 0 — the talisman slot). */
-const NO_RARITY_COLOR = "#8a8079";
-
-/** Accent colour for an armour piece, derived from its rarity. */
-export function rarityColor(rarity: number): string {
-  return RARITY_COLORS[rarity] ?? NO_RARITY_COLOR;
-}
 
 /** Derive the category a skill belongs to from its flags. */
 export function categoryOf(skill: Skill): SkillCategory {

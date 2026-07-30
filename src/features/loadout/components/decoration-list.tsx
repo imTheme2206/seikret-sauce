@@ -1,5 +1,5 @@
 import { Typography } from "@/components/ui/typography";
-import { SectionHeading } from "./section-heading";
+import { SectionHeading } from "@/components/gear/section-heading";
 
 interface DecorationListProps {
   decorations: string[];

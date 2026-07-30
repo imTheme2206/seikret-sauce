@@ -8,6 +8,8 @@
  * "restoring" a transport/domain split here.
  */
 
+import type { ElementalDefenses } from "@/lib/mh-wilds";
+
 export type SkillCategory = "armor" | "weapon" | "set" | "group";
 
 /** A single skill as returned by the skills endpoint. */
@@ -61,14 +63,11 @@ export const EMPTY_WEAPON_SKILLS: WeaponSkills = { set: null, group: null };
 /** Search difficulty rank. `master` is reachable in the type but not yet offered in the UI. */
 export type Rank = "low" | "high" | "master";
 
-/** Elemental defense totals summed over the five body pieces (talisman excluded). */
-export interface ElementalDefenses {
-  fire: number;
-  water: number;
-  thunder: number;
-  ice: number;
-  dragon: number;
-}
+/**
+ * Elemental defense totals summed over the five body pieces (talisman excluded).
+ * Re-exported from the shared domain module, which the Builds feature also uses.
+ */
+export type { ElementalDefenses } from "@/lib/mh-wilds";
 
 /**
  * One optimized armour loadout returned by `POST /api/mh-wilds/search`.

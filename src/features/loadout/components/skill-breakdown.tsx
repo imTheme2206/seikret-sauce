@@ -1,6 +1,6 @@
 import { Typography } from "@/components/ui/typography";
 import { cn } from "@/lib/utils";
-import { SectionHeading } from "./section-heading";
+import { SectionHeading } from "@/components/gear/section-heading";
 
 interface SkillBreakdownProps {
   skills: Record<string, number>;

@@ -16,8 +16,14 @@ const withAuth: Middleware = async (url, init, next) => {
 };
 
 const newApi = () => {
+  const endpoint =
+    process.env.BUN_PUBLIC_API_BASE_URL ??
+    (process.env.NODE_ENV === "production"
+      ? window.location.origin
+      : "http://localhost:3003");
+
   return {
-    api: newFetcher<paths>("http://localhost:3003", [withAuth]).path,
+    api: newFetcher<paths>(endpoint, [withAuth]).path,
   };
 };
 

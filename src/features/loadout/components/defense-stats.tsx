@@ -1,21 +1,17 @@
+import { SectionHeading } from "@/components/gear/section-heading";
 import { Typography } from "@/components/ui/typography";
+import {
+  ELEMENTS,
+  formatResistance,
+  type ElementalDefenses,
+} from "@/lib/mh-wilds";
 import { cn } from "@/lib/utils";
-import type { ElementalDefenses } from "../types";
-import { SectionHeading } from "./section-heading";
 
 interface DefenseStatsProps {
   defense: number;
   elementalDefenses: ElementalDefenses;
   freeSlots: number[];
 }
-
-const ELEMENTS: { key: keyof ElementalDefenses; label: string; color: string }[] = [
-  { key: "fire", label: "Fire", color: "hsl(8,65%,55%)" },
-  { key: "water", label: "Water", color: "hsl(205,55%,55%)" },
-  { key: "thunder", label: "Thndr", color: "hsl(50,75%,55%)" },
-  { key: "ice", label: "Ice", color: "hsl(190,45%,60%)" },
-  { key: "dragon", label: "Drgn", color: "hsl(280,40%,62%)" },
-];
 
 /** Defense / elemental-defense / slot summary shown inside an expanded result. */
 export function DefenseStats({ defense, elementalDefenses, freeSlots }: DefenseStatsProps) {
@@ -41,7 +37,7 @@ export function DefenseStats({ defense, elementalDefenses, freeSlots }: DefenseS
         </div>
 
         <div className="flex items-center gap-2">
-          {ELEMENTS.map(({ key, label, color }) => {
+          {ELEMENTS.map(({ key, label, abbr, color }) => {
             const value = elementalDefenses[key];
             return (
               <div key={key} className="flex flex-col items-center leading-none">
@@ -49,8 +45,9 @@ export function DefenseStats({ defense, elementalDefenses, freeSlots }: DefenseS
                   as="span"
                   className="text-xs uppercase tracking-[0.08em]"
                   style={{ color }}
+                  title={`${label} resistance`}
                 >
-                  {label}
+                  {abbr}
                 </Typography>
                 <Typography
                   as="span"
@@ -59,7 +56,7 @@ export function DefenseStats({ defense, elementalDefenses, freeSlots }: DefenseS
                     value < 0 ? "text-[hsl(8,60%,58%)]" : "text-foreground/80",
                   )}
                 >
-                  {value > 0 ? `+${value}` : value}
+                  {formatResistance(value)}
                 </Typography>
               </div>
             );

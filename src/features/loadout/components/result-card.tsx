@@ -1,4 +1,3 @@
-import { ChevronDown } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import {
   Collapsible,
@@ -7,12 +6,13 @@ import {
 } from "@/components/ui/collapsible";
 import { Typography } from "@/components/ui/typography";
 import { cn } from "@/lib/utils";
+import { ChevronDown } from "lucide-react";
+import type { LoadoutResult } from "../types";
 import { statsSummary } from "../utils";
 import { ArmorChip } from "./armor-chip";
 import { DecorationList } from "./decoration-list";
 import { DefenseStats } from "./defense-stats";
 import { SkillBreakdown } from "./skill-breakdown";
-import type { LoadoutResult } from "../types";
 
 interface ResultCardProps {
   result: LoadoutResult;
@@ -44,10 +44,7 @@ export function ResultCard({
           )}
         >
           <div className="flex size-[26px] shrink-0 items-center justify-center rounded-[4px] bg-secondary">
-            <Typography
-              as="span"
-              className="text-xs font-bold text-primary"
-            >
+            <Typography as="span" className="text-xs font-bold text-primary">
               {index + 1}
             </Typography>
           </div>
@@ -62,13 +59,19 @@ export function ResultCard({
               />
             ))}
           </div>
-
-          <Typography
-            as="span"
-            className="ml-1.5 shrink-0 whitespace-nowrap text-xs text-muted-foreground"
-          >
-            {statsSummary(skillCount, result.decoNames.length, result.defense)}
-          </Typography>
+          <div className="flex flex-col gap-1">
+            {statsSummary(skillCount, result.decoNames.length, result.defense)
+              .split("·")
+              .map((char, i) => (
+                <Typography
+                  as="div"
+                  className="ml-1.5 shrink-0 whitespace-nowrap text-xs text-muted-foreground"
+                  key={i}
+                >
+                  {char}
+                </Typography>
+              ))}
+          </div>
 
           <ChevronDown
             className={cn(

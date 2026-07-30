@@ -1,6 +1,6 @@
 import { Typography } from "@/components/ui/typography";
 
-/** Small uppercase heading used inside an expanded result row. */
+/** Small uppercase heading used above a group of gear/skill details. */
 export function SectionHeading({ children }: { children: React.ReactNode }) {
   return (
     <Typography

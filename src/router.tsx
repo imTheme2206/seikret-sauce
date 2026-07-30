@@ -3,6 +3,7 @@ import { ThemeProvider } from "./components/theme-provider";
 import { AppHeader } from "./components/app-header";
 import { LoadoutOptimizer } from "./features/loadout";
 import { TalismansTab } from "./features/talismans";
+import { BuildDetail, BuildEditor, BuildsHub } from "./features/builds";
 
 /** Shared shell (theme, header + nav) for every route. */
 const rootRoute = createRootRoute({
@@ -30,7 +31,51 @@ const talismansRoute = createRoute({
   component: TalismansTab,
 });
 
-const routeTree = rootRoute.addChildren([indexRoute, talismansRoute]);
+const buildsRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/builds",
+  component: BuildsHub,
+});
+
+const sharedBuildsRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/builds/shared",
+  component: () => <BuildsHub view="shared" />,
+});
+
+const newBuildRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/builds/new",
+  component: BuildEditor,
+});
+
+const editBuildRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/builds/$buildId/edit",
+  component: () => {
+    const { buildId } = editBuildRoute.useParams();
+    return <BuildEditor buildId={buildId} />;
+  },
+});
+
+const buildDetailRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/b/$buildId",
+  component: () => {
+    const { buildId } = buildDetailRoute.useParams();
+    return <BuildDetail buildId={buildId} />;
+  },
+});
+
+const routeTree = rootRoute.addChildren([
+  indexRoute,
+  talismansRoute,
+  buildsRoute,
+  sharedBuildsRoute,
+  newBuildRoute,
+  editBuildRoute,
+  buildDetailRoute,
+]);
 
 export const router = createRouter({ routeTree });
 
