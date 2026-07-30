@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 import plugin from "bun-plugin-tailwind";
 import { existsSync } from "fs";
-import { rm } from "fs/promises";
+import { cp, rm } from "fs/promises";
 import path from "path";
 
 if (process.argv.includes("--help") || process.argv.includes("-h")) {
@@ -131,11 +131,27 @@ const result = await Bun.build({
   minify: true,
   target: "browser",
   sourcemap: "linked",
+  // Inline `process.env.BUN_PUBLIC_*` into the browser bundle. Without this the
+  // bundler leaves the `process.env` lookups in place and they blow up at runtime
+  // (there is no `process` in the browser) — see src/lib/env.ts.
+  env: "BUN_PUBLIC_*",
   define: {
     "process.env.NODE_ENV": JSON.stringify("production"),
   },
   ...cliConfig,
 });
+
+// In development `src/index.tsx` serves `public/` (icons, weapon artwork, robots.txt)
+// straight off disk. A static deploy has no such server, so copy it alongside the bundle.
+const publicDir = path.resolve("public");
+if (existsSync(publicDir)) {
+  console.log("📦 Copying public/ into the build output");
+  await cp(publicDir, outdir as string, {
+    recursive: true,
+    // Skip OS cruft (.DS_Store) so it never ships to the CDN.
+    filter: src => !path.basename(src).startsWith("."),
+  });
+}
 
 const end = performance.now();
 

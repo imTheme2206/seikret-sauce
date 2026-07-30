@@ -1,5 +1,6 @@
 import type { Middleware } from "openapi-typescript-fetch";
 import { newFetcher } from "@/lib/api";
+import { API_BASE_URL } from "@/lib/env";
 import { supabase } from "@/lib/supabase";
 import { type paths } from "@/vendor/openapi";
 
@@ -16,14 +17,8 @@ const withAuth: Middleware = async (url, init, next) => {
 };
 
 const newApi = () => {
-  const endpoint =
-    process.env.BUN_PUBLIC_API_BASE_URL ??
-    (process.env.NODE_ENV === "production"
-      ? window.location.origin
-      : "http://localhost:3003");
-
   return {
-    api: newFetcher<paths>(endpoint, [withAuth]).path,
+    api: newFetcher<paths>(API_BASE_URL, [withAuth]).path,
   };
 };
 

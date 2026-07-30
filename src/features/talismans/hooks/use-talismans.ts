@@ -4,8 +4,6 @@ import useSWR from "node_modules/swr/dist/index";
 import { ApiError } from "openapi-typescript-fetch";
 import type { CreateTalismanInput, CustomTalisman } from "../types";
 
-const API_BASE = process.env.BUN_PUBLIC_API_BASE_URL ?? "http://localhost:3003";
-
 export interface UseTalismans {
   talismans: CustomTalisman[];
   isLoading: boolean;

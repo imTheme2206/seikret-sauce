@@ -26,7 +26,6 @@ import type {
   WeaponSkills,
 } from "../types";
 
-const API_BASE = process.env.BUN_PUBLIC_API_BASE_URL ?? "http://localhost:3003";
 /** Slightly above the backend's ~15s worst case so we only trip on genuine hangs. */
 const TIMEOUT_MS = 20_000;
 
@@ -130,8 +129,8 @@ export function useSearchSets(): UseSearchSets {
         .create();
 
       // `data` is typed off the OpenAPI response schema — no cast, no drift.
+      // No `baseUrl` override — `useApi()` already configured it from the environment.
       const { data } = await searchSets(toRequestBody(selected, rank, weapon), {
-        baseUrl: API_BASE,
         signal: controller.signal,
       });
 
