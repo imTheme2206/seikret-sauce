@@ -69,7 +69,15 @@ export function BuildSummaryCard({
           <Clock3 className="size-3" /> Revised {formatBuildDate(build.updatedAt)}
         </Typography>
         {actions ?? (
-          <ChevronRight className="size-4 text-primary transition-transform group-hover:translate-x-1" />
+          <Link
+            to="/b/$buildId"
+            params={{ buildId: build.id }}
+            aria-label={`Open ${build.name}`}
+            className="flex items-center gap-1 text-xs font-medium text-primary"
+          >
+            Open
+            <ChevronRight className="size-4 transition-transform group-hover:translate-x-1" />
+          </Link>
         )}
       </div>
     </HunterPanel>

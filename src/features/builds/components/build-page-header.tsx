@@ -33,12 +33,12 @@ export function BuildPageHeader({
   return (
     <header
       className={cn(
-        "border-b border-border bg-card px-5 py-9 md:px-10",
+        "border-b border-border bg-card px-5 py-8 md:px-10 md:py-10",
         className,
       )}
     >
       <div className="mx-auto flex max-w-7xl flex-col justify-between gap-6 sm:flex-row sm:items-end">
-        <div>
+        <div className="min-w-0">
           <Typography
             as="div"
             className="mb-2 flex items-center gap-2 text-[10px] font-bold uppercase tracking-[.28em] text-primary"
@@ -59,7 +59,7 @@ export function BuildPageHeader({
           )}
           {children}
         </div>
-        {action}
+        {action && <div className="shrink-0">{action}</div>}
       </div>
     </header>
   );

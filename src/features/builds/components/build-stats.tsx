@@ -17,8 +17,8 @@ export function BuildStats({ snapshot }: { snapshot: BuildSnapshot }) {
 
   return (
     <div className="space-y-5">
-      <div className="grid grid-cols-[1.3fr_repeat(5,1fr)] border border-border bg-background/45">
-        <div className="flex items-center gap-3 border-r border-border p-3">
+      <div className="grid grid-cols-5 border border-border bg-background/45 sm:grid-cols-[1.3fr_repeat(5,1fr)]">
+        <div className="col-span-5 flex items-center gap-3 border-b border-border p-3 sm:col-span-1 sm:border-r sm:border-b-0">
           <Shield className="size-5 text-primary" />
           <div>
             <Typography

@@ -1,80 +1,58 @@
+import { Button } from "@/components/ui/button";
 import {
-  BookMarked,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Typography } from "@/components/ui/typography";
+import { Link } from "@tanstack/react-router";
+import {
   Hammer,
   Loader2,
   LockKeyhole,
   PackageOpen,
-  Plus,
   RefreshCw,
   Share2,
   ShieldOff,
   Trash2,
-  Users,
 } from "lucide-react";
-import type { LucideIcon } from "lucide-react";
-import { Link } from "@tanstack/react-router";
-import { Button } from "@/components/ui/button";
+import { useState } from "react";
 import {
   useBuildsHub,
   type BuildsHubController,
   type BuildsView,
 } from "../hooks/use-builds-hub";
+import type { BuildSummary } from "../types";
 import { AlertBanner } from "./alert-banner";
-import { BuildPageHeader } from "./build-page-header";
+import { BuildSetCard } from "./build-set-card";
 import { BuildSummaryCard } from "./build-summary-card";
 import { BuildsEmptyState, BuildsGridSkeleton } from "./builds-states";
-import type { BuildSummary } from "../types";
 
-const COPY: Record<
-  BuildsView,
-  { icon: LucideIcon; eyebrow: string; title: string; body: string }
-> = {
-  mine: {
-    icon: BookMarked,
-    eyebrow: "Hunter's equipment box",
-    title: "My Loadouts",
-    body: "Forge and revise equipment records prepared for the Forbidden Lands.",
-  },
-  shared: {
-    icon: Users,
-    eyebrow: "Guild expedition archive",
-    title: "Gathering Hub",
-    body: "Study loadouts posted by fellow hunters and bring one back to your equipment box.",
-  },
-};
-
-/** `/builds` and `/builds/shared`: the two build feeds behind one layout. */
-export function BuildsHub({ view = "mine" }: { view?: BuildsView }) {
+/** Reusable build feeds for route pages and embedded feature surfaces. */
+export function BuildsHub({
+  view = "mine",
+  showFullSets = false,
+}: {
+  view?: BuildsView;
+  /** Resolve and display each build's equipment and calculated skills. */
+  showFullSets?: boolean;
+}) {
   const controller = useBuildsHub(view);
-  const copy = COPY[view];
 
   return (
-    <div className="h-full overflow-y-auto">
-      <BuildPageHeader
-        icon={copy.icon}
-        eyebrow={copy.eyebrow}
-        title={copy.title}
-        description={copy.body}
-        action={
-          <Button asChild className="gap-2 uppercase tracking-wider">
-            <Link to="/builds/new">
-              <Plus className="size-4" /> Forge loadout
-            </Link>
-          </Button>
-        }
-      />
-
-      <main className="mx-auto max-w-7xl p-5 md:p-10">
-        {controller.actionError && (
-          <AlertBanner message={controller.actionError} className="mb-5" />
-        )}
-        {view === "mine" ? (
-          <MyBuilds controller={controller} />
-        ) : (
-          <SharedBuilds controller={controller} />
-        )}
-      </main>
-    </div>
+    <>
+      {controller.actionError && (
+        <AlertBanner message={controller.actionError} className="mb-5" />
+      )}
+      {view === "mine" ? (
+        <MyBuilds controller={controller} />
+      ) : (
+        <SharedBuilds controller={controller} showFullSets={showFullSets} />
+      )}
+    </>
   );
 }
 
@@ -85,7 +63,10 @@ function BuildsGrid({ children }: React.PropsWithChildren) {
 }
 
 function MyBuilds({ controller }: { controller: BuildsHubController }) {
-  const { mine, session, signInWithDiscord, toggleShare, removeBuild } = controller;
+  const { mine, session, signInWithDiscord, toggleShare, removeBuild } =
+    controller;
+  const [pendingDelete, setPendingDelete] = useState<BuildSummary | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   if (!session && !mine.authLoading) {
     return (
@@ -129,53 +110,111 @@ function MyBuilds({ controller }: { controller: BuildsHubController }) {
     );
   }
 
-  const confirmRemove = (build: BuildSummary) => {
-    if (window.confirm(`Discard “${build.name}” from your equipment box?`)) {
-      void removeBuild(build);
+  const confirmRemove = async () => {
+    if (!pendingDelete) return;
+    setIsDeleting(true);
+    try {
+      const wasDeleted = await removeBuild(pendingDelete);
+      if (wasDeleted) setPendingDelete(null);
+    } finally {
+      setIsDeleting(false);
     }
   };
 
   return (
-    <BuildsGrid>
-      {mine.builds.map((build) => (
-        <BuildSummaryCard
-          key={build.id}
-          build={build}
-          actions={
-            <div className="flex gap-1">
-              <Button
-                variant="ghost"
-                size="icon"
-                title={build.isShared ? "Stop sharing" : "Share build"}
-                onClick={(event) => {
-                  event.preventDefault();
-                  void toggleShare(build);
-                }}
-              >
-                <Share2
-                  className={build.isShared ? "size-4 text-primary" : "size-4"}
-                />
-              </Button>
-              <Button
-                variant="ghost"
-                size="icon"
-                title="Delete build"
-                onClick={(event) => {
-                  event.preventDefault();
-                  confirmRemove(build);
-                }}
-              >
-                <Trash2 className="size-4 text-destructive" />
-              </Button>
-            </div>
-          }
-        />
-      ))}
-    </BuildsGrid>
+    <>
+      <BuildsGrid>
+        {mine.builds.map((build) => (
+          <BuildSummaryCard
+            key={build.id}
+            build={build}
+            actions={
+              <div className="flex gap-1">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  aria-label={
+                    build.isShared
+                      ? `Stop sharing ${build.name}`
+                      : `Share ${build.name}`
+                  }
+                  title={build.isShared ? "Stop sharing" : "Share loadout"}
+                  onClick={(event) => {
+                    event.preventDefault();
+                    void toggleShare(build);
+                  }}
+                >
+                  <Share2
+                    className={
+                      build.isShared ? "size-4 text-primary" : "size-4"
+                    }
+                  />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  aria-label={`Delete ${build.name}`}
+                  title="Delete loadout"
+                  onClick={(event) => {
+                    event.preventDefault();
+                    setPendingDelete(build);
+                  }}
+                >
+                  <Trash2 className="size-4 text-destructive" />
+                </Button>
+              </div>
+            }
+          />
+        ))}
+      </BuildsGrid>
+      <Dialog
+        open={Boolean(pendingDelete)}
+        onOpenChange={(open) => {
+          if (!open && !isDeleting) setPendingDelete(null);
+        }}
+      >
+        <DialogContent className="rounded-none sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Delete “{pendingDelete?.name}”?</DialogTitle>
+            <DialogDescription>
+              This permanently removes the loadout from your equipment box and
+              invalidates its shared link.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              disabled={isDeleting}
+              onClick={() => setPendingDelete(null)}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              disabled={isDeleting}
+              onClick={() => void confirmRemove()}
+            >
+              {isDeleting ? (
+                <Loader2 className="size-4 animate-spin" />
+              ) : (
+                <Trash2 className="size-4" />
+              )}
+              {isDeleting ? "Deleting…" : "Delete loadout"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }
 
-function SharedBuilds({ controller }: { controller: BuildsHubController }) {
+function SharedBuilds({
+  controller,
+  showFullSets,
+}: {
+  controller: BuildsHubController;
+  showFullSets: boolean;
+}) {
   const { shared } = controller;
 
   if (shared.isLoadingFirstPage) return <BuildsGridSkeleton />;
@@ -200,11 +239,24 @@ function SharedBuilds({ controller }: { controller: BuildsHubController }) {
 
   return (
     <>
-      <BuildsGrid>
-        {shared.builds.map((build) => (
-          <BuildSummaryCard key={build.id} build={build} />
-        ))}
-      </BuildsGrid>
+      <CollectionHeading
+        title="Shared by hunters"
+        count={shared.builds.length}
+        description="Open a record to inspect it or duplicate it into your equipment box."
+      />
+      {showFullSets ? (
+        <div className="grid gap-5">
+          {shared.builds.map((build) => (
+            <BuildSetCard key={build.id} summary={build} />
+          ))}
+        </div>
+      ) : (
+        <BuildsGrid>
+          {shared.builds.map((build) => (
+            <BuildSummaryCard key={build.id} build={build} />
+          ))}
+        </BuildsGrid>
+      )}
       {shared.hasMore && (
         <div className="mt-7 text-center">
           <Button
@@ -223,5 +275,34 @@ function SharedBuilds({ controller }: { controller: BuildsHubController }) {
         </div>
       )}
     </>
+  );
+}
+
+function CollectionHeading({
+  title,
+  count,
+  description,
+}: {
+  title: string;
+  count: number;
+  description: string;
+}) {
+  return (
+    <div className="mb-5 flex flex-col justify-between gap-2 border-b border-border pb-4 sm:flex-row sm:items-end">
+      <div>
+        <Typography as="h2" className="text-lg font-semibold">
+          {title}
+        </Typography>
+        <Typography className="mt-1 text-xs text-muted-foreground">
+          {description}
+        </Typography>
+      </div>
+      <Typography
+        as="span"
+        className="text-[10px] font-bold uppercase tracking-[.18em] text-primary"
+      >
+        {count} {count === 1 ? "record" : "records"}
+      </Typography>
+    </div>
   );
 }

@@ -14,14 +14,14 @@ import { Typography } from "@/components/ui/typography";
 import { POSITION_KEYS } from "../config";
 import { useBuildDetail } from "../hooks/use-build-detail";
 import { formatBuildDate } from "../utils";
-import { AlertBanner } from "./alert-banner";
-import { BuildPageHeader } from "./build-page-header";
-import { ScreenError, ScreenLoader } from "./builds-states";
-import { EquippedGearRow } from "./equipped-gear-row";
-import { HunterStatusPanel } from "./hunter-status-panel";
+import { AlertBanner } from "../components/alert-banner";
+import { BuildPageHeader } from "../components/build-page-header";
+import { ScreenError, ScreenLoader } from "../components/builds-states";
+import { EquippedGearRow } from "../components/equipped-gear-row";
+import { HunterStatusPanel } from "../components/hunter-status-panel";
 
 /** `/b/$buildId`: the public permalink for one saved build. */
-export function BuildDetail({ buildId }: { buildId: string }) {
+export function BuildDetailPage({ buildId }: { buildId: string }) {
   const { build, isLoading, error, isOwner, message, duplicate } =
     useBuildDetail(buildId);
 

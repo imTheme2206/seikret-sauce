@@ -1,9 +1,15 @@
 import { createRootRoute, createRoute, createRouter, Outlet } from "@tanstack/react-router";
 import { ThemeProvider } from "./components/theme-provider";
 import { AppHeader } from "./components/app-header";
+import { Toaster } from "./components/ui/toaster";
+import { HomePage } from "./features/home";
 import { LoadoutOptimizer } from "./features/loadout";
 import { TalismansTab } from "./features/talismans";
-import { BuildDetail, BuildEditor, BuildsHub } from "./features/builds";
+import {
+  BuildDetailPage,
+  BuildEditorPage,
+  BuildsPage,
+} from "./features/builds";
 
 /** Shared shell (theme, header + nav) for every route. */
 const rootRoute = createRootRoute({
@@ -14,6 +20,7 @@ const rootRoute = createRootRoute({
         <div className="flex-1 overflow-hidden">
           <Outlet />
         </div>
+        <Toaster />
       </div>
     </ThemeProvider>
   ),
@@ -22,6 +29,12 @@ const rootRoute = createRootRoute({
 const indexRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/",
+  component: HomePage,
+});
+
+const optimizerRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/optimizer",
   component: LoadoutOptimizer,
 });
 
@@ -34,19 +47,19 @@ const talismansRoute = createRoute({
 const buildsRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/builds",
-  component: BuildsHub,
+  component: BuildsPage,
 });
 
 const sharedBuildsRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/builds/shared",
-  component: () => <BuildsHub view="shared" />,
+  component: () => <BuildsPage view="shared" />,
 });
 
 const newBuildRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/builds/new",
-  component: BuildEditor,
+  component: BuildEditorPage,
 });
 
 const editBuildRoute = createRoute({
@@ -54,7 +67,7 @@ const editBuildRoute = createRoute({
   path: "/builds/$buildId/edit",
   component: () => {
     const { buildId } = editBuildRoute.useParams();
-    return <BuildEditor buildId={buildId} />;
+    return <BuildEditorPage buildId={buildId} />;
   },
 });
 
@@ -63,12 +76,13 @@ const buildDetailRoute = createRoute({
   path: "/b/$buildId",
   component: () => {
     const { buildId } = buildDetailRoute.useParams();
-    return <BuildDetail buildId={buildId} />;
+    return <BuildDetailPage buildId={buildId} />;
   },
 });
 
 const routeTree = rootRoute.addChildren([
   indexRoute,
+  optimizerRoute,
   talismansRoute,
   buildsRoute,
   sharedBuildsRoute,

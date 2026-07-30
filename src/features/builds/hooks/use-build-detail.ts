@@ -3,8 +3,9 @@
  * viewer owns it, and duplicates it into their own equipment box.
  */
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
+import { toast } from "@/hooks/use-toast";
 import { draftFromBuild } from "../draft";
 import { buildErrorMessage } from "../errors";
 import { toCreateBody } from "../utils";
@@ -19,6 +20,19 @@ export function useBuildDetail(buildId: string) {
   const { createBuild } = useBuildApi();
   const [message, setMessage] = useState<string | null>(null);
 
+  useEffect(() => {
+    if (error) {
+      toast({
+        variant: "destructive",
+        title: "Could not open loadout",
+        description: buildErrorMessage(
+          error,
+          "The equipment record is unavailable.",
+        ),
+      });
+    }
+  }, [error]);
+
   const duplicate = async () => {
     if (!build) return;
     const draft = draftFromBuild(build);
@@ -29,14 +43,26 @@ export function useBuildDetail(buildId: string) {
         name: `${draft.name} — Copy`,
         isShared: false,
       });
+      toast({
+        variant: "success",
+        title: "Loadout duplicated",
+        description: "A private copy is ready to edit.",
+      });
       await navigate({
         to: "/builds/$buildId/edit",
         params: { buildId: copy.id },
       });
     } catch (error) {
-      setMessage(
-        buildErrorMessage(error, "Could not duplicate this loadout."),
+      const errorMessage = buildErrorMessage(
+        error,
+        "Could not duplicate this loadout.",
       );
+      setMessage(errorMessage);
+      toast({
+        variant: "destructive",
+        title: "Could not duplicate loadout",
+        description: errorMessage,
+      });
     }
   };
 

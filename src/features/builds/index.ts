@@ -1,6 +1,7 @@
 export { BuildsHub } from "./components/builds-hub";
-export { BuildEditor } from "./components/build-editor";
-export { BuildDetail } from "./components/build-detail";
+export { BuildDetailPage } from "./pages/build-detail-page";
+export { BuildEditorPage } from "./pages/build-editor-page";
+export { BuildsPage } from "./pages/builds-page";
 export type { BuildsView } from "./hooks/use-builds-hub";
 export type {
   ActivatedBonus,

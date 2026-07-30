@@ -7,6 +7,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { useTalismans } from "@/features/talismans/hooks/use-talismans";
+import { toast } from "@/hooks/use-toast";
 import { EMPTY_DRAFT } from "../config";
 import { draftFromBuild, snapshotFromDraft } from "../draft";
 import { buildErrorMessage, isRevisionConflict } from "../errors";
@@ -26,9 +27,6 @@ import type {
   PositionKey,
 } from "../types";
 
-const RELOAD_PROMPT =
-  "This loadout was changed elsewhere. Reload the newest revision? Your unsaved edits will be replaced.";
-
 export function useBuildEditor(buildId?: string) {
   const navigate = useNavigate();
   const catalog = useCatalog();
@@ -40,6 +38,7 @@ export function useBuildEditor(buildId?: string) {
   const [hydratedId, setHydratedId] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
+  const [hasRevisionConflict, setHasRevisionConflict] = useState(false);
   // Kept across retries of this logical create action; replaced only after success.
   const idempotencyKey = useRef(crypto.randomUUID());
 
@@ -49,6 +48,19 @@ export function useBuildEditor(buildId?: string) {
       setHydratedId(existing.build.id);
     }
   }, [existing.build, hydratedId]);
+
+  useEffect(() => {
+    if (buildId && existing.error) {
+      toast({
+        variant: "destructive",
+        title: "Could not open loadout",
+        description: buildErrorMessage(
+          existing.error,
+          "The equipment record is unavailable.",
+        ),
+      });
+    }
+  }, [buildId, existing.error]);
 
   // ── Draft edits ───────────────────────────────────────────────────────────
   const patchDraft = (patch: Partial<Omit<BuildDraft, "composition">>) =>
@@ -124,11 +136,23 @@ export function useBuildEditor(buildId?: string) {
   // ── Save ──────────────────────────────────────────────────────────────────
   const save = async () => {
     if (!draft.name.trim()) {
-      setMessage("Give this loadout a name before saving.");
+      const validationMessage = "Give this loadout a name before saving.";
+      setMessage(validationMessage);
+      toast({
+        variant: "destructive",
+        title: "Loadout needs a name",
+        description: validationMessage,
+      });
       return;
     }
     if (!hasAnyPiece(draft)) {
-      setMessage("Equip at least one piece before saving.");
+      const validationMessage = "Equip at least one piece before saving.";
+      setMessage(validationMessage);
+      toast({
+        variant: "destructive",
+        title: "Loadout is empty",
+        description: validationMessage,
+      });
       return;
     }
 
@@ -140,20 +164,49 @@ export function useBuildEditor(buildId?: string) {
           ? await replaceBuild(buildId, existing.build.revision, toCreateBody(draft))
           : await createBuild(toCreateBody(draft), idempotencyKey.current);
       idempotencyKey.current = crypto.randomUUID();
+      toast({
+        variant: "success",
+        title: buildId ? "Loadout updated" : "Loadout forged",
+        description: `${draft.name.trim()} was saved to your equipment box.`,
+      });
       await navigate({ to: "/b/$buildId", params: { buildId: saved.id } });
     } catch (error) {
-      if (isRevisionConflict(error) && window.confirm(RELOAD_PROMPT)) {
-        setHydratedId(null);
-        await existing.mutate();
-        setMessage("Loaded the newest revision. Review it before saving again.");
+      if (isRevisionConflict(error)) {
+        setHasRevisionConflict(true);
+        toast({
+          variant: "destructive",
+          title: "A newer revision exists",
+          description:
+            "Choose whether to keep editing or reload the latest saved version.",
+        });
         return;
       }
-      setMessage(
-        buildErrorMessage(error, "The forge could not save this loadout."),
+      const errorMessage = buildErrorMessage(
+        error,
+        "The forge could not save this loadout.",
       );
+      setMessage(errorMessage);
+      toast({
+        variant: "destructive",
+        title: "Could not save loadout",
+        description: errorMessage,
+      });
     } finally {
       setIsSaving(false);
     }
+  };
+
+  const reloadNewest = async () => {
+    setHydratedId(null);
+    await existing.mutate();
+    setHasRevisionConflict(false);
+    const conflictMessage =
+      "Loaded the newest revision. Review it before saving again.";
+    setMessage(conflictMessage);
+    toast({
+      title: "Newest revision loaded",
+      description: conflictMessage,
+    });
   };
 
   return {
@@ -162,6 +215,7 @@ export function useBuildEditor(buildId?: string) {
     rows,
     snapshot,
     message,
+    hasRevisionConflict,
     isSaving,
     isLoadingCatalog: catalog.isLoading,
     isLoadingBuild: Boolean(buildId) && existing.isLoading,
@@ -169,6 +223,8 @@ export function useBuildEditor(buildId?: string) {
     patchDraft,
     selectGear,
     assignDecoration,
+    setHasRevisionConflict,
+    reloadNewest,
     save,
   };
 }

@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/select";
 import { Typography } from "@/components/ui/typography";
 import type { GroupedSkills, SkillCategory } from "@/features/loadout/types";
-import { Plus, X } from "lucide-react";
+import { Gem, Loader2, Plus, Sparkles, X } from "lucide-react";
 import { useState } from "react";
 import {
   MAX_SKILLS_PER_TALISMAN,
@@ -53,6 +53,7 @@ function flattenSkills(skills: GroupedSkills | undefined): FlatSkill[] {
 
 interface TalismanFormProps {
   skills: GroupedSkills | undefined;
+  isLoadingSkills: boolean;
   onCreate: (input: CreateTalismanInput) => Promise<void>;
 }
 
@@ -60,7 +61,11 @@ const EMPTY_SKILL_ROW: TalismanSkillInput = { skillId: "", level: 1 };
 const EMPTY_SLOT_ROW: TalismanSlot = { type: "armor", size: 1 };
 
 /** Create form for a custom talisman: name, 1-3 skills, up to 3 decoration slots. */
-export function TalismanForm({ skills, onCreate }: TalismanFormProps) {
+export function TalismanForm({
+  skills,
+  isLoadingSkills,
+  onCreate,
+}: TalismanFormProps) {
   const flatSkills = flattenSkills(skills);
 
   const [name, setName] = useState("");
@@ -77,7 +82,8 @@ export function TalismanForm({ skills, onCreate }: TalismanFormProps) {
     name.trim().length > 0 &&
     skillRows.length > 0 &&
     skillRows.every((r) => r.skillId && r.level >= 1) &&
-    !isSubmitting;
+    !isSubmitting &&
+    !isLoadingSkills;
 
   const reset = () => {
     setName("");
@@ -99,28 +105,69 @@ export function TalismanForm({ skills, onCreate }: TalismanFormProps) {
   };
 
   return (
-    <Card className="gap-3 py-4">
-      <CardHeader className="px-4">
-        <CardTitle className="text-sm">New Custom Talisman</CardTitle>
+    <Card className="gap-0 rounded-none border-border py-0 shadow-none">
+      <CardHeader className="border-b border-border bg-secondary/35 p-5">
+        <div className="flex items-start gap-3">
+          <div className="grid size-9 shrink-0 place-items-center border border-primary/30 bg-primary/10">
+            <Sparkles className="size-4 text-primary" />
+          </div>
+          <div>
+            <CardTitle className="text-base">Forge a talisman</CardTitle>
+            <Typography className="mt-1 text-xs leading-relaxed text-muted-foreground">
+              Name it, add its skills, then match its decoration slots.
+            </Typography>
+          </div>
+        </div>
       </CardHeader>
-      <CardContent className="flex flex-col gap-3 px-4">
-        <Input
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          placeholder="Talisman name"
-          maxLength={100}
-        />
+      <CardContent className="flex flex-col gap-5 p-5">
+        <label className="block" htmlFor="talisman-name">
+          <span className="mb-2 flex items-center justify-between gap-3">
+            <Typography
+              as="span"
+              className="text-[10px] font-bold uppercase tracking-[.18em] text-foreground"
+            >
+              Talisman name
+            </Typography>
+            <Typography
+              as="span"
+              className="text-[10px] tabular-nums text-muted-foreground"
+            >
+              {name.length}/100
+            </Typography>
+          </span>
+          <Input
+            id="talisman-name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="e.g. Challenger Charm"
+            maxLength={100}
+            className="rounded-none bg-background/70"
+          />
+        </label>
 
-        <div className="flex flex-col gap-1.5">
-          <Typography as="span" className="text-xs text-muted-foreground">
-            Skills
-          </Typography>
+        <fieldset className="flex flex-col gap-2.5">
+          <div className="flex items-center justify-between gap-3">
+            <Typography
+              as="legend"
+              className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[.18em]"
+            >
+              <Sparkles className="size-3.5 text-primary" />
+              Skills
+            </Typography>
+            <Typography as="span" className="text-[10px] text-muted-foreground">
+              {skillRows.length}/{MAX_SKILLS_PER_TALISMAN}
+            </Typography>
+          </div>
           {skillRows.map((row, i) => {
             const maxLevel = skillById.get(row.skillId)?.maxLevel ?? 1;
             return (
-              <div key={i} className="flex items-center gap-1.5">
+              <div
+                key={i}
+                className="grid grid-cols-[minmax(0,1fr)_72px_32px] items-center gap-2"
+              >
                 <Select
                   value={row.skillId}
+                  disabled={isLoadingSkills}
                   onValueChange={(skillId) =>
                     setSkillRows((rows) =>
                       rows.map((r, idx) =>
@@ -129,22 +176,40 @@ export function TalismanForm({ skills, onCreate }: TalismanFormProps) {
                     )
                   }
                 >
-                  <SelectTrigger className="h-8 flex-1 text-xs" size="sm">
-                    <SelectValue placeholder="Choose a skill" />
+                  <SelectTrigger
+                    className="h-9 w-full rounded-none bg-background/70 text-xs"
+                    size="sm"
+                    aria-label={`Skill ${i + 1}`}
+                  >
+                    <SelectValue
+                      placeholder={
+                        isLoadingSkills ? "Loading skills…" : "Choose a skill"
+                      }
+                    />
                   </SelectTrigger>
                   <SelectContent>
-                    {flatSkills.map((s) => (
-                      <SelectItem key={s.id} value={s.id}>
-                        <span className="flex items-center gap-2">
-                          <SkillIcon
-                            icon={s.icon}
-                            category={s.category}
-                            className="size-6"
-                          />
-                          {s.name}
-                        </span>
-                      </SelectItem>
-                    ))}
+                    {flatSkills.map((s) => {
+                      const chosenElsewhere = skillRows.some(
+                        (candidate, index) =>
+                          index !== i && candidate.skillId === s.id,
+                      );
+                      return (
+                        <SelectItem
+                          key={s.id}
+                          value={s.id}
+                          disabled={chosenElsewhere}
+                        >
+                          <span className="flex items-center gap-2">
+                            <SkillIcon
+                              icon={s.icon}
+                              category={s.category}
+                              className="size-6"
+                            />
+                            {s.name}
+                          </span>
+                        </SelectItem>
+                      );
+                    })}
                   </SelectContent>
                 </Select>
 
@@ -158,7 +223,11 @@ export function TalismanForm({ skills, onCreate }: TalismanFormProps) {
                     )
                   }
                 >
-                  <SelectTrigger className="h-8 w-16 text-xs" size="sm">
+                  <SelectTrigger
+                    className="h-9 w-full rounded-none bg-background/70 text-xs"
+                    size="sm"
+                    aria-label={`Skill ${i + 1} level`}
+                  >
                     <SelectValue placeholder="Lv." />
                   </SelectTrigger>
                   <SelectContent>
@@ -173,6 +242,8 @@ export function TalismanForm({ skills, onCreate }: TalismanFormProps) {
                 <Button
                   variant="ghost"
                   size="icon-sm"
+                  type="button"
+                  aria-label={`Remove skill ${i + 1}`}
                   disabled={skillRows.length <= 1}
                   onClick={() =>
                     setSkillRows((rows) => rows.filter((_, idx) => idx !== i))
@@ -186,22 +257,35 @@ export function TalismanForm({ skills, onCreate }: TalismanFormProps) {
           <Button
             variant="outline"
             size="sm"
+            type="button"
             disabled={skillRows.length >= MAX_SKILLS_PER_TALISMAN}
             onClick={() =>
               setSkillRows((rows) => [...rows, { ...EMPTY_SKILL_ROW }])
             }
-            className="self-start"
+            className="self-start rounded-none"
           >
             <Plus /> Add skill
           </Button>
-        </div>
+        </fieldset>
 
-        <div className="flex flex-col gap-1.5">
-          <Typography as="span" className="text-xs text-muted-foreground">
-            Slots (optional)
-          </Typography>
+        <fieldset className="flex flex-col gap-2.5">
+          <div className="flex items-center justify-between gap-3">
+            <Typography
+              as="legend"
+              className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[.18em]"
+            >
+              <Gem className="size-3.5 text-primary" />
+              Decoration slots
+            </Typography>
+            <Typography as="span" className="text-[10px] text-muted-foreground">
+              Optional · {slotRows.length}/{MAX_SLOTS_PER_TALISMAN}
+            </Typography>
+          </div>
           {slotRows.map((slot, i) => (
-            <div key={i} className="flex items-center gap-1.5">
+            <div
+              key={i}
+              className="grid grid-cols-[minmax(0,1fr)_72px_32px] items-center gap-2"
+            >
               <Select
                 value={slot.type}
                 onValueChange={(type) =>
@@ -214,7 +298,11 @@ export function TalismanForm({ skills, onCreate }: TalismanFormProps) {
                   )
                 }
               >
-                <SelectTrigger className="h-8 flex-1 text-xs" size="sm">
+                <SelectTrigger
+                  className="h-9 w-full rounded-none bg-background/70 text-xs"
+                  size="sm"
+                  aria-label={`Slot ${i + 1} type`}
+                >
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -236,7 +324,11 @@ export function TalismanForm({ skills, onCreate }: TalismanFormProps) {
                   )
                 }
               >
-                <SelectTrigger className="h-8 w-16 text-xs" size="sm">
+                <SelectTrigger
+                  className="h-9 w-full rounded-none bg-background/70 text-xs"
+                  size="sm"
+                  aria-label={`Slot ${i + 1} level`}
+                >
                   <SelectValue placeholder="Lv." />
                 </SelectTrigger>
                 <SelectContent>
@@ -251,6 +343,8 @@ export function TalismanForm({ skills, onCreate }: TalismanFormProps) {
               <Button
                 variant="ghost"
                 size="icon-sm"
+                type="button"
+                aria-label={`Remove slot ${i + 1}`}
                 onClick={() =>
                   setSlotRows((rows) => rows.filter((_, idx) => idx !== i))
                 }
@@ -262,22 +356,38 @@ export function TalismanForm({ skills, onCreate }: TalismanFormProps) {
           <Button
             variant="outline"
             size="sm"
+            type="button"
             disabled={slotRows.length >= MAX_SLOTS_PER_TALISMAN}
             onClick={() =>
               setSlotRows((rows) => [...rows, { ...EMPTY_SLOT_ROW }])
             }
-            className="self-start"
+            className="self-start rounded-none"
           >
             <Plus /> Add slot
           </Button>
-        </div>
+        </fieldset>
 
         {error && (
-          <Typography className="text-xs text-destructive">{error}</Typography>
+          <Typography
+            role="alert"
+            className="border border-destructive/30 bg-destructive/10 p-3 text-xs text-destructive"
+          >
+            {error}
+          </Typography>
         )}
 
-        <Button onClick={() => void handleSubmit()} disabled={!canSubmit}>
-          {isSubmitting ? "Creating…" : "Create Talisman"}
+        <Button
+          type="button"
+          onClick={() => void handleSubmit()}
+          disabled={!canSubmit}
+          className="rounded-none"
+        >
+          {isSubmitting ? (
+            <Loader2 className="size-4 animate-spin" />
+          ) : (
+            <Sparkles className="size-4" />
+          )}
+          {isSubmitting ? "Forging talisman…" : "Forge talisman"}
         </Button>
       </CardContent>
     </Card>
