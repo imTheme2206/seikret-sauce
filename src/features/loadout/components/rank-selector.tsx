@@ -2,11 +2,11 @@ import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { cn } from "@/lib/utils";
 import type { Rank } from "../types";
 
-interface RankSelectorProps {
+type RankSelectorProps = {
   value: Rank;
   onChange: (rank: Rank) => void;
   disabled?: boolean;
-}
+};
 
 /** Selectable ranks. Master is shown but disabled until the content is available. */
 const OPTIONS: { rank: Rank; label: string; enabled: boolean }[] = [
@@ -15,7 +15,7 @@ const OPTIONS: { rank: Rank; label: string; enabled: boolean }[] = [
 ];
 
 /** Segmented rank picker that feeds the search request's `rank` field. */
-export function RankSelector({ value, onChange, disabled }: RankSelectorProps) {
+export const RankSelector = ({ value, onChange, disabled }: RankSelectorProps) => {
   return (
     <div className="flex shrink-0 items-center gap-2">
       <ToggleGroup
@@ -44,4 +44,4 @@ export function RankSelector({ value, onChange, disabled }: RankSelectorProps) {
       </ToggleGroup>
     </div>
   );
-}
+};

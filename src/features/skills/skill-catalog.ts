@@ -18,7 +18,7 @@ export type SkillCatalogResponse = JsonResponse<
 >;
 export type SkillCategory = "armor" | "weapon" | "set" | "group";
 
-export interface CatalogSkill {
+export type CatalogSkill = {
   id: string;
   name: string;
   cleanName: string;
@@ -30,16 +30,16 @@ export interface CatalogSkill {
   requiredPieces: number | null;
   effectName: string | null;
   icon: string | null;
-}
+};
 
-export interface GroupedSkills {
+export type GroupedSkills = {
   armorSkills: CatalogSkill[];
   weaponSkills: CatalogSkill[];
   setSkills: CatalogSkill[];
   groupSkills: CatalogSkill[];
-}
+};
 
-export interface SkillCatalog {
+export type SkillCatalog = {
   response: SkillCatalogResponse;
   grouped: GroupedSkills;
   byId: ReadonlyMap<string, CatalogSkill>;
@@ -48,14 +48,14 @@ export interface SkillCatalog {
     set: SkillCatalogResponse["bonuses"];
     group: SkillCatalogResponse["bonuses"];
   };
-}
+};
 
 const SKILL_CATALOG_KEY = "catalog/skills";
 const SKILL_CATALOG_OPTIONS = { revalidateOnFocus: false } as const;
 
-export function createSkillCatalog(
+export const createSkillCatalog = (
   response: SkillCatalogResponse,
-): SkillCatalog {
+): SkillCatalog => {
   const regularSkills: CatalogSkill[] = response.skills.map((skill) => ({
     id: skill.id,
     name: skill.name,
@@ -113,10 +113,10 @@ export function createSkillCatalog(
       group: response.bonuses.filter((bonus) => bonus.kind === "group"),
     },
   };
-}
+};
 
 /** One fetch and one projection seam for every consumer of the Skill Catalog. */
-export function useSkillCatalog() {
+export const useSkillCatalog = () => {
   const { api } = useApi();
   const { data, isLoading, error } = useSWR<SkillCatalogResponse>(
     SKILL_CATALOG_KEY,
@@ -134,4 +134,4 @@ export function useSkillCatalog() {
     error:
       error instanceof Error ? error : error ? new Error(String(error)) : null,
   };
-}
+};

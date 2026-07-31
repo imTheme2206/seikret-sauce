@@ -1,7 +1,7 @@
 import { Typography } from "@/components/ui/typography";
 
 /** A piece's decoration slots as rotated level badges. */
-export function SlotPips({ slots }: { slots: number[] }) {
+export const SlotPips = ({ slots }: { slots: number[] }) => {
   if (!slots.length) {
     return (
       <Typography as="span" className="text-xs text-muted-foreground">
@@ -28,4 +28,4 @@ export function SlotPips({ slots }: { slots: number[] }) {
       ))}
     </span>
   );
-}
+};

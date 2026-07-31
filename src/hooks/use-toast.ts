@@ -1,38 +1,38 @@
 import { useSyncExternalStore } from "react";
 
-export interface ToastMessage {
+export type ToastMessage = {
   id: string;
   title: string;
   description?: string;
   variant?: "default" | "destructive" | "success";
-}
+};
 
 type ToastInput = Omit<ToastMessage, "id">;
 
 let messages: ToastMessage[] = [];
 const listeners = new Set<() => void>();
 
-function emit() {
+const emit = () => {
   listeners.forEach((listener) => listener());
-}
+};
 
-export function toast(message: ToastInput) {
+export const toast = (message: ToastInput) => {
   const id = crypto.randomUUID();
   messages = [...messages, { ...message, id }];
   emit();
   return id;
-}
+};
 
-export function dismissToast(id: string) {
+export const dismissToast = (id: string) => {
   messages = messages.filter((message) => message.id !== id);
   emit();
-}
+};
 
-function subscribe(listener: () => void) {
+const subscribe = (listener: () => void) => {
   listeners.add(listener);
   return () => listeners.delete(listener);
-}
+};
 
-export function useToastMessages() {
+export const useToastMessages = () => {
   return useSyncExternalStore(subscribe, () => messages, () => messages);
-}
+};

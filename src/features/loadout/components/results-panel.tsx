@@ -10,7 +10,7 @@ import {
 } from "./results-states";
 import type { LoadoutResult, SearchError, SearchStatus } from "../types";
 
-interface ResultsPanelProps {
+type ResultsPanelProps = {
   results: LoadoutResult[];
   status: SearchStatus;
   error: SearchError | null;
@@ -20,10 +20,10 @@ interface ResultsPanelProps {
   isSignedIn: boolean;
   savingIndex: number | null;
   onSave: (result: LoadoutResult, index: number) => Promise<void>;
-}
+};
 
 /** Right-hand panel: header subtitle + the list of optimised loadouts. */
-export function ResultsPanel({
+export const ResultsPanel = ({
   results,
   status,
   error,
@@ -33,7 +33,7 @@ export function ResultsPanel({
   isSignedIn,
   savingIndex,
   onSave,
-}: ResultsPanelProps) {
+}: ResultsPanelProps) => {
   const hasResults = status === "success";
 
   const subtitle =
@@ -97,4 +97,4 @@ export function ResultsPanel({
       )}
     </main>
   );
-}
+};

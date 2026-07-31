@@ -18,7 +18,7 @@ import { useBuildApi } from "./use-build-api";
 import { useCatalog } from "./use-catalog";
 import { useSavedBuild } from "./use-saved-build";
 
-export function useBuildEditor(buildId?: string) {
+export const useBuildEditor = (buildId?: string) => {
   const navigate = useNavigate();
   const catalog = useCatalog();
   const talismans = useTalismans();
@@ -254,6 +254,6 @@ export function useBuildEditor(buildId?: string) {
     reloadNewest,
     save,
   };
-}
+};
 
 export type BuildEditorController = ReturnType<typeof useBuildEditor>;

@@ -6,25 +6,25 @@ import type { ElementalDefenses } from "@/lib/mh-wilds";
 import { calculateBuild } from "./calculator";
 import type { ActivatedBonus, BuildSnapshot } from "./types";
 
-export interface HunterStatusSkill {
+export type HunterStatusSkill = {
   name: string;
   level: number;
   icon: string | null;
   category: SkillCategory;
-}
+};
 
-export interface HunterStatus {
+export type HunterStatus = {
   defense: number;
   resistances: ElementalDefenses;
   skills: HunterStatusSkill[];
   activeBonuses: ActivatedBonus[];
-}
+};
 
 /** Complete display model shared by the live editor and saved Build view. */
-export function createHunterStatus(
+export const createHunterStatus = (
   snapshot: BuildSnapshot,
   catalog?: SkillCatalog,
-): HunterStatus {
+): HunterStatus => {
   const totals = calculateBuild(snapshot);
 
   return {
@@ -41,4 +41,4 @@ export function createHunterStatus(
     }),
     activeBonuses: totals.activeBonuses,
   };
-}
+};

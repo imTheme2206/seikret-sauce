@@ -4,29 +4,29 @@ import useSWR from "node_modules/swr/dist/index";
 import { ApiError } from "openapi-typescript-fetch";
 import type { CreateTalismanInput, CustomTalisman } from "../types";
 
-export interface UseTalismans {
+export type UseTalismans = {
   talismans: CustomTalisman[];
   isLoading: boolean;
   error: Error | null;
   create: (input: CreateTalismanInput) => Promise<void>;
   remove: (id: string) => Promise<void>;
-}
+};
 
 /**
  * The backend doesn't publish response schemas for `/api/talismans` yet, so the
  * generated OpenAPI types leave `data` as `unknown` here — cast at this one edge
  * rather than threading `unknown` through the rest of the feature.
  */
-function toError(e: unknown, fallback: string): Error {
+const toError = (e: unknown, fallback: string): Error => {
   if (e instanceof ApiError) {
     const body = e.data as { error?: string } | undefined;
     return new Error(body?.error ?? `${fallback} (${e.status})`);
   }
   return new Error(fallback);
-}
+};
 
 /** CRUD over the signed-in user's custom talismans; scoped to their Discord ID by the API. */
-export function useTalismans(): UseTalismans {
+export const useTalismans = (): UseTalismans => {
   const { session } = useAuth();
   const userId = session?.user.id ?? null;
   const { api } = useApi();
@@ -76,4 +76,4 @@ export function useTalismans(): UseTalismans {
     create,
     remove,
   };
-}
+};

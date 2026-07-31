@@ -20,13 +20,13 @@ export type Skill = CatalogSkill;
 export type GroupedSkills = SharedGroupedSkills;
 
 /** A skill the user has chosen, together with the desired level. */
-export interface SelectedSkill {
+export type SelectedSkill = {
   name: string;
   level: number;
   maxLevel: number;
   category: SkillCategory;
   icon: string | null;
-}
+};
 
 /** Map of skill name -> selection. */
 export type SelectedSkillMap = Record<string, SelectedSkill>;
@@ -37,10 +37,10 @@ export type SelectedSkillMap = Record<string, SelectedSkill>;
  * Group Skill, both, or neither (see CONTEXT.md). Each contributes one piece,
  * feeding `initialSetCounts`/`initialGroupCounts`. `null` means none of that kind.
  */
-export interface WeaponSkills {
+export type WeaponSkills = {
   set: string | null;
   group: string | null;
-}
+};
 
 /** A weapon carrying no skills — the default Pre-owned Piece Count. */
 export const EMPTY_WEAPON_SKILLS: WeaponSkills = { set: null, group: null };
@@ -61,7 +61,7 @@ export type { ElementalDefenses } from "@/lib/mh-wilds";
  * `docs/adr/0001-result-type-mirrors-api-dto.md`. `armorNames` and `rarities`
  * are index-aligned (6 entries; index 5 is always the talisman, rarity 0).
  */
-export interface LoadoutResult {
+export type LoadoutResult = {
   armorNames: string[];
   rarities: number[];
   skills: Record<string, number>;
@@ -73,7 +73,7 @@ export interface LoadoutResult {
   /** Base defense over 5 body pieces only — not augment/floor-accurate. */
   defense: number;
   elementalDefenses: ElementalDefenses;
-}
+};
 
 /** Lifecycle of a single search request. */
 export type SearchStatus = "idle" | "searching" | "success" | "empty" | "error";
@@ -81,12 +81,12 @@ export type SearchStatus = "idle" | "searching" | "success" | "empty" | "error";
 /** How a search failed — drives which message the results panel shows. */
 export type SearchErrorKind = "rate-limit" | "validation" | "network" | "timeout";
 
-export interface SearchError {
+export type SearchError = {
   kind: SearchErrorKind;
   message: string;
-}
+};
 
 /** A skill from the pool, annotated with the category it was matched under. */
-export interface PoolSkill extends Skill {
+export type PoolSkill = Skill & {
   category: SkillCategory;
-}
+};

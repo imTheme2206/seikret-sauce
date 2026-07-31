@@ -2,9 +2,9 @@ import { describe, expect, test } from "bun:test";
 import { resultName } from "./utils";
 import type { SelectedSkill } from "./types";
 
-function skill(name: string): SelectedSkill {
+const skill = (name: string): SelectedSkill => {
   return { name, level: 1, maxLevel: 1, category: "armor", icon: null };
-}
+};
 
 describe("resultName", () => {
   test("names a result after up to three requested skills", () => {

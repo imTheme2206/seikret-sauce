@@ -10,7 +10,7 @@
 
 import type { GroupedSkills, Skill, SkillCategory } from "./types";
 
-export interface CategoryConfig {
+export type CategoryConfig = {
   /** Stable key. */
   id: SkillCategory;
   /** Human label used for tabs and badges. */
@@ -21,7 +21,7 @@ export interface CategoryConfig {
   color: string;
   /** Translucent background used behind the category badge. */
   badgeBg: string;
-}
+};
 
 export const CATEGORY_CONFIG: Record<SkillCategory, CategoryConfig> = {
   armor: {
@@ -58,8 +58,8 @@ export const CATEGORY_CONFIG: Record<SkillCategory, CategoryConfig> = {
 export const CATEGORY_ORDER: SkillCategory[] = ["armor", "weapon", "set", "group"];
 
 /** Derive the category a skill belongs to from its flags. */
-export function categoryOf(skill: Skill): SkillCategory {
+export const categoryOf = (skill: Skill): SkillCategory => {
   if (skill.isSetSkill) return "set";
   if (skill.isGroupSkill) return "group";
   return skill.type === "weapon" ? "weapon" : "armor";
-}
+};

@@ -5,19 +5,19 @@ import { BuildStats } from "./build-stats";
 import { HunterPanel } from "./hunter-panel";
 import type { HunterStatus } from "../hunter-status";
 
-interface HunterStatusPanelProps {
+type HunterStatusPanelProps = {
   status: HunterStatus;
   /** Distinguishes live editor totals from a saved snapshot's totals. */
   subtitle: string;
   className?: string;
-}
+};
 
 /** The sticky totals panel shared by the editor and the permalink. */
-export function HunterStatusPanel({
+export const HunterStatusPanel = ({
   status,
   subtitle,
   className,
-}: HunterStatusPanelProps) {
+}: HunterStatusPanelProps) => {
   return (
     <HunterPanel className={cn("h-fit p-5", className)}>
       <div className="mb-5 flex items-center justify-between">
@@ -37,4 +37,4 @@ export function HunterStatusPanel({
       <BuildStats status={status} />
     </HunterPanel>
   );
-}
+};

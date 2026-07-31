@@ -7,14 +7,14 @@ import {
 } from "@/lib/mh-wilds";
 import { cn } from "@/lib/utils";
 
-interface DefenseStatsProps {
+type DefenseStatsProps = {
   defense: number;
   elementalDefenses: ElementalDefenses;
   freeSlots: number[];
-}
+};
 
 /** Defense / elemental-defense / slot summary shown inside an expanded result. */
-export function DefenseStats({ defense, elementalDefenses, freeSlots }: DefenseStatsProps) {
+export const DefenseStats = ({ defense, elementalDefenses, freeSlots }: DefenseStatsProps) => {
   return (
     <div>
       <SectionHeading>Defense &amp; Slots</SectionHeading>
@@ -88,4 +88,4 @@ export function DefenseStats({ defense, elementalDefenses, freeSlots }: DefenseS
       </div>
     </div>
   );
-}
+};

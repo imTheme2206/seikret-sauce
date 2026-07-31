@@ -17,7 +17,7 @@ const SHARED_PAGE_SIZE = 12;
  * Write operations over builds, each responsible for invalidating the lists its
  * result would change. Reads live in the `use-*` fetch hooks.
  */
-export function useBuildApi() {
+export const useBuildApi = () => {
   const { api } = useApi();
 
   const revalidateMine = () => mutateCache(buildKeyMatchers.anyMine);
@@ -126,4 +126,4 @@ export function useBuildApi() {
     deleteBuild,
     fetchSharedBuilds,
   };
-}
+};

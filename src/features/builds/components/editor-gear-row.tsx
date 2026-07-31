@@ -11,18 +11,18 @@ import { RarityPips } from "./rarity-pips";
 import { SlotPips } from "./slot-pips";
 import type { DecorationAssignment, EditorGearRow } from "../types";
 
-interface EditorGearRowProps {
+type EditorGearRowProps = {
   row: EditorGearRow;
   onSelect: (value: string) => void;
   onDecoration: (assignment: DecorationAssignment) => void;
-}
+};
 
 /** One editable position: pick the piece, then fill its decoration slots. */
-export function EditorGearRowCard({
+export const EditorGearRowCard = ({
   row,
   onSelect,
   onDecoration,
-}: EditorGearRowProps) {
+}: EditorGearRowProps) => {
   const label = POSITION_LABELS[row.position];
 
   return (
@@ -115,4 +115,4 @@ export function EditorGearRowCard({
       </div>
     </HunterPanel>
   );
-}
+};

@@ -7,7 +7,7 @@ import { CATEGORY_CONFIG, CATEGORY_ORDER } from "../config";
 import type { PoolSkill, SkillCategory } from "../types";
 import { SkillPoolRow } from "./skill-pool-row";
 
-interface SkillPoolProps {
+type SkillPoolProps = {
   pool: PoolSkill[];
   activeTab: SkillCategory;
   onTabChange: (tab: SkillCategory) => void;
@@ -15,10 +15,10 @@ interface SkillPoolProps {
   isLoading: boolean;
   isSelected: (name: string) => boolean;
   onAdd: (skill: PoolSkill) => void;
-}
+};
 
 /** Browsable, tabbed pool of all available skills. */
-export function SkillPool({
+export const SkillPool = ({
   pool,
   activeTab,
   onTabChange,
@@ -26,7 +26,7 @@ export function SkillPool({
   isLoading,
   isSelected,
   onAdd,
-}: SkillPoolProps) {
+}: SkillPoolProps) => {
   return (
     <Card className="flex min-h-0 flex-1 flex-col gap-0 rounded-md border-border py-0 shadow-none">
       <div className="shrink-0 border-b border-border p-2">
@@ -66,9 +66,9 @@ export function SkillPool({
       </ScrollArea>
     </Card>
   );
-}
+};
 
-function PoolMessage({ children }: { children: React.ReactNode }) {
+const PoolMessage = ({ children }: { children: React.ReactNode }) => {
   return (
     <Typography
       as="div"
@@ -77,10 +77,10 @@ function PoolMessage({ children }: { children: React.ReactNode }) {
       {children}
     </Typography>
   );
-}
+};
 
 /** Loading placeholder that mirrors the skill-pool row layout. */
-function PoolSkeleton() {
+const PoolSkeleton = () => {
   return (
     <div aria-busy="true" aria-label="Loading skills">
       {Array.from({ length: 7 }, (_, i) => (
@@ -95,4 +95,4 @@ function PoolSkeleton() {
       ))}
     </div>
   );
-}
+};

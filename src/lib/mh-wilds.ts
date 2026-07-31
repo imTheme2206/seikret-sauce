@@ -47,22 +47,22 @@ export const POSITION_LABELS: Record<EquipmentPosition, string> = {
 };
 
 /** Elemental defense totals summed over the five body pieces (talisman excluded). */
-export interface ElementalDefenses {
+export type ElementalDefenses = {
   fire: number;
   water: number;
   thunder: number;
   ice: number;
   dragon: number;
-}
+};
 
-export interface ElementConfig {
+export type ElementConfig = {
   key: keyof ElementalDefenses;
   /** Full name, for titles and tooltips. */
   label: string;
   /** Three-letter form used in dense stat rows. */
   abbr: string;
   color: string;
-}
+};
 
 /** The five elements in in-game order, with the accent colour used everywhere. */
 export const ELEMENTS: ElementConfig[] = [
@@ -92,11 +92,11 @@ export const RARITY_COLORS: Record<number, string> = {
 const NO_RARITY_COLOR = "#8a8079";
 
 /** Accent colour for an armour piece, derived from its rarity. */
-export function rarityColor(rarity: number): string {
+export const rarityColor = (rarity: number): string => {
   return RARITY_COLORS[rarity] ?? NO_RARITY_COLOR;
-}
+};
 
 /** Signed defense value for display: `+12`, `0`, `-5`. */
-export function formatResistance(value: number): string {
+export const formatResistance = (value: number): string => {
   return value > 0 ? `+${value}` : String(value);
-}
+};

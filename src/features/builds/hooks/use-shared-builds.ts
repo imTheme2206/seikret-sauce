@@ -9,7 +9,7 @@ import type { BuildSummary, SharedBuildPage } from "../types";
  * `enabled` is false on the "my builds" view so opening the hub does not fetch a
  * feed the hunter is not looking at.
  */
-export function useSharedBuilds(enabled: boolean) {
+export const useSharedBuilds = (enabled: boolean) => {
   const { fetchSharedBuilds } = useBuildApi();
 
   const pages = useSWRInfinite<SharedBuildPage>(
@@ -34,4 +34,4 @@ export function useSharedBuilds(enabled: boolean) {
     error: pages.error,
     loadMore: () => void pages.setSize(pages.size + 1),
   };
-}
+};

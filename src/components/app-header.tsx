@@ -31,7 +31,7 @@ const NAV_LINKS = [
 ] as const;
 
 /** Top application bar: brand mark, product name, page nav, and the Discord auth control. */
-export function AppHeader() {
+export const AppHeader = () => {
   const pathname = useRouterState({
     select: (state) => state.location.pathname,
   });
@@ -122,4 +122,4 @@ export function AppHeader() {
       </div>
     </header>
   );
-}
+};

@@ -14,10 +14,10 @@ import type { LoadoutResult, SelectedSkill, WeaponSkills } from "../types";
  * `docs/adr/0001-result-type-mirrors-api-dto.md` and the retired
  * `optimizer-to-build.ts`, which used to do this on the client).
  */
-export function useSaveOptimizerResult(
+export const useSaveOptimizerResult = (
   selected: SelectedSkill[],
   weapon: WeaponSkills,
-) {
+) => {
   const { session, signInWithDiscord } = useAuth();
   const { importBuild } = useBuildApi();
   const [savingIndex, setSavingIndex] = useState<number | null>(null);
@@ -64,4 +64,4 @@ export function useSaveOptimizerResult(
     savingIndex,
     saveResult,
   };
-}
+};

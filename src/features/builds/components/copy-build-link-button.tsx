@@ -2,7 +2,7 @@ import { Link2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
 
-async function copyText(value: string) {
+const copyText = async (value: string) => {
   if (navigator.clipboard?.writeText) {
     await navigator.clipboard.writeText(value);
     return;
@@ -17,10 +17,10 @@ async function copyText(value: string) {
   const copied = document.execCommand("copy");
   input.remove();
   if (!copied) throw new Error("Copy command was rejected.");
-}
+};
 
 /** Copies the canonical public-facing URL for a saved build. */
-export function CopyBuildLinkButton({
+export const CopyBuildLinkButton = ({
   buildId,
   buildName,
   iconOnly = false,
@@ -30,7 +30,7 @@ export function CopyBuildLinkButton({
   buildName: string;
   iconOnly?: boolean;
   onClick?: React.MouseEventHandler<HTMLButtonElement>;
-}) {
+}) => {
   const copyLink = async (event: React.MouseEvent<HTMLButtonElement>) => {
     onClick?.(event);
     if (event.defaultPrevented) return;
@@ -66,4 +66,4 @@ export function CopyBuildLinkButton({
       {!iconOnly && "Copy link"}
     </Button>
   );
-}
+};

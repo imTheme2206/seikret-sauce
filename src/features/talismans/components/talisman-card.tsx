@@ -17,20 +17,20 @@ import type { CatalogSkill } from "@/features/skills/skill-catalog";
 import type { CustomTalisman } from "../types";
 import { SlotSizeIcon, SlotTypeIcon } from "./talisman-icons";
 
-interface TalismanCardProps {
+type TalismanCardProps = {
   talisman: CustomTalisman;
   skillMetaById: ReadonlyMap<string, CatalogSkill> | undefined;
   onDelete: (id: string) => void;
   isDeleting: boolean;
-}
+};
 
 /** One saved custom talisman: name, its skills, and its decoration slots. */
-export function TalismanCard({
+export const TalismanCard = ({
   talisman,
   skillMetaById,
   onDelete,
   isDeleting,
-}: TalismanCardProps) {
+}: TalismanCardProps) => {
   const [isConfirmingDelete, setIsConfirmingDelete] = useState(false);
 
   return (
@@ -160,4 +160,4 @@ export function TalismanCard({
       </Dialog>
     </Card>
   );
-}
+};

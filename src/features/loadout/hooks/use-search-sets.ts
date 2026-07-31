@@ -42,11 +42,11 @@ type SearchRequestBody =
  * different axis from the desired Activation Level in `setSkills`/`groupSkills` —
  * see CONTEXT.md. Skills the weapon doesn't carry leave the count maps empty.
  */
-function toRequestBody(
+const toRequestBody = (
   selected: SelectedSkillMap,
   rank: Rank,
   weapon: WeaponSkills,
-): SearchRequestBody {
+): SearchRequestBody => {
   const skills: Record<string, number> = {};
   const setSkills: Record<string, number> = {};
   const groupSkills: Record<string, number> = {};
@@ -70,9 +70,9 @@ function toRequestBody(
     initialGroupCounts,
     rank,
   };
-}
+};
 
-export interface UseSearchSets {
+export type UseSearchSets = {
   status: SearchStatus;
   results: LoadoutResult[];
   error: SearchError | null;
@@ -82,9 +82,9 @@ export interface UseSearchSets {
     weapon: WeaponSkills,
   ) => Promise<void>;
   reset: () => void;
-}
+};
 
-export function useSearchSets(): UseSearchSets {
+export const useSearchSets = (): UseSearchSets => {
   const [status, setStatus] = useState<SearchStatus>("idle");
   const [results, setResults] = useState<LoadoutResult[]>([]);
   const [error, setError] = useState<SearchError | null>(null);
@@ -196,4 +196,4 @@ export function useSearchSets(): UseSearchSets {
   }, []);
 
   return { status, results, error, search, reset };
-}
+};

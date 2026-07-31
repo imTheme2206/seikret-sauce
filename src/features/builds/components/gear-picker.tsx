@@ -18,7 +18,7 @@ import { Check, ChevronsUpDown, CircleSlash } from "lucide-react";
 import { useState } from "react";
 import type { GearOption, GearOptionGroup } from "../types";
 
-interface GearPickerProps {
+type GearPickerProps = {
   value: string;
   groups: GearOptionGroup[];
   /** Trigger text while nothing is equipped. */
@@ -31,18 +31,18 @@ interface GearPickerProps {
   onChange: (value: string) => void;
   ariaLabel?: string;
   className?: string;
-}
+};
 
-function findOption(groups: GearOptionGroup[], id: string): GearOption | null {
+const findOption = (groups: GearOptionGroup[], id: string): GearOption | null => {
   if (!id) return null;
   for (const group of groups) {
     const match = group.options.find((option) => option.id === id);
     if (match) return match;
   }
   return null;
-}
+};
 
-export function GearPicker({
+export const GearPicker = ({
   value,
   groups,
   placeholder,
@@ -52,7 +52,7 @@ export function GearPicker({
   onChange,
   ariaLabel,
   className,
-}: GearPickerProps) {
+}: GearPickerProps) => {
   const [open, setOpen] = useState(false);
   const selected = findOption(groups, value);
 
@@ -139,4 +139,4 @@ export function GearPicker({
       </PopoverContent>
     </Popover>
   );
-}
+};

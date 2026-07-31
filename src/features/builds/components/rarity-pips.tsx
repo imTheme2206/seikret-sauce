@@ -2,7 +2,7 @@ import { Typography } from "@/components/ui/typography";
 import { rarityColor } from "@/lib/mh-wilds";
 
 /** Rarity as diamonds, tinted with the in-game rarity colour. */
-export function RarityPips({ value }: { value: number }) {
+export const RarityPips = ({ value }: { value: number }) => {
   const clamped = Math.max(1, Math.min(value, 8));
   return (
     <Typography
@@ -14,4 +14,4 @@ export function RarityPips({ value }: { value: number }) {
       {"◆".repeat(clamped)}
     </Typography>
   );
-}
+};

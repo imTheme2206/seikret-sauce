@@ -5,7 +5,7 @@ import { formatBuildDate } from "../utils";
 import { HunterPanel } from "./hunter-panel";
 import type { BuildSummary } from "../types";
 
-function CardTag({
+const CardTag = ({
   icon: Icon,
   label,
   tone,
@@ -13,7 +13,7 @@ function CardTag({
   icon: typeof AlertTriangle;
   label: string;
   tone: "warning" | "primary";
-}) {
+}) => {
   return (
     <Typography
       as="span"
@@ -26,16 +26,16 @@ function CardTag({
       <Icon className="size-3" /> {label}
     </Typography>
   );
-}
+};
 
 /** One build in a grid. `actions` replaces the default "open" chevron. */
-export function BuildSummaryCard({
+export const BuildSummaryCard = ({
   build,
   actions,
 }: {
   build: BuildSummary;
   actions?: React.ReactNode;
-}) {
+}) => {
   return (
     <HunterPanel className="group flex min-h-52 flex-col p-5 transition-colors hover:border-primary/45">
       <div className="mb-5 flex items-start justify-between gap-3">
@@ -82,4 +82,4 @@ export function BuildSummaryCard({
       </div>
     </HunterPanel>
   );
-}
+};

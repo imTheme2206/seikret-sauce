@@ -15,15 +15,15 @@ const NONE = "__none__";
 
 type BonusOption = SkillCatalog["bonuses"][number];
 
-interface WeaponBonusRowProps {
+type WeaponBonusRowProps = {
   value: EditorWeaponSelection;
   setBonusOptions: BonusOption[];
   groupBonusOptions: BonusOption[];
   onChange: (kind: "setBonusId" | "groupBonusId", bonusId: string | null) => void;
-}
+};
 
 /** One labelled Select for a single kind of weapon bonus contribution, by id. */
-function BonusSelect({
+const BonusSelect = ({
   label,
   placeholder,
   value,
@@ -35,7 +35,7 @@ function BonusSelect({
   value: string | null;
   options: BonusOption[];
   onChange: (bonusId: string | null) => void;
-}) {
+}) => {
   return (
     <label className="block">
       <Typography
@@ -62,7 +62,7 @@ function BonusSelect({
       </Select>
     </label>
   );
-}
+};
 
 /**
  * Editable weapon row: per ADR-0012 (backend), a weapon contributes exactly
@@ -72,12 +72,12 @@ function BonusSelect({
  * selects catalog bonuses by id (the composition's currency) instead of by
  * name (the optimizer's `WeaponSkills` currency).
  */
-export function WeaponBonusRow({
+export const WeaponBonusRow = ({
   value,
   setBonusOptions,
   groupBonusOptions,
   onChange,
-}: WeaponBonusRowProps) {
+}: WeaponBonusRowProps) => {
   return (
     <HunterPanel className="grid md:grid-cols-[150px_minmax(220px,.8fr)_minmax(300px,1.2fr)]">
       <div className="flex items-center gap-3 border-b border-border bg-secondary/40 p-4 md:border-b-0 md:border-r">
@@ -115,4 +115,4 @@ export function WeaponBonusRow({
       </div>
     </HunterPanel>
   );
-}
+};
