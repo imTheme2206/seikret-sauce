@@ -43,7 +43,7 @@ const parseValue = (value: string): any => {
   if (/^\d+$/.test(value)) return parseInt(value, 10);
   if (/^\d*\.\d+$/.test(value)) return parseFloat(value);
 
-  if (value.includes(",")) return value.split(",").map(v => v.trim());
+  if (value.includes(",")) return value.split(",").map((v) => v.trim());
 
   return value;
 };
@@ -63,7 +63,10 @@ function parseArgs(): Partial<Bun.BuildConfig> {
       continue;
     }
 
-    if (!arg.includes("=") && (i === args.length - 1 || args[i + 1]?.startsWith("--"))) {
+    if (
+      !arg.includes("=") &&
+      (i === args.length - 1 || args[i + 1]?.startsWith("--"))
+    ) {
       const key = toCamelCase(arg.slice(2));
       config[key] = true;
       continue;
@@ -128,7 +131,7 @@ const REQUIRED_PUBLIC_VARS = [
   "BUN_PUBLIC_SUPABASE_PUBLISHABLE_KEY",
 ];
 
-const missing = REQUIRED_PUBLIC_VARS.filter(key => !process.env[key]);
+const missing = REQUIRED_PUBLIC_VARS.filter((key) => !process.env[key]);
 if (missing.length > 0) {
   console.error(
     `\n❌ Missing required environment ${missing.length === 1 ? "variable" : "variables"}: ${missing.join(", ")}\n` +
@@ -148,16 +151,20 @@ if (missing.length > 0) {
  */
 const publicEnvDefines = Object.fromEntries(
   Object.entries(process.env)
-    .filter(([key, value]) => key.startsWith("BUN_PUBLIC_") && value !== undefined)
+    .filter(
+      ([key, value]) => key.startsWith("BUN_PUBLIC_") && value !== undefined,
+    )
     .map(([key, value]) => [`process.env.${key}`, JSON.stringify(value)]),
 );
 
 const start = performance.now();
 
 const entrypoints = [...new Bun.Glob("**.html").scanSync("src")]
-  .map(a => path.resolve("src", a))
-  .filter(dir => !dir.includes("node_modules"));
-console.log(`📄 Found ${entrypoints.length} HTML ${entrypoints.length === 1 ? "file" : "files"} to process\n`);
+  .map((a) => path.resolve("src", a))
+  .filter((dir) => !dir.includes("node_modules"));
+console.log(
+  `📄 Found ${entrypoints.length} HTML ${entrypoints.length === 1 ? "file" : "files"} to process\n`,
+);
 
 const result = await Bun.build({
   entrypoints,
@@ -166,6 +173,7 @@ const result = await Bun.build({
   minify: true,
   target: "browser",
   sourcemap: "linked",
+  publicPath: "/",
   define: {
     "process.env.NODE_ENV": JSON.stringify("production"),
     ...publicEnvDefines,
@@ -181,7 +189,7 @@ if (existsSync(publicDir)) {
   await cp(publicDir, outdir as string, {
     recursive: true,
     // Skip OS cruft (.DS_Store) so it never ships to the CDN.
-    filter: src => !path.basename(src).startsWith("."),
+    filter: (src) => !path.basename(src).startsWith("."),
   });
 }
 
@@ -193,13 +201,14 @@ for (const output of result.outputs) {
   if (output.kind !== "entry-point" && output.kind !== "chunk") continue;
   const text = await output.text();
   const hit = text.match(/process\.env\.[A-Za-z_][A-Za-z0-9_]*/);
-  if (hit) leaked.push(`${path.relative(process.cwd(), output.path)}: ${hit[0]}`);
+  if (hit)
+    leaked.push(`${path.relative(process.cwd(), output.path)}: ${hit[0]}`);
 }
 
 if (leaked.length > 0) {
   console.error(
     `\n❌ Unreplaced process.env reference(s) in the browser bundle:\n` +
-      leaked.map(l => `   - ${l}`).join("\n") +
+      leaked.map((l) => `   - ${l}`).join("\n") +
       `\n   These throw "process is not defined" at runtime. Add the variable to the\n` +
       `   build environment (BUN_PUBLIC_* prefix) so it gets inlined. Aborting.\n`,
   );
@@ -208,7 +217,7 @@ if (leaked.length > 0) {
 
 const end = performance.now();
 
-const outputTable = result.outputs.map(output => ({
+const outputTable = result.outputs.map((output) => ({
   File: path.relative(process.cwd(), output.path),
   Type: output.kind,
   Size: formatFileSize(output.size),
