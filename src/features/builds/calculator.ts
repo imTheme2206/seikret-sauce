@@ -30,8 +30,7 @@ export function calculateBuild(snapshot: BuildSnapshot): BuildTotals {
       for (const skill of decoration.skills)
         add(rawSkills, skill.name, skill.level);
     }
-    for (const bonus of piece.bonuses)
-      add(bonusCounts, bonus.name, 1);
+    for (const bonus of piece.bonuses) add(bonusCounts, bonus.name, 1);
 
     if ("defense" in piece) {
       defense += piece.defense;
@@ -52,20 +51,27 @@ export function calculateBuild(snapshot: BuildSnapshot): BuildTotals {
         .at(-1);
       if (!active) return [];
       add(rawSkills, active.effectName, active.level);
-      return [{
-        name,
-        kind: definition.kind,
-        pieces,
-        piecesRequired: active.piecesRequired,
-        effectName: active.effectName,
-        level: active.level,
-      }];
+      return [
+        {
+          name,
+          kind: definition.kind,
+          pieces,
+          piecesRequired: active.piecesRequired,
+          effectName: active.effectName,
+          level: active.level,
+        },
+      ];
     })
-    .sort((a, b) => a.kind.localeCompare(b.kind) || a.name.localeCompare(b.name));
+    .sort(
+      (a, b) => a.kind.localeCompare(b.kind) || a.name.localeCompare(b.name),
+    );
 
   const skills = Object.fromEntries(
     Object.entries(rawSkills)
-      .sort(([a], [b]) => a.localeCompare(b))
+      .filter(([name]) => {
+        return !activeBonuses.some((bonus) => bonus.effectName === name);
+      })
+      .sort(([, a], [, b]) => a + b)
       .map(([name, level]) => [
         name,
         Math.min(level, snapshot.skillDefinitions[name] ?? level),

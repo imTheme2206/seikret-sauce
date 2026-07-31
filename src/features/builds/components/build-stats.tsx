@@ -1,17 +1,23 @@
-import { Diamond, Shield, ShieldHalf, Sparkles, Swords } from "lucide-react";
 import { Typography } from "@/components/ui/typography";
 import { ELEMENTS, formatResistance } from "@/lib/mh-wilds";
+import { Diamond, Shield, ShieldHalf, Sparkles, Swords } from "lucide-react";
 import { calculateBuild } from "../calculator";
 import { ELEMENT_ICONS } from "../config";
-import { PanelHeading } from "./panel-heading";
 import type { BuildSnapshot } from "../types";
+import { PanelHeading } from "./panel-heading";
 
 /**
  * Live totals for a snapshot: defense, resistances, capped skills and any
  * activated set/group bonuses. Uses the same element colours as the optimizer's
  * result panel so identical numbers look identical in both places.
  */
-export function BuildStats({ snapshot }: { snapshot: BuildSnapshot }) {
+export function BuildStats({
+  snapshot,
+  skillIcons = {},
+}: {
+  snapshot: BuildSnapshot;
+  skillIcons?: Record<string, string | null>;
+}) {
   const totals = calculateBuild(snapshot);
   const skills = Object.entries(totals.skills);
 
@@ -68,7 +74,15 @@ export function BuildStats({ snapshot }: { snapshot: BuildSnapshot }) {
               className="flex items-center justify-between border-l-2 border-primary/50 bg-secondary/55 px-3 py-2"
             >
               <Typography as="span" className="flex items-center gap-2 text-sm">
-                <Diamond className="size-3 shrink-0 text-primary/60" />
+                {skillIcons[name] ? (
+                  <img
+                    src={`/images/icons/${skillIcons[name]}.png`}
+                    alt={name}
+                    className="size-4 shrink-0 object-contain"
+                  />
+                ) : (
+                  <Diamond className="size-3 shrink-0 text-primary/60" />
+                )}
                 {name}
               </Typography>
               <Typography
@@ -93,7 +107,7 @@ export function BuildStats({ snapshot }: { snapshot: BuildSnapshot }) {
 
       {totals.activeBonuses.length > 0 && (
         <div>
-          <PanelHeading icon={Swords}>Set resonance</PanelHeading>
+          <PanelHeading icon={Swords}>Active Set / Group Skills</PanelHeading>
           <div className="space-y-1.5">
             {totals.activeBonuses.map((bonus) => (
               <div

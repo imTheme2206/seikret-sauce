@@ -1,31 +1,21 @@
-/**
- * Controller for the build editor: owns the draft, resolves it into rows and
- * live totals, and performs the save. Mirrors the optimizer's controller shape —
- * the editor components below it are stateless.
- */
-
-import { useEffect, useMemo, useRef, useState } from "react";
-import { useNavigate } from "@tanstack/react-router";
 import { useTalismans } from "@/features/talismans/hooks/use-talismans";
 import { toast } from "@/hooks/use-toast";
+import { useNavigate } from "@tanstack/react-router";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { EMPTY_DRAFT } from "../config";
 import { draftFromBuild, snapshotFromDraft } from "../draft";
 import { buildErrorMessage, isRevisionConflict } from "../errors";
 import { buildGearRows } from "../gear-rows";
-import {
-  decodeTalismanValue,
-  hasAnyPiece,
-  toCreateBody,
-} from "../utils";
-import { useBuildApi } from "./use-build-api";
-import { useCatalog } from "./use-catalog";
-import { useSavedBuild } from "./use-saved-build";
 import type {
   ArmorPosition,
   BuildDraft,
   DecorationAssignment,
   PositionKey,
 } from "../types";
+import { decodeTalismanValue, hasAnyPiece, toCreateBody } from "../utils";
+import { useBuildApi } from "./use-build-api";
+import { useCatalog } from "./use-catalog";
+import { useSavedBuild } from "./use-saved-build";
 
 export function useBuildEditor(buildId?: string) {
   const navigate = useNavigate();
@@ -110,9 +100,7 @@ export function useBuildEditor(buildId?: string) {
 
   /** Routes a row's `Select` change to the right setter. */
   const selectGear = (position: PositionKey, value: string) =>
-    position === "talisman"
-      ? setTalisman(value)
-      : setArmor(position, value);
+    position === "talisman" ? setTalisman(value) : setArmor(position, value);
 
   /** Set (or clear, with `null`) the weapon's Set or Group Bonus, by id. */
   const setWeaponBonus = (
@@ -130,11 +118,21 @@ export function useBuildEditor(buildId?: string) {
   // A weapon can carry any Set or Group Bonus; those are the picker's options.
   const bonusOptions = useMemo(
     () => ({
-      set: (catalog.skills?.bonuses ?? []).filter((bonus) => bonus.kind === "set"),
+      set: (catalog.skills?.bonuses ?? []).filter(
+        (bonus) => bonus.kind === "set",
+      ),
       group: (catalog.skills?.bonuses ?? []).filter(
         (bonus) => bonus.kind === "group",
       ),
     }),
+    [catalog.skills],
+  );
+
+  const skillIcons = useMemo(
+    () =>
+      Object.fromEntries(
+        (catalog.skills?.skills ?? []).map((skill) => [skill.name, skill.icon]),
+      ),
     [catalog.skills],
   );
 
@@ -148,12 +146,23 @@ export function useBuildEditor(buildId?: string) {
         catalog.skills,
         talismans.talismans,
       ),
-    [draft, catalog.armors, catalog.decorations, catalog.skills, talismans.talismans],
+    [
+      draft,
+      catalog.armors,
+      catalog.decorations,
+      catalog.skills,
+      talismans.talismans,
+    ],
   );
 
   const rows = useMemo(
     () =>
-      buildGearRows(draft, catalog.armors, catalog.decorations, talismans.talismans),
+      buildGearRows(
+        draft,
+        catalog.armors,
+        catalog.decorations,
+        talismans.talismans,
+      ),
     [draft, catalog.armors, catalog.decorations, talismans.talismans],
   );
 
@@ -185,7 +194,11 @@ export function useBuildEditor(buildId?: string) {
     try {
       const saved =
         buildId && existing.build
-          ? await replaceBuild(buildId, existing.build.revision, toCreateBody(draft))
+          ? await replaceBuild(
+              buildId,
+              existing.build.revision,
+              toCreateBody(draft),
+            )
           : await createBuild(toCreateBody(draft), idempotencyKey.current);
       idempotencyKey.current = crypto.randomUUID();
       toast({
@@ -245,6 +258,7 @@ export function useBuildEditor(buildId?: string) {
     isLoadingBuild: Boolean(buildId) && existing.isLoading,
     loadError: buildId ? existing.error : null,
     bonusOptions,
+    skillIcons,
     patchDraft,
     selectGear,
     assignDecoration,

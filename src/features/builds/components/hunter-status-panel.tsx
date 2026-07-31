@@ -9,6 +9,8 @@ interface HunterStatusPanelProps {
   snapshot: BuildSnapshot;
   /** Distinguishes live editor totals from a saved snapshot's totals. */
   subtitle: string;
+  /** Presentation metadata from the live catalog; snapshots intentionally omit it. */
+  skillIcons?: Record<string, string | null>;
   className?: string;
 }
 
@@ -16,6 +18,7 @@ interface HunterStatusPanelProps {
 export function HunterStatusPanel({
   snapshot,
   subtitle,
+  skillIcons,
   className,
 }: HunterStatusPanelProps) {
   return (
@@ -34,7 +37,7 @@ export function HunterStatusPanel({
         </div>
         <Shield className="size-6 text-primary/60" />
       </div>
-      <BuildStats snapshot={snapshot} />
+      <BuildStats snapshot={snapshot} skillIcons={skillIcons} />
     </HunterPanel>
   );
 }

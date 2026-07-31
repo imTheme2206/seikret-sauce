@@ -92,6 +92,7 @@ export function BuildEditorPage({ buildId }: { buildId?: string }) {
           <HunterStatusPanel
             snapshot={controller.snapshot}
             subtitle="Live equipment totals"
+            skillIcons={controller.skillIcons}
           />
         </aside>
       </main>
@@ -330,6 +331,7 @@ function MobileBuildSummary({
         <HunterStatusPanel
           snapshot={controller.snapshot}
           subtitle="Live equipment totals"
+          skillIcons={controller.skillIcons}
           className="border-0"
         />
       </CollapsibleContent>
