@@ -1,3 +1,5 @@
+import { PageHeader } from "@/components/page-header";
+import { PageContainer } from "@/components/page-layout";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Typography } from "@/components/ui/typography";
@@ -12,8 +14,21 @@ import { TalismanCard } from "./talisman-card";
 import { TalismanEmptyState } from "./talisman-empty-state";
 import { TalismanForm } from "./talisman-form";
 
+/** Banner + page column shared by every state of the talismans screen. */
+const TalismansFrame = ({ children }: React.PropsWithChildren) => (
+  <>
+    <PageHeader
+      icon={Sparkles}
+      eyebrow="Custom equipment"
+      title="Talismans"
+      description="Forge the talismans you own so the optimizer and the set builder can equip them."
+    />
+    <PageContainer>{children}</PageContainer>
+  </>
+);
+
 /** "Talismans" tab: CRUD over the signed-in user's custom talismans. */
-export function TalismansTab() {
+export const TalismansTab = () => {
   const { session, isLoading: isAuthLoading, signInWithDiscord } = useAuth();
   const { catalog, isLoading: isLoadingSkills } = useSkillCatalog();
   const { talismans, isLoading, error, create, remove } = useTalismans();
@@ -31,16 +46,18 @@ export function TalismansTab() {
 
   if (isAuthLoading) {
     return (
-      <div className="h-full overflow-y-auto p-5 md:p-8">
-        <Skeleton className="mx-auto h-48 max-w-7xl rounded-none" />
-      </div>
+      <TalismansFrame>
+        <div className="py-5 md:py-8">
+          <Skeleton className="h-48 rounded-none" />
+        </div>
+      </TalismansFrame>
     );
   }
 
   if (!session) {
     return (
-      <div className="h-full overflow-y-auto">
-        <main className="mx-auto max-w-7xl p-5 md:p-8">
+      <TalismansFrame>
+        <main className="py-5 md:py-8">
           <TalismanEmptyState
             icon={LockKeyhole}
             title="Your talisman box is sealed"
@@ -56,7 +73,7 @@ export function TalismansTab() {
             }
           />
         </main>
-      </div>
+      </TalismansFrame>
     );
   }
 
@@ -109,8 +126,8 @@ export function TalismansTab() {
   };
 
   return (
-    <div className="h-full overflow-y-auto">
-      <main className="mx-auto grid max-w-7xl items-start gap-6 p-5 md:p-8 lg:grid-cols-[360px_minmax(0,1fr)]">
+    <TalismansFrame>
+      <main className="grid items-start gap-6 py-5 md:py-8 lg:grid-cols-[360px_minmax(0,1fr)]">
         <aside className="lg:sticky lg:top-6">
           <TalismanForm
             catalog={catalog}
@@ -186,6 +203,6 @@ export function TalismansTab() {
           )}
         </section>
       </main>
-    </div>
+    </TalismansFrame>
   );
-}
+};

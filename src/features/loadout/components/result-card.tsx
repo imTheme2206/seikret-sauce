@@ -15,7 +15,7 @@ import { DecorationList } from "./decoration-list";
 import { DefenseStats } from "./defense-stats";
 import { SkillBreakdown } from "./skill-breakdown";
 
-interface ResultCardProps {
+type ResultCardProps = {
   result: LoadoutResult;
   index: number;
   isExpanded: boolean;
@@ -25,10 +25,10 @@ interface ResultCardProps {
   isSaving: boolean;
   saveDisabled: boolean;
   onSave: () => Promise<void>;
-}
+};
 
 /** A single optimised loadout, expandable to reveal decorations + skills. */
-export function ResultCard({
+export const ResultCard = ({
   result,
   index,
   isExpanded,
@@ -38,7 +38,7 @@ export function ResultCard({
   isSaving,
   saveDisabled,
   onSave,
-}: ResultCardProps) {
+}: ResultCardProps) => {
   const skillCount = Object.keys(result.skills).length;
   const setGroupSkills = { ...result.setSkills, ...result.groupSkills };
   const hasSetGroup = Object.keys(setGroupSkills).length > 0;
@@ -92,7 +92,7 @@ export function ResultCard({
 
         <CollapsibleContent>
           <div className="space-y-3 border-t border-border px-3.5 py-3">
-            <div className="grid grid-cols-[1fr_1.1fr] gap-4">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-[1fr_1.1fr]">
               <DecorationList decorations={result.decoNames} />
               <SkillBreakdown
                 skills={result.skills}
@@ -131,4 +131,4 @@ export function ResultCard({
       </Card>
     </Collapsible>
   );
-}
+};

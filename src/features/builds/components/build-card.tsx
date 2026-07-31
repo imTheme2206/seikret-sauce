@@ -3,12 +3,10 @@ import {
   AlertTriangle,
   ChevronRight,
   Clock3,
-  Diamond,
   Gem,
   Link2,
   Loader2,
   ShieldOff,
-  Sparkles,
   Swords,
   UserRound,
 } from "lucide-react";
@@ -19,24 +17,33 @@ import {
   AvatarImage,
 } from "@/components/ui/avatar";
 import { Typography } from "@/components/ui/typography";
+import { useSkillCatalog } from "@/features/skills/skill-catalog";
 import { POSITION_LABELS, rarityColor } from "@/lib/mh-wilds";
-import { calculateBuild } from "../calculator";
 import { POSITION_KEYS } from "../config";
+import { createHunterStatus } from "../hunter-status";
 import { useSavedBuild } from "../hooks/use-saved-build";
 import type { BuildSummary } from "../types";
 import { formatBuildDate } from "../utils";
 import { HunterPanel } from "./hunter-panel";
+import { HunterSkills } from "./hunter-skills";
 import { PanelHeading } from "./panel-heading";
+import { EquippedWeaponCell } from "./equipped-weapon-row";
 
 /**
- * Expanded build preview used by the home-page Gathering Hub. The build feeds
- * only contain metadata, so this card resolves the public snapshot before
- * showing its complete equipment set and calculated skills.
+ * Expanded Build card shared by the Gathering Hub and the hunter's equipment
+ * box. Feed entries contain metadata, so the card resolves the saved snapshot.
  */
-export function BuildSetCard({ summary }: { summary: BuildSummary }) {
+export const BuildCard = ({
+  summary,
+  actions,
+}: {
+  summary: BuildSummary;
+  actions?: React.ReactNode;
+}) => {
   const { build, isLoading, error } = useSavedBuild(summary.id);
+  const { catalog, isLoading: isLoadingSkills } = useSkillCatalog();
 
-  if (isLoading) {
+  if (isLoading || isLoadingSkills) {
     return (
       <HunterPanel className="grid min-h-80 place-items-center" aria-busy="true">
         <Loader2 className="size-6 animate-spin text-primary" />
@@ -59,8 +66,7 @@ export function BuildSetCard({ summary }: { summary: BuildSummary }) {
     );
   }
 
-  const totals = calculateBuild(build.composition);
-  const skills = Object.entries(totals.skills);
+  const status = createHunterStatus(build.composition, catalog);
 
   return (
     <HunterPanel className="group">
@@ -112,7 +118,10 @@ export function BuildSetCard({ summary }: { summary: BuildSummary }) {
             <Clock3 className="size-3" />
             Revised {formatBuildDate(build.updatedAt)}
           </Typography>
-          <BuildLink id={build.id} name={build.name} />
+          <div className="flex items-center gap-2">
+            <BuildLink id={build.id} name={build.name} />
+            {actions}
+          </div>
         </div>
       </div>
 
@@ -169,79 +178,21 @@ export function BuildSetCard({ summary }: { summary: BuildSummary }) {
                 </div>
               );
             })}
+            <EquippedWeaponCell
+              weapon={build.composition.positions.weapon}
+            />
           </div>
         </section>
 
-        <section className="p-5">
-          <PanelHeading icon={Sparkles}>Skills from this set</PanelHeading>
-          <div className="grid gap-1.5 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
-            {skills.map(([name, level]) => (
-              <div
-                key={name}
-                className="flex items-center justify-between gap-3 border-l-2 border-primary/50 bg-secondary/55 px-3 py-2"
-              >
-                <Typography
-                  as="span"
-                  className="flex min-w-0 items-center gap-2 text-sm"
-                >
-                  <Diamond className="size-3 shrink-0 text-primary/60" />
-                  <span className="truncate" title={name}>
-                    {name}
-                  </span>
-                </Typography>
-                <Typography
-                  as="span"
-                  className="shrink-0 text-sm font-bold tabular-nums text-primary"
-                >
-                  Lv {level}
-                </Typography>
-              </div>
-            ))}
-            {!skills.length && (
-              <Typography className="text-sm text-muted-foreground">
-                No skills are granted by this equipment.
-              </Typography>
-            )}
-          </div>
-
-          {totals.activeBonuses.length > 0 && (
-            <div className="mt-5">
-              <PanelHeading icon={Swords}>Activated set bonuses</PanelHeading>
-              <div className="space-y-1.5">
-                {totals.activeBonuses.map((bonus) => (
-                  <div
-                    key={bonus.name}
-                    className="flex items-center justify-between gap-3 border border-primary/20 bg-primary/[.06] px-3 py-2"
-                  >
-                    <div className="min-w-0">
-                      <Typography as="div" className="truncate text-sm font-medium">
-                        {bonus.name}
-                      </Typography>
-                      <Typography
-                        as="div"
-                        className="text-[10px] text-muted-foreground"
-                      >
-                        {bonus.pieces} pieces equipped
-                      </Typography>
-                    </div>
-                    <Typography
-                      as="div"
-                      className="shrink-0 text-right text-xs font-semibold text-primary"
-                    >
-                      {bonus.effectName} Lv {bonus.level}
-                    </Typography>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
+        <section className="space-y-5 p-5">
+          <HunterSkills status={status} />
         </section>
       </div>
     </HunterPanel>
   );
-}
+};
 
-function BuildLink({ id, name }: { id: string; name: string }) {
+const BuildLink = ({ id, name }: { id: string; name: string }) => {
   return (
     <Link
       to="/b/$buildId"
@@ -253,9 +204,9 @@ function BuildLink({ id, name }: { id: string; name: string }) {
       <ChevronRight className="size-4 transition-transform group-hover:translate-x-1" />
     </Link>
   );
-}
+};
 
-function CardTag({
+const CardTag = ({
   icon: Icon,
   label,
   tone,
@@ -263,7 +214,7 @@ function CardTag({
   icon: typeof AlertTriangle;
   label: string;
   tone: "warning" | "primary";
-}) {
+}) => {
   return (
     <Typography
       as="span"
@@ -276,4 +227,4 @@ function CardTag({
       <Icon className="size-3" /> {label}
     </Typography>
   );
-}
+};
