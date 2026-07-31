@@ -9,7 +9,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Typography } from "@/components/ui/typography";
-import type { GroupedSkills, SkillCategory } from "@/features/loadout/types";
+import type { SkillCatalog } from "@/features/skills/skill-catalog";
+import { SkillGlyph } from "@/features/skills/skill-glyph";
 import { Gem, Loader2, Plus, Sparkles, X } from "lucide-react";
 import { useState } from "react";
 import {
@@ -19,40 +20,9 @@ import {
   type TalismanSkillInput,
   type TalismanSlot,
 } from "../types";
-import { SkillIcon } from "./talisman-icons";
-
-interface FlatSkill {
-  id: string;
-  name: string;
-  maxLevel: number;
-  icon: string | null;
-  category: SkillCategory;
-}
-
-function flattenSkills(skills: GroupedSkills | undefined): FlatSkill[] {
-  if (!skills) return [];
-  const byId = new Map<string, FlatSkill>();
-  const buckets: [(typeof skills)["armorSkills"], SkillCategory][] = [
-    [skills.armorSkills, "armor"],
-    [skills.weaponSkills, "weapon"],
-    [skills.setSkills, "set"],
-    [skills.groupSkills, "group"],
-  ];
-  for (const [bucket, category] of buckets) {
-    for (const s of bucket)
-      byId.set(s.id, {
-        id: s.id,
-        name: s.name,
-        maxLevel: s.maxLevel,
-        icon: s.icon,
-        category,
-      });
-  }
-  return [...byId.values()].sort((a, b) => a.name.localeCompare(b.name));
-}
 
 interface TalismanFormProps {
-  skills: GroupedSkills | undefined;
+  catalog: SkillCatalog | undefined;
   isLoadingSkills: boolean;
   onCreate: (input: CreateTalismanInput) => Promise<void>;
 }
@@ -62,11 +32,13 @@ const EMPTY_SLOT_ROW: TalismanSlot = { type: "armor", size: 1 };
 
 /** Create form for a custom talisman: name, 1-3 skills, up to 3 decoration slots. */
 export function TalismanForm({
-  skills,
+  catalog,
   isLoadingSkills,
   onCreate,
 }: TalismanFormProps) {
-  const flatSkills = flattenSkills(skills);
+  const flatSkills = catalog
+    ? [...catalog.byId.values()].sort((a, b) => a.name.localeCompare(b.name))
+    : [];
 
   const [name, setName] = useState("");
   const [skillRows, setSkillRows] = useState<TalismanSkillInput[]>([
@@ -76,7 +48,7 @@ export function TalismanForm({
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const skillById = new Map(flatSkills.map((s) => [s.id, s]));
+  const skillById = catalog?.byId;
 
   const canSubmit =
     name.trim().length > 0 &&
@@ -159,7 +131,7 @@ export function TalismanForm({
             </Typography>
           </div>
           {skillRows.map((row, i) => {
-            const maxLevel = skillById.get(row.skillId)?.maxLevel ?? 1;
+            const maxLevel = skillById?.get(row.skillId)?.maxLevel ?? 1;
             return (
               <div
                 key={i}
@@ -200,9 +172,10 @@ export function TalismanForm({
                           disabled={chosenElsewhere}
                         >
                           <span className="flex items-center gap-2">
-                            <SkillIcon
+                            <SkillGlyph
                               icon={s.icon}
                               category={s.category}
+                              label={s.name}
                               className="size-6"
                             />
                             {s.name}

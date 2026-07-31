@@ -9,30 +9,15 @@
  */
 
 import type { ElementalDefenses } from "@/lib/mh-wilds";
+import type {
+  CatalogSkill,
+  GroupedSkills as SharedGroupedSkills,
+  SkillCategory as SharedSkillCategory,
+} from "@/features/skills/skill-catalog";
 
-export type SkillCategory = "armor" | "weapon" | "set" | "group";
-
-/** A single skill as returned by the skills endpoint. */
-export interface Skill {
-  id: string;
-  name: string;
-  cleanName: string;
-  type: string;
-  maxLevel: number;
-  isSetSkill: boolean;
-  isGroupSkill: boolean;
-  requiredPieces: number | null;
-  effectName: string | null;
-  icon: string | null;
-}
-
-/** Skills bucketed by the category they belong to. */
-export interface GroupedSkills {
-  armorSkills: Skill[];
-  weaponSkills: Skill[];
-  setSkills: Skill[];
-  groupSkills: Skill[];
-}
+export type SkillCategory = SharedSkillCategory;
+export type Skill = CatalogSkill;
+export type GroupedSkills = SharedGroupedSkills;
 
 /** A skill the user has chosen, together with the desired level. */
 export interface SelectedSkill {

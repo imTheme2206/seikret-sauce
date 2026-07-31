@@ -1,8 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { Typography } from "@/components/ui/typography";
+import { SkillGlyph } from "@/features/skills/skill-glyph";
 import { X } from "lucide-react";
 import { CATEGORY_CONFIG } from "../config";
-import { TypeIcon } from "../icons";
 import type { SelectedSkill } from "../types";
 import { SkillLevelBlocks, StepButton } from "./skill-level-stepper";
 
@@ -41,7 +41,12 @@ export function SelectedSkillRow({
       />
 
       <div className="flex size-[30px] shrink-0 items-center justify-center rounded-md bg-secondary">
-        <TypeIcon category={skill.category} color={color} icon={skill.icon} />
+        <SkillGlyph
+          category={skill.category}
+          icon={skill.icon}
+          label={skill.name}
+          className="size-3.5"
+        />
       </div>
       <div className="min-w-0 flex-1">
         <Typography

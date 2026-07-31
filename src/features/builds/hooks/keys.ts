@@ -4,8 +4,7 @@
  */
 
 export const buildKeys = {
-  catalog: (part: "armors" | "decorations" | "skills") =>
-    `build-catalog/${part}`,
+  catalog: (part: "armors" | "decorations") => `build-catalog/${part}`,
   mine: (userId: string) => `builds/mine/${userId}`,
   detail: (id: string) => `builds/detail/${id}`,
   shared: "builds/shared",

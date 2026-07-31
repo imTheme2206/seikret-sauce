@@ -8,6 +8,7 @@
  */
 
 import type { ElementalDefenses } from "@/lib/mh-wilds";
+import type { SkillCatalogResponse } from "@/features/skills/skill-catalog";
 import type { paths } from "@/vendor/openapi";
 
 type JsonResponse<
@@ -24,7 +25,7 @@ export type Decoration = JsonResponse<
   "/api/mh-wilds/decorations",
   "get"
 >[number];
-export type SkillCatalog = JsonResponse<"/api/mh-wilds/skills", "get">;
+export type SkillCatalog = SkillCatalogResponse;
 export type BuildSummary = JsonResponse<"/api/mh-wilds/builds", "get">[number];
 export type SharedBuildPage = JsonResponse<
   "/api/mh-wilds/builds/shared",

@@ -24,11 +24,11 @@ import { HunterStatusPanel } from "../components/hunter-status-panel";
 
 /** `/b/$buildId`: the public permalink for one saved build. */
 export function BuildDetailPage({ buildId }: { buildId: string }) {
-  const { build, isLoading, error, isOwner, message, duplicate } =
+  const { build, isLoading, error, isOwner, hunterStatus, message, duplicate } =
     useBuildDetail(buildId);
 
   if (isLoading) return <ScreenLoader />;
-  if (error || !build) {
+  if (error || !build || !hunterStatus) {
     return (
       <ScreenError
         icon={FileQuestion}
@@ -121,7 +121,7 @@ export function BuildDetailPage({ buildId }: { buildId: string }) {
             <EquippedWeaponRow weapon={build.composition.positions.weapon} />
           </div>
           <HunterStatusPanel
-            snapshot={build.composition}
+            status={hunterStatus}
             subtitle="Verified snapshot totals"
             className="lg:sticky lg:top-5"
           />

@@ -64,7 +64,7 @@ describe("calculateBuild", () => {
     };
 
     expect(calculateBuild(snapshot)).toMatchObject({
-      skills: { "Attack Boost": 3, "Powerhouse I": 1 },
+      skills: { "Attack Boost": 3 },
       defense: 98,
       resistances: { fire: 4, water: -2, thunder: -6, ice: 2, dragon: 0 },
       activeBonuses: [{

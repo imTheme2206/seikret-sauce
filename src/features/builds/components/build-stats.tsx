@@ -1,26 +1,20 @@
 import { Typography } from "@/components/ui/typography";
+import { SkillGlyph } from "@/features/skills/skill-glyph";
 import { ELEMENTS, formatResistance } from "@/lib/mh-wilds";
-import { Diamond, Shield, ShieldHalf, Sparkles, Swords } from "lucide-react";
-import { calculateBuild } from "../calculator";
+import { Shield, ShieldHalf, Sparkles, Swords } from "lucide-react";
 import { ELEMENT_ICONS } from "../config";
-import type { BuildSnapshot } from "../types";
+import type { HunterStatus } from "../hunter-status";
 import { PanelHeading } from "./panel-heading";
 
 /**
- * Live totals for a snapshot: defense, resistances, capped skills and any
- * activated set/group bonuses. Uses the same element colours as the optimizer's
- * result panel so identical numbers look identical in both places.
+ * Renders the shared Hunter Status model: defense, resistances, capped skills
+ * and activated Set/Group Skills.
  */
 export function BuildStats({
-  snapshot,
-  skillIcons = {},
+  status,
 }: {
-  snapshot: BuildSnapshot;
-  skillIcons?: Record<string, string | null>;
+  status: HunterStatus;
 }) {
-  const totals = calculateBuild(snapshot);
-  const skills = Object.entries(totals.skills);
-
   return (
     <div className="space-y-5">
       <div className="grid grid-cols-5 border border-border bg-background/45 sm:grid-cols-[1.3fr_repeat(5,1fr)]">
@@ -37,7 +31,7 @@ export function BuildStats({
               as="div"
               className="text-xl font-semibold tabular-nums text-foreground"
             >
-              {totals.defense}
+              {status.defense}
             </Typography>
           </div>
         </div>
@@ -58,7 +52,7 @@ export function BuildStats({
                 {abbr}
               </Typography>
               <Typography as="span" className="text-base tabular-nums">
-                {formatResistance(totals.resistances[key])}
+                {formatResistance(status.resistances[key])}
               </Typography>
             </div>
           );
@@ -68,32 +62,29 @@ export function BuildStats({
       <div>
         <PanelHeading icon={Sparkles}>Active skills</PanelHeading>
         <div className="grid gap-1.5 sm:grid-cols-2">
-          {skills.map(([name, level]) => (
+          {status.skills.map((skill) => (
             <div
-              key={name}
+              key={skill.name}
               className="flex items-center justify-between border-l-2 border-primary/50 bg-secondary/55 px-3 py-2"
             >
               <Typography as="span" className="flex items-center gap-2 text-sm">
-                {skillIcons[name] ? (
-                  <img
-                    src={`/images/icons/${skillIcons[name]}.png`}
-                    alt={name}
-                    className="size-4 shrink-0 object-contain"
-                  />
-                ) : (
-                  <Diamond className="size-3 shrink-0 text-primary/60" />
-                )}
-                {name}
+                <SkillGlyph
+                  icon={skill.icon}
+                  category={skill.category}
+                  label={skill.name}
+                  className="size-4"
+                />
+                {skill.name}
               </Typography>
               <Typography
                 as="span"
                 className="text-sm font-bold tabular-nums text-primary"
               >
-                Lv {level}
+                Lv {skill.level}
               </Typography>
             </div>
           ))}
-          {!skills.length && (
+          {!status.skills.length && (
             <Typography
               as="div"
               className="col-span-2 flex flex-col items-center gap-2 py-5 text-center text-sm text-muted-foreground"
@@ -105,11 +96,11 @@ export function BuildStats({
         </div>
       </div>
 
-      {totals.activeBonuses.length > 0 && (
+      {status.activeBonuses.length > 0 && (
         <div>
           <PanelHeading icon={Swords}>Active Set / Group Skills</PanelHeading>
           <div className="space-y-1.5">
-            {totals.activeBonuses.map((bonus) => (
+            {status.activeBonuses.map((bonus) => (
               <div
                 key={bonus.name}
                 className="flex items-center justify-between border border-primary/20 bg-primary/[.06] px-3 py-2"

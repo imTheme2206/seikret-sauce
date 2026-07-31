@@ -90,9 +90,8 @@ export function BuildEditorPage({ buildId }: { buildId?: string }) {
         <aside className="hidden h-fit space-y-4 lg:sticky lg:top-4 lg:block">
           <SavePanel controller={controller} />
           <HunterStatusPanel
-            snapshot={controller.snapshot}
+            status={controller.hunterStatus}
             subtitle="Live equipment totals"
-            skillIcons={controller.skillIcons}
           />
         </aside>
       </main>
@@ -329,9 +328,8 @@ function MobileBuildSummary({
       </CollapsibleTrigger>
       <CollapsibleContent className="border-t border-border">
         <HunterStatusPanel
-          snapshot={controller.snapshot}
+          status={controller.hunterStatus}
           subtitle="Live equipment totals"
-          skillIcons={controller.skillIcons}
           className="border-0"
         />
       </CollapsibleContent>

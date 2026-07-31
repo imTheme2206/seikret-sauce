@@ -3,22 +3,19 @@ import { Typography } from "@/components/ui/typography";
 import { cn } from "@/lib/utils";
 import { BuildStats } from "./build-stats";
 import { HunterPanel } from "./hunter-panel";
-import type { BuildSnapshot } from "../types";
+import type { HunterStatus } from "../hunter-status";
 
 interface HunterStatusPanelProps {
-  snapshot: BuildSnapshot;
+  status: HunterStatus;
   /** Distinguishes live editor totals from a saved snapshot's totals. */
   subtitle: string;
-  /** Presentation metadata from the live catalog; snapshots intentionally omit it. */
-  skillIcons?: Record<string, string | null>;
   className?: string;
 }
 
 /** The sticky totals panel shared by the editor and the permalink. */
 export function HunterStatusPanel({
-  snapshot,
+  status,
   subtitle,
-  skillIcons,
   className,
 }: HunterStatusPanelProps) {
   return (
@@ -37,7 +34,7 @@ export function HunterStatusPanel({
         </div>
         <Shield className="size-6 text-primary/60" />
       </div>
-      <BuildStats snapshot={snapshot} skillIcons={skillIcons} />
+      <BuildStats status={status} />
     </HunterPanel>
   );
 }

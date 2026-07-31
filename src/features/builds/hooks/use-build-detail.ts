@@ -3,11 +3,13 @@
  * viewer owns it, and duplicates it into their own equipment box.
  */
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
+import { useSkillCatalog } from "@/features/skills/skill-catalog";
 import { toast } from "@/hooks/use-toast";
 import { draftFromBuild } from "../draft";
 import { buildErrorMessage } from "../errors";
+import { createHunterStatus } from "../hunter-status";
 import { toCreateBody } from "../utils";
 import { useBuildApi } from "./use-build-api";
 import { useMyBuilds } from "./use-my-builds";
@@ -16,9 +18,14 @@ import { useSavedBuild } from "./use-saved-build";
 export function useBuildDetail(buildId: string) {
   const navigate = useNavigate();
   const { build, isLoading, error } = useSavedBuild(buildId);
+  const { catalog } = useSkillCatalog();
   const mine = useMyBuilds();
   const { createBuild } = useBuildApi();
   const [message, setMessage] = useState<string | null>(null);
+  const hunterStatus = useMemo(
+    () => (build ? createHunterStatus(build.composition, catalog) : null),
+    [build, catalog],
+  );
 
   useEffect(() => {
     if (error) {
@@ -71,6 +78,7 @@ export function useBuildDetail(buildId: string) {
     isLoading,
     error,
     isOwner: mine.builds.some((item) => item.id === buildId),
+    hunterStatus,
     message,
     duplicate,
   };

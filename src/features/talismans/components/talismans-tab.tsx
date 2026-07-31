@@ -1,9 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Typography } from "@/components/ui/typography";
-import type { GroupedSkills, SkillCategory } from "@/features/loadout/types";
+import { useSkillCatalog } from "@/features/skills/skill-catalog";
 import { useAuth } from "@/hooks/use-auth";
-import { useGetSkills } from "@/hooks/use-get-skills";
 import { toast } from "@/hooks/use-toast";
 import { AlertCircle, Boxes, LockKeyhole, Sparkles } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -13,38 +12,10 @@ import { TalismanCard } from "./talisman-card";
 import { TalismanEmptyState } from "./talisman-empty-state";
 import { TalismanForm } from "./talisman-form";
 
-/** Display metadata for a skill, keyed by id for the talisman card. */
-export interface SkillMeta {
-  name: string;
-  icon: string | null;
-  category: SkillCategory;
-}
-
-/** Flattens the category buckets from `useGetSkills` into a single id -> metadata lookup. */
-export function toSkillMetaById(
-  skills: GroupedSkills | undefined,
-): Map<string, SkillMeta> {
-  const map = new Map<string, SkillMeta>();
-  if (!skills) return map;
-
-  const buckets: [GroupedSkills["armorSkills"], SkillCategory][] = [
-    [skills.armorSkills, "armor"],
-    [skills.weaponSkills, "weapon"],
-    [skills.setSkills, "set"],
-    [skills.groupSkills, "group"],
-  ];
-  for (const [bucket, category] of buckets) {
-    for (const skill of bucket)
-      map.set(skill.id, { name: skill.name, icon: skill.icon, category });
-  }
-
-  return map;
-}
-
 /** "Talismans" tab: CRUD over the signed-in user's custom talismans. */
 export function TalismansTab() {
   const { session, isLoading: isAuthLoading, signInWithDiscord } = useAuth();
-  const { data: skills, isLoading: isLoadingSkills } = useGetSkills();
+  const { catalog, isLoading: isLoadingSkills } = useSkillCatalog();
   const { talismans, isLoading, error, create, remove } = useTalismans();
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
@@ -88,10 +59,6 @@ export function TalismansTab() {
       </div>
     );
   }
-
-  const skillMetaById = toSkillMetaById(
-    skills as unknown as GroupedSkills | undefined,
-  );
 
   const handleCreate = async (input: CreateTalismanInput) => {
     try {
@@ -146,7 +113,7 @@ export function TalismansTab() {
       <main className="mx-auto grid max-w-7xl items-start gap-6 p-5 md:p-8 lg:grid-cols-[360px_minmax(0,1fr)]">
         <aside className="lg:sticky lg:top-6">
           <TalismanForm
-            skills={skills as unknown as GroupedSkills | undefined}
+            catalog={catalog}
             isLoadingSkills={isLoadingSkills}
             onCreate={handleCreate}
           />
@@ -210,7 +177,7 @@ export function TalismansTab() {
                 <TalismanCard
                   key={t.id}
                   talisman={t}
-                  skillMetaById={skillMetaById}
+                  skillMetaById={catalog?.byId}
                   onDelete={(id) => void handleDelete(id)}
                   isDeleting={deletingId === t.id}
                 />

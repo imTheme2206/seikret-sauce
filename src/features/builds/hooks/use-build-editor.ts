@@ -6,6 +6,7 @@ import { EMPTY_DRAFT } from "../config";
 import { draftFromBuild, snapshotFromDraft } from "../draft";
 import { buildErrorMessage, isRevisionConflict } from "../errors";
 import { buildGearRows } from "../gear-rows";
+import { createHunterStatus } from "../hunter-status";
 import type {
   ArmorPosition,
   BuildDraft,
@@ -115,26 +116,8 @@ export function useBuildEditor(buildId?: string) {
       },
     }));
 
-  // A weapon can carry any Set or Group Bonus; those are the picker's options.
-  const bonusOptions = useMemo(
-    () => ({
-      set: (catalog.skills?.bonuses ?? []).filter(
-        (bonus) => bonus.kind === "set",
-      ),
-      group: (catalog.skills?.bonuses ?? []).filter(
-        (bonus) => bonus.kind === "group",
-      ),
-    }),
-    [catalog.skills],
-  );
-
-  const skillIcons = useMemo(
-    () =>
-      Object.fromEntries(
-        (catalog.skills?.skills ?? []).map((skill) => [skill.name, skill.icon]),
-      ),
-    [catalog.skills],
-  );
+  // A weapon can carry any Set or Group Skill; the shared catalog owns grouping.
+  const bonusOptions = catalog.skillCatalog?.bonuses ?? { set: [], group: [] };
 
   // ── Derived view data ─────────────────────────────────────────────────────
   const snapshot = useMemo(
@@ -143,14 +126,14 @@ export function useBuildEditor(buildId?: string) {
         draft,
         catalog.armors,
         catalog.decorations,
-        catalog.skills,
+        catalog.skillCatalog?.response,
         talismans.talismans,
       ),
     [
       draft,
       catalog.armors,
       catalog.decorations,
-      catalog.skills,
+      catalog.skillCatalog,
       talismans.talismans,
     ],
   );
@@ -164,6 +147,11 @@ export function useBuildEditor(buildId?: string) {
         talismans.talismans,
       ),
     [draft, catalog.armors, catalog.decorations, talismans.talismans],
+  );
+
+  const hunterStatus = useMemo(
+    () => createHunterStatus(snapshot, catalog.skillCatalog),
+    [snapshot, catalog.skillCatalog],
   );
 
   // ── Save ──────────────────────────────────────────────────────────────────
@@ -250,7 +238,7 @@ export function useBuildEditor(buildId?: string) {
     isEditing: Boolean(buildId),
     draft,
     rows,
-    snapshot,
+    hunterStatus,
     message,
     hasRevisionConflict,
     isSaving,
@@ -258,7 +246,6 @@ export function useBuildEditor(buildId?: string) {
     isLoadingBuild: Boolean(buildId) && existing.isLoading,
     loadError: buildId ? existing.error : null,
     bonusOptions,
-    skillIcons,
     patchDraft,
     selectGear,
     assignDecoration,

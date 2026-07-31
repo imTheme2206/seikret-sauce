@@ -1,13 +1,17 @@
 import useSWR from "swr";
+import {
+  useSkillCatalog,
+  type SkillCatalog as SharedSkillCatalog,
+} from "@/features/skills/skill-catalog";
 import { useApi } from "@/hooks/use-api";
 import { toBuildApiError } from "../errors";
 import { buildKeys } from "./keys";
-import type { Armor, Decoration, SkillCatalog } from "../types";
+import type { Armor, Decoration } from "../types";
 
 export interface BuildCatalog {
   armors: Armor[];
   decorations: Decoration[];
-  skills: SkillCatalog | undefined;
+  skillCatalog: SharedSkillCatalog | undefined;
   isLoading: boolean;
   error: Error | null;
 }
@@ -16,15 +20,16 @@ export interface BuildCatalog {
 const CATALOG_OPTIONS = { revalidateOnFocus: false } as const;
 
 /**
- * The armour / decoration / skill catalogs the editor resolves draft ids against.
- *
- * These are the raw catalogs, deliberately separate from `useGetSkills` — that
- * hook projects the same skills endpoint into the optimizer's grouped shape,
- * whereas the editor needs skill and bonus definitions verbatim to build a
- * snapshot.
+ * The armour / decoration catalogs the editor resolves draft ids against,
+ * composed with the shared Skill Catalog module.
  */
 export function useCatalog(): BuildCatalog {
   const { api } = useApi();
+  const {
+    catalog: skillCatalog,
+    isLoading: isLoadingSkills,
+    error: skillsError,
+  } = useSkillCatalog();
 
   const armors = useSWR<Armor[]>(
     buildKeys.catalog("armors"),
@@ -51,23 +56,11 @@ export function useCatalog(): BuildCatalog {
     CATALOG_OPTIONS,
   );
 
-  const skills = useSWR<SkillCatalog>(
-    buildKeys.catalog("skills"),
-    async () => {
-      try {
-        return (await api("/api/mh-wilds/skills").method("get").create()({})).data;
-      } catch (error) {
-        throw toBuildApiError(error);
-      }
-    },
-    CATALOG_OPTIONS,
-  );
-
   return {
     armors: armors.data ?? [],
     decorations: decorations.data ?? [],
-    skills: skills.data,
-    isLoading: armors.isLoading || decorations.isLoading || skills.isLoading,
-    error: armors.error ?? decorations.error ?? skills.error ?? null,
+    skillCatalog,
+    isLoading: armors.isLoading || decorations.isLoading || isLoadingSkills,
+    error: armors.error ?? decorations.error ?? skillsError,
   };
 }

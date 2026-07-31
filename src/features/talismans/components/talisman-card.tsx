@@ -9,16 +9,17 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Typography } from "@/components/ui/typography";
+import { SkillGlyph } from "@/features/skills/skill-glyph";
 import TalismanSVG from "@/svg/TalismanSvg";
 import { Loader2, Shield, Trash2 } from "lucide-react";
 import { useState } from "react";
+import type { CatalogSkill } from "@/features/skills/skill-catalog";
 import type { CustomTalisman } from "../types";
-import type { SkillMeta } from "./talismans-tab";
-import { SkillIcon, SlotSizeIcon, SlotTypeIcon } from "./talisman-icons";
+import { SlotSizeIcon, SlotTypeIcon } from "./talisman-icons";
 
 interface TalismanCardProps {
   talisman: CustomTalisman;
-  skillMetaById: Map<string, SkillMeta>;
+  skillMetaById: ReadonlyMap<string, CatalogSkill> | undefined;
   onDelete: (id: string) => void;
   isDeleting: boolean;
 }
@@ -57,12 +58,13 @@ export function TalismanCard({
       <CardContent className="flex min-h-40 flex-col gap-4 p-4">
         <div className="flex flex-col gap-2">
           {talisman.skills.map((s) => {
-            const meta = skillMetaById.get(s.skillId);
+            const meta = skillMetaById?.get(s.skillId);
             return (
               <div key={s.skillId} className="flex items-center gap-2">
-                <SkillIcon
+                <SkillGlyph
                   icon={meta?.icon ?? null}
                   category={meta?.category ?? "armor"}
+                  label={meta?.name ?? s.skillId}
                   className="size-4"
                 />
                 <Typography

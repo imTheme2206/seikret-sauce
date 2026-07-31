@@ -38,9 +38,16 @@ _Avoid_: set (ambiguous with Set Skill)
 The sixth and final armor slot. Always has rarity `0` and is excluded from `defense`/`elementalDefenses`,
 which cover the five body pieces only.
 
+**Skill Catalog**:
+The shared reference data returned by `/api/mh-wilds/skills`, containing Regular Skill definitions
+and Set/Group Skill definitions. Frontend features consume derived category groups and lookup indexes
+from one catalog rather than fetching or reclassifying the same definitions independently.
+
 ## Relationships
 
 - A **Build** satisfies a set of requested **Regular Skills**, **Set Skills**, and **Group Skills**.
+- The **Skill Catalog** is the frontend authority for skill names, levels, categories, icons, and
+  Set/Group Skill thresholds.
 - A **Set Skill**'s **Activation Level** is reached by combining armor pieces with any
   **Pre-owned Piece Count** the player brings in (e.g. an equipped weapon).
 - **Pre-owned Piece Count** originates from a weapon picker that does **not exist yet** — weapon

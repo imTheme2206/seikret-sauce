@@ -1,9 +1,9 @@
 import { Badge } from "@/components/ui/badge";
 import { Typography } from "@/components/ui/typography";
+import { SkillGlyph } from "@/features/skills/skill-glyph";
 import { cn } from "@/lib/utils";
 import { Check, Plus } from "lucide-react";
 import { CATEGORY_CONFIG } from "../config";
-import { TypeIcon } from "../icons";
 import type { PoolSkill } from "../types";
 
 interface SkillPoolRowProps {
@@ -22,7 +22,6 @@ export function SkillPoolRow({
   onAdd,
 }: SkillPoolRowProps) {
   const config = CATEGORY_CONFIG[skill.category];
-  console.log(skill);
   return (
     <button
       type="button"
@@ -34,10 +33,11 @@ export function SkillPoolRow({
       )}
 
       <div className="relative flex size-8 shrink-0 items-center justify-center overflow-hidden rounded-md bg-secondary [&_img]:size-5 [&_img]:object-contain">
-        <TypeIcon
+        <SkillGlyph
           category={skill.category}
-          color={config.color}
           icon={skill.icon}
+          label={skill.name}
+          className="size-5"
         />
       </div>
 

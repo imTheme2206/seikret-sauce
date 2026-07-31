@@ -1,19 +1,18 @@
-import { useGetSkills } from "@/hooks/use-get-skills";
+import { useSkillCatalog } from "@/features/skills/skill-catalog";
 import { LeftPanel } from "./components/left-panel";
 import { ResultsPanel } from "./components/results-panel";
 import { useLoadoutOptimizer } from "./hooks/use-loadout-optimizer";
 import { useSaveOptimizerResult } from "./hooks/use-save-optimizer-result";
-import type { GroupedSkills } from "./types";
 
 /**
  * `/` route body: owns data fetching and the optimizer controller, then
  * composes the two-panel layout. The header/shell live in the root route.
  */
 export function LoadoutOptimizer() {
-  const { data, isLoading } = useGetSkills();
+  const { catalog, isLoading } = useSkillCatalog();
 
   const controller = useLoadoutOptimizer({
-    skills: data as unknown as GroupedSkills | undefined,
+    skills: catalog?.grouped,
     isLoadingSkills: isLoading,
   });
   const saveResult = useSaveOptimizerResult(controller.selectedList, controller.weapon);
