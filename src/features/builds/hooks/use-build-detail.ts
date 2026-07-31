@@ -15,7 +15,7 @@ import { useBuildApi } from "./use-build-api";
 import { useMyBuilds } from "./use-my-builds";
 import { useSavedBuild } from "./use-saved-build";
 
-export function useBuildDetail(buildId: string) {
+export const useBuildDetail = (buildId: string) => {
   const navigate = useNavigate();
   const { build, isLoading, error } = useSavedBuild(buildId);
   const { catalog } = useSkillCatalog();
@@ -82,6 +82,6 @@ export function useBuildDetail(buildId: string) {
     message,
     duplicate,
   };
-}
+};
 
 export type BuildDetailController = ReturnType<typeof useBuildDetail>;

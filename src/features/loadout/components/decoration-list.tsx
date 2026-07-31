@@ -1,12 +1,12 @@
 import { Typography } from "@/components/ui/typography";
 import { SectionHeading } from "@/components/gear/section-heading";
 
-interface DecorationListProps {
+type DecorationListProps = {
   decorations: string[];
-}
+};
 
 /** "Decorations" column inside an expanded result. */
-export function DecorationList({ decorations }: DecorationListProps) {
+export const DecorationList = ({ decorations }: DecorationListProps) => {
   return (
     <div>
       <SectionHeading>Decorations</SectionHeading>
@@ -23,4 +23,4 @@ export function DecorationList({ decorations }: DecorationListProps) {
       ))}
     </div>
   );
-}
+};

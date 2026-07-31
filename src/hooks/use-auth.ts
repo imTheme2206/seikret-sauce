@@ -2,16 +2,16 @@ import type { Session } from "@supabase/supabase-js";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 
-export interface UseAuth {
+export type UseAuth = {
   session: Session | null;
   isLoading: boolean;
   discordUser: { name: string | null; avatarUrl: string | null } | null;
   signInWithDiscord: () => Promise<void>;
   signOut: () => Promise<void>;
-}
+};
 
 /** Reads the Discord identity fields Supabase's Discord OAuth provider stores on the user. */
-function toDiscordUser(session: Session | null): UseAuth["discordUser"] {
+const toDiscordUser = (session: Session | null): UseAuth["discordUser"] => {
   const identity = session?.user.identities?.find((i) => i.provider === "discord");
   if (!identity) return null;
 
@@ -20,10 +20,10 @@ function toDiscordUser(session: Session | null): UseAuth["discordUser"] {
     name: (data.full_name as string) ?? (data.name as string) ?? null,
     avatarUrl: (data.avatar_url as string) ?? null,
   };
-}
+};
 
 /** Session state backed by Supabase's Discord OAuth provider; see enlightened-fellows-discord-bot docs/adr/0003. */
-export function useAuth(): UseAuth {
+export const useAuth = (): UseAuth => {
   const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -52,4 +52,4 @@ export function useAuth(): UseAuth {
   };
 
   return { session, isLoading, discordUser: toDiscordUser(session), signInWithDiscord, signOut };
-}
+};

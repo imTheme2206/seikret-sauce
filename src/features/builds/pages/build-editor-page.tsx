@@ -1,3 +1,5 @@
+import { PageHeader } from "@/components/page-header";
+import { PageContainer } from "@/components/page-layout";
 import { Button } from "@/components/ui/button";
 import {
   Collapsible,
@@ -18,6 +20,7 @@ import { Typography } from "@/components/ui/typography";
 import {
   ChevronDown,
   FileQuestion,
+  Hammer,
   ListChecks,
   Loader2,
   Save,
@@ -26,21 +29,20 @@ import {
   Tag,
   Text,
 } from "lucide-react";
-import { DRAFT_LIMITS } from "../config";
-import {
-  useBuildEditor,
-  type BuildEditorController,
-} from "../hooks/use-build-editor";
-import { AlertBanner } from "../components/alert-banner";
 import { ScreenError, ScreenLoader } from "../components/builds-states";
 import { EditorGearRowCard } from "../components/editor-gear-row";
 import { HunterPanel } from "../components/hunter-panel";
 import { HunterStatusPanel } from "../components/hunter-status-panel";
 import { PanelHeading } from "../components/panel-heading";
 import { WeaponBonusRow } from "../components/weapon-bonus-row";
+import { DRAFT_LIMITS } from "../config";
+import {
+  useBuildEditor,
+  type BuildEditorController,
+} from "../hooks/use-build-editor";
 
 /** `/builds/new` and `/builds/$buildId/edit`. */
-export function BuildEditorPage({ buildId }: { buildId?: string }) {
+export const BuildEditorPage = ({ buildId }: { buildId?: string }) => {
   const controller = useBuildEditor(buildId);
 
   if (controller.isLoadingBuild) return <ScreenLoader />;
@@ -55,46 +57,55 @@ export function BuildEditorPage({ buildId }: { buildId?: string }) {
   }
 
   return (
-    <div className="h-full overflow-y-auto bg-background">
-      <main className="mx-auto grid max-w-[1500px] gap-5 p-4 pb-24 lg:grid-cols-[minmax(0,1.3fr)_minmax(340px,.7fr)] lg:p-7">
-        <div className="space-y-5">
-          <IdentityPanel controller={controller} />
+    <div className="bg-background">
+      <PageHeader
+        icon={Hammer}
+        eyebrow={controller.isEditing ? "Reforge equipment" : "Equipment forge"}
+        title={controller.isEditing ? "Reforge loadout" : "Forge new loadout"}
+        description="Equip a piece per slot, socket decorations, then save the record to your equipment box."
+      />
 
-          <MobileBuildSummary controller={controller} />
+      <PageContainer>
+        <main className="grid gap-5 py-4 pb-24 lg:grid-cols-[minmax(0,1.3fr)_minmax(340px,.7fr)] lg:py-7">
+          <div className="space-y-5">
+            <IdentityPanel controller={controller} />
 
-          <section aria-labelledby="equipment-heading">
-            <EquipmentHeading controller={controller} />
-            <div className="grid gap-3">
-              {controller.rows.map((row) => (
-                <EditorGearRowCard
-                  key={row.position}
-                  row={row}
-                  onSelect={(value) =>
-                    controller.selectGear(row.position, value)
-                  }
-                  onDecoration={(assignment) =>
-                    controller.assignDecoration(row.position, assignment)
-                  }
+            <MobileBuildSummary controller={controller} />
+
+            <section aria-labelledby="equipment-heading">
+              <EquipmentHeading controller={controller} />
+              <div className="grid gap-3">
+                {controller.rows.map((row) => (
+                  <EditorGearRowCard
+                    key={row.position}
+                    row={row}
+                    onSelect={(value) =>
+                      controller.selectGear(row.position, value)
+                    }
+                    onDecoration={(assignment) =>
+                      controller.assignDecoration(row.position, assignment)
+                    }
+                  />
+                ))}
+                <WeaponBonusRow
+                  value={controller.draft.composition.weapon}
+                  setBonusOptions={controller.bonusOptions.set}
+                  groupBonusOptions={controller.bonusOptions.group}
+                  onChange={controller.setWeaponBonus}
                 />
-              ))}
-              <WeaponBonusRow
-                value={controller.draft.composition.weapon}
-                setBonusOptions={controller.bonusOptions.set}
-                groupBonusOptions={controller.bonusOptions.group}
-                onChange={controller.setWeaponBonus}
-              />
-            </div>
-          </section>
-        </div>
+              </div>
+            </section>
+          </div>
 
-        <aside className="hidden h-fit space-y-4 lg:sticky lg:top-4 lg:block">
-          <SavePanel controller={controller} />
-          <HunterStatusPanel
-            status={controller.hunterStatus}
-            subtitle="Live equipment totals"
-          />
-        </aside>
-      </main>
+          <aside className="hidden h-fit space-y-4 lg:sticky lg:top-4 lg:block">
+            <SavePanel controller={controller} />
+            <HunterStatusPanel
+              status={controller.hunterStatus}
+              subtitle="Live equipment totals"
+            />
+          </aside>
+        </main>
+      </PageContainer>
 
       <MobileSaveBar controller={controller} />
 
@@ -125,15 +136,15 @@ export function BuildEditorPage({ buildId }: { buildId?: string }) {
       </Dialog>
     </div>
   );
-}
+};
 
-function SaveButton({
+const SaveButton = ({
   controller,
   className,
 }: {
   controller: BuildEditorController;
   className?: string;
-}) {
+}) => {
   return (
     <Button
       onClick={() => void controller.save()}
@@ -152,9 +163,9 @@ function SaveButton({
           : "Save loadout"}
     </Button>
   );
-}
+};
 
-function SavePanel({ controller }: { controller: BuildEditorController }) {
+const SavePanel = ({ controller }: { controller: BuildEditorController }) => {
   const equippedCount = controller.rows.filter((row) => row.name).length;
 
   return (
@@ -188,9 +199,9 @@ function SavePanel({ controller }: { controller: BuildEditorController }) {
       />
     </HunterPanel>
   );
-}
+};
 
-function MobileSaveBar({ controller }: { controller: BuildEditorController }) {
+const MobileSaveBar = ({ controller }: { controller: BuildEditorController }) => {
   return (
     <div className="fixed inset-x-0 bottom-0 z-30 border-t border-border bg-background/95 p-3 backdrop-blur lg:hidden">
       <SaveButton
@@ -199,9 +210,9 @@ function MobileSaveBar({ controller }: { controller: BuildEditorController }) {
       />
     </div>
   );
-}
+};
 
-function IdentityPanel({ controller }: { controller: BuildEditorController }) {
+const IdentityPanel = ({ controller }: { controller: BuildEditorController }) => {
   const { draft, patchDraft } = controller;
 
   return (
@@ -261,19 +272,15 @@ function IdentityPanel({ controller }: { controller: BuildEditorController }) {
           {draft.isShared ? "Shared with hunters" : "Keep private"}
         </Toggle>
       </div>
-
-      {controller.message && (
-        <AlertBanner message={controller.message} className="mt-4" />
-      )}
     </HunterPanel>
   );
-}
+};
 
-function EquipmentHeading({
+const EquipmentHeading = ({
   controller,
 }: {
   controller: BuildEditorController;
-}) {
+}) => {
   const equippedCount = controller.rows.filter((row) => row.name).length;
 
   return (
@@ -295,13 +302,13 @@ function EquipmentHeading({
       </Typography>
     </div>
   );
-}
+};
 
-function MobileBuildSummary({
+const MobileBuildSummary = ({
   controller,
 }: {
   controller: BuildEditorController;
-}) {
+}) => {
   return (
     <Collapsible className="border border-border lg:hidden">
       <CollapsibleTrigger asChild>
@@ -335,4 +342,4 @@ function MobileBuildSummary({
       </CollapsibleContent>
     </Collapsible>
   );
-}
+};

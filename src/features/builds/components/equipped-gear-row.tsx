@@ -8,13 +8,13 @@ import { RarityPips } from "./rarity-pips";
 import { SlotPips } from "./slot-pips";
 import type { PositionKey, SnapshotPositions } from "../types";
 
-interface EquippedGearRowProps {
+type EquippedGearRowProps = {
   position: PositionKey;
   piece: SnapshotPositions[PositionKey];
-}
+};
 
 /** Read-only counterpart of the editor row, rendered from a saved snapshot. */
-export function EquippedGearRow({ position, piece }: EquippedGearRowProps) {
+export const EquippedGearRow = ({ position, piece }: EquippedGearRowProps) => {
   const rarity = piece && "rarity" in piece ? piece.rarity : undefined;
 
   return (
@@ -62,4 +62,4 @@ export function EquippedGearRow({ position, piece }: EquippedGearRowProps) {
       )}
     </HunterPanel>
   );
-}
+};

@@ -1,21 +1,18 @@
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
-/** The feature's panel surface: a squared-off card with a lit top edge. */
-export function HunterPanel({
+/**
+ * The feature's panel surface. Built on the shared shadcn `Card`, styled to
+ * match the loadout optimizer's `ResultCard` (rounded-md, border-border, no
+ * drop shadow) so build cards and result cards read as one system.
+ */
+export const HunterPanel = ({
   children,
   className,
-}: React.PropsWithChildren<{ className?: string }>) {
+}: React.PropsWithChildren<{ className?: string }>) => {
   return (
-    <Card
-      className={cn(
-        "relative overflow-hidden rounded-none border-border bg-card shadow-none",
-        // Flat top hairline in place of the old gradient sheen.
-        "before:absolute before:inset-x-0 before:top-0 before:h-px before:bg-primary/40",
-        className,
-      )}
-    >
+    <Card className={cn("overflow-hidden rounded-md border-border bg-card shadow-none", className)}>
       {children}
     </Card>
   );
-}
+};

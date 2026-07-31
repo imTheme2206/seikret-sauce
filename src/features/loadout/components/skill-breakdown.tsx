@@ -2,16 +2,16 @@ import { Typography } from "@/components/ui/typography";
 import { cn } from "@/lib/utils";
 import { SectionHeading } from "@/components/gear/section-heading";
 
-interface SkillBreakdownProps {
+type SkillBreakdownProps = {
   skills: Record<string, number>;
   /** Activated set/group skills → activation count. Omitted when none activated. */
   setGroupSkills?: Record<string, number>;
   /** Names the user explicitly requested — highlighted in the accent colour. */
   requestedNames: Set<string>;
-}
+};
 
 /** "All Skills" column inside an expanded result. */
-export function SkillBreakdown({ skills, setGroupSkills, requestedNames }: SkillBreakdownProps) {
+export const SkillBreakdown = ({ skills, setGroupSkills, requestedNames }: SkillBreakdownProps) => {
   return (
     <div>
       <SectionHeading>All Skills</SectionHeading>
@@ -76,4 +76,4 @@ export function SkillBreakdown({ skills, setGroupSkills, requestedNames }: Skill
       )}
     </div>
   );
-}
+};

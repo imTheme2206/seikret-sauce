@@ -65,27 +65,27 @@ export type ImportBuildBody =
   paths["/api/mh-wilds/builds/import"]["post"]["requestBody"]["content"]["application/json"];
 
 /** Fields the PATCH endpoint accepts — metadata only, never the composition. */
-export interface BuildMetadataPatch {
+export type BuildMetadataPatch = {
   name?: string;
   description?: string | null;
   isShared?: boolean;
-}
+};
 
-export interface DecorationAssignment {
+export type DecorationAssignment = {
   slotIndex: number;
   decorationId: string;
-}
+};
 
-export interface EditorArmorSelection {
+export type EditorArmorSelection = {
   armorId: string;
   decorations: DecorationAssignment[];
-}
+};
 
-export interface EditorTalismanSelection {
+export type EditorTalismanSelection = {
   source: TalismanSource;
   talismanId: string;
   decorations: DecorationAssignment[];
-}
+};
 
 /** Talismans come either from the scraped catalog or the hunter's own list. */
 export type TalismanSource = "custom" | "scraped";
@@ -97,13 +97,13 @@ export type TalismanSource = "custom" | "scraped";
  * each field independently means "no bonus of that kind" when `null`, mirroring
  * `WeaponSkills`'s per-kind independence.
  */
-export interface EditorWeaponSelection {
+export type EditorWeaponSelection = {
   setBonusId: string | null;
   groupBonusId: string | null;
-}
+};
 
 /** In-progress editor state; becomes a `CreateBuildBody` on save. */
-export interface BuildDraft {
+export type BuildDraft = {
   name: string;
   description: string;
   isShared: boolean;
@@ -116,65 +116,65 @@ export interface BuildDraft {
     talisman: EditorTalismanSelection | null;
     weapon: EditorWeaponSelection;
   };
-}
+};
 
-export interface ActivatedBonus {
+export type ActivatedBonus = {
   name: string;
   kind: "set" | "group";
   pieces: number;
   piecesRequired: number;
   effectName: string;
   level: number;
-}
+};
 
 /** Display totals projected from a snapshot by `calculator.ts`. */
-export interface BuildTotals {
+export type BuildTotals = {
   skills: Record<string, number>;
   rawSkills: Record<string, number>;
   bonusCounts: Record<string, number>;
   activeBonuses: ActivatedBonus[];
   defense: number;
   resistances: ElementalDefenses;
-}
+};
 
 /** A decoration slot on a piece: armour slots carry no `type`, weapon slots do. */
-export interface GearSlot {
+export type GearSlot = {
   size: number;
   type: "armor" | "weapon";
-}
+};
 
 /** One choice in a gear or decoration picker. */
-export interface GearOption {
+export type GearOption = {
   id: string;
   name: string;
   /** Rarity of the piece, used to tint its glyph. Absent when it has none. */
   rarity?: number;
   /** Extra terms the search should match, e.g. the skills a piece grants. */
   keywords?: string[];
-}
+};
 
 /**
  * Options bucketed under a heading — rarity for armour, source for talismans,
  * jewel level for decorations. The heading carries what a per-row `R8` suffix
  * used to, so options themselves stay clean.
  */
-export interface GearOptionGroup {
+export type GearOptionGroup = {
   label: string;
   options: GearOption[];
-}
+};
 
 /** A decoration slot rendered as a picker: what fits it, and what sits in it. */
-export interface EditorSlot extends GearSlot {
+export type EditorSlot = GearSlot & {
   slotIndex: number;
   selectedId: string;
   groups: GearOptionGroup[];
-}
+};
 
 /**
  * Everything one row of the editor needs, resolved from the draft against the
  * catalogs. Derived by `gear-rows.ts` so the row component is pure presentation.
  */
-export interface EditorGearRow {
+export type EditorGearRow = {
   position: PositionKey;
   /** Packed picker value: an armour id, or `source:id` for a talisman. */
   value: string;
@@ -186,4 +186,4 @@ export interface EditorGearRow {
   skills: { name: string; level: number }[];
   bonuses: { name: string }[];
   slots: EditorSlot[];
-}
+};

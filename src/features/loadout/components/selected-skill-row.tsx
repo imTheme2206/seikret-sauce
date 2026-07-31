@@ -6,18 +6,18 @@ import { CATEGORY_CONFIG } from "../config";
 import type { SelectedSkill } from "../types";
 import { SkillLevelBlocks, StepButton } from "./skill-level-stepper";
 
-interface SelectedSkillRowProps {
+type SelectedSkillRowProps = {
   skill: SelectedSkill;
   onLevelChange: (level: number) => void;
   onRemove: () => void;
-}
+};
 
 /** One row in the "Selected Skills" panel. */
-export function SelectedSkillRow({
+export const SelectedSkillRow = ({
   skill,
   onLevelChange,
   onRemove,
-}: SelectedSkillRowProps) {
+}: SelectedSkillRowProps) => {
   const { color } = CATEGORY_CONFIG[skill.category];
   const canDecrease = skill.level > 1;
   const canIncrease = skill.level < skill.maxLevel;
@@ -70,4 +70,4 @@ export function SelectedSkillRow({
       />
     </div>
   );
-}
+};

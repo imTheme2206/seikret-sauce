@@ -2,7 +2,7 @@ import type { LucideIcon } from "lucide-react";
 import { Typography } from "@/components/ui/typography";
 import { cn } from "@/lib/utils";
 
-export function TalismanEmptyState({
+export const TalismanEmptyState = ({
   icon: Icon,
   title,
   body,
@@ -14,7 +14,7 @@ export function TalismanEmptyState({
   body: string;
   action?: React.ReactNode;
   compact?: boolean;
-}) {
+}) => {
   return (
     <div
       className={cn(
@@ -36,4 +36,4 @@ export function TalismanEmptyState({
       </div>
     </div>
   );
-}
+};

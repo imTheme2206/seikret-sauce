@@ -21,21 +21,21 @@ import {
   type TalismanSlot,
 } from "../types";
 
-interface TalismanFormProps {
+type TalismanFormProps = {
   catalog: SkillCatalog | undefined;
   isLoadingSkills: boolean;
   onCreate: (input: CreateTalismanInput) => Promise<void>;
-}
+};
 
 const EMPTY_SKILL_ROW: TalismanSkillInput = { skillId: "", level: 1 };
 const EMPTY_SLOT_ROW: TalismanSlot = { type: "armor", size: 1 };
 
 /** Create form for a custom talisman: name, 1-3 skills, up to 3 decoration slots. */
-export function TalismanForm({
+export const TalismanForm = ({
   catalog,
   isLoadingSkills,
   onCreate,
-}: TalismanFormProps) {
+}: TalismanFormProps) => {
   const flatSkills = catalog
     ? [...catalog.byId.values()].sort((a, b) => a.name.localeCompare(b.name))
     : [];
@@ -365,4 +365,4 @@ export function TalismanForm({
       </CardContent>
     </Card>
   );
-}
+};

@@ -4,25 +4,25 @@ import { POSITION_LABELS, rarityColor } from "@/lib/mh-wilds";
 import { cn } from "@/lib/utils";
 import type { PositionKey } from "../types";
 
-interface PositionBadgeProps {
+type PositionBadgeProps = {
   position: PositionKey;
   /** Small line above the label, e.g. "Equip" or "Equipped". */
   caption: string;
   /** Tints the glyph with the equipped piece's rarity when there is one. */
   rarity?: number;
   className?: string;
-}
+};
 
 /**
  * Left-hand identity cell of a gear row — the same glyph the optimizer shows for
  * that position, so a build row and a search result read alike.
  */
-export function PositionBadge({
+export const PositionBadge = ({
   position,
   caption,
   rarity,
   className,
-}: PositionBadgeProps) {
+}: PositionBadgeProps) => {
   return (
     <div
       className={cn(
@@ -46,4 +46,4 @@ export function PositionBadge({
       </div>
     </div>
   );
-}
+};

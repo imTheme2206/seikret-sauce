@@ -27,11 +27,11 @@ export const OPTIMIZER_PARAMS_KEY = "mh-wilds-optimizer-params-v1";
 
 const RANKS: Rank[] = ["low", "high", "master"];
 
-export interface OptimizerParams {
+export type OptimizerParams = {
   selected: SelectedSkillMap;
   rank: Rank;
   weapon: WeaponSkills;
-}
+};
 
 export const DEFAULT_OPTIMIZER_PARAMS: OptimizerParams = {
   selected: {},
@@ -39,11 +39,11 @@ export const DEFAULT_OPTIMIZER_PARAMS: OptimizerParams = {
   weapon: EMPTY_WEAPON_SKILLS,
 };
 
-function isRecord(value: unknown): value is Record<string, unknown> {
+const isRecord = (value: unknown): value is Record<string, unknown> => {
   return typeof value === "object" && value !== null && !Array.isArray(value);
-}
+};
 
-function parseSelectedSkill(name: string, raw: unknown): SelectedSkill | null {
+const parseSelectedSkill = (name: string, raw: unknown): SelectedSkill | null => {
   if (!isRecord(raw)) return null;
 
   const category = raw.category;
@@ -64,9 +64,9 @@ function parseSelectedSkill(name: string, raw: unknown): SelectedSkill | null {
     category: category as SkillCategory,
     icon: typeof raw.icon === "string" ? raw.icon : null,
   };
-}
+};
 
-function parseSelected(raw: unknown): SelectedSkillMap {
+const parseSelected = (raw: unknown): SelectedSkillMap => {
   if (!isRecord(raw)) return {};
 
   const selected: SelectedSkillMap = {};
@@ -75,18 +75,18 @@ function parseSelected(raw: unknown): SelectedSkillMap {
     if (skill) selected[name] = skill;
   }
   return selected;
-}
+};
 
-function parseWeapon(raw: unknown): WeaponSkills {
+const parseWeapon = (raw: unknown): WeaponSkills => {
   if (!isRecord(raw)) return EMPTY_WEAPON_SKILLS;
   return {
     set: typeof raw.set === "string" ? raw.set : null,
     group: typeof raw.group === "string" ? raw.group : null,
   };
-}
+};
 
 /** Coerce arbitrary stored JSON into a usable params object. */
-export function parseOptimizerParams(raw: unknown): OptimizerParams {
+export const parseOptimizerParams = (raw: unknown): OptimizerParams => {
   if (!isRecord(raw)) return DEFAULT_OPTIMIZER_PARAMS;
 
   const rank = RANKS.find((r) => r === raw.rank) ?? DEFAULT_OPTIMIZER_PARAMS.rank;
@@ -96,10 +96,10 @@ export function parseOptimizerParams(raw: unknown): OptimizerParams {
     rank,
     weapon: parseWeapon(raw.weapon),
   };
-}
+};
 
 /** Read the saved params, falling back to defaults when absent or unreadable. */
-export function loadOptimizerParams(): OptimizerParams {
+export const loadOptimizerParams = (): OptimizerParams => {
   if (typeof window === "undefined") return DEFAULT_OPTIMIZER_PARAMS;
 
   try {
@@ -110,10 +110,10 @@ export function loadOptimizerParams(): OptimizerParams {
     // Corrupt JSON, or storage blocked (private mode / disabled cookies).
     return DEFAULT_OPTIMIZER_PARAMS;
   }
-}
+};
 
 /** Write the params, silently ignoring quota / access errors. */
-export function saveOptimizerParams(params: OptimizerParams): void {
+export const saveOptimizerParams = (params: OptimizerParams): void => {
   if (typeof window === "undefined") return;
 
   try {
@@ -121,4 +121,4 @@ export function saveOptimizerParams(params: OptimizerParams): void {
   } catch {
     // Storage unavailable or full — persistence is best-effort.
   }
-}
+};

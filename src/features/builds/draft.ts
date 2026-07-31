@@ -23,15 +23,15 @@ import type {
   SnapshotWeapon,
 } from "./types";
 
-function toAssignments(piece: SnapshotPiece): DecorationAssignment[] {
+const toAssignments = (piece: SnapshotPiece): DecorationAssignment[] => {
   return piece.decorations.map(({ slotIndex, decorationId }) => ({
     slotIndex,
     decorationId,
   }));
-}
+};
 
 /** Rehydrates the editor from a saved build; unknown pieces simply come back empty. */
-export function draftFromBuild(build: SavedBuild): BuildDraft {
+export const draftFromBuild = (build: SavedBuild): BuildDraft => {
   const { positions } = build.composition;
   const composition: BuildDraft["composition"] = { ...EMPTY_DRAFT.composition };
 
@@ -64,15 +64,15 @@ export function draftFromBuild(build: SavedBuild): BuildDraft {
     isShared: build.isShared,
     composition,
   };
-}
+};
 
-export function snapshotFromDraft(
+export const snapshotFromDraft = (
   draft: BuildDraft,
   armors: Armor[],
   decorations: Decoration[],
   catalog: SkillCatalog | undefined,
   customTalismans: CustomTalisman[],
-): BuildSnapshot {
+): BuildSnapshot => {
   const armorById = new Map(armors.map((armor) => [armor.id, armor]));
   const decorationById = new Map(
     decorations.map((decoration) => [decoration.id, decoration]),
@@ -189,4 +189,4 @@ export function snapshotFromDraft(
       ]),
     ),
   };
-}
+};

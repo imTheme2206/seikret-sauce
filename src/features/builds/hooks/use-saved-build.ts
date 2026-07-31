@@ -5,7 +5,7 @@ import { buildKeys } from "./keys";
 import type { SavedBuild } from "../types";
 
 /** One saved build by id — public builds included, hence no auth gate. */
-export function useSavedBuild(id: string | undefined) {
+export const useSavedBuild = (id: string | undefined) => {
   const { api } = useApi();
 
   const result = useSWR<SavedBuild>(
@@ -23,4 +23,4 @@ export function useSavedBuild(id: string | undefined) {
   );
 
   return { ...result, build: result.data };
-}
+};

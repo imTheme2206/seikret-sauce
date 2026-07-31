@@ -2,25 +2,25 @@ import { Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
-interface SkillSearchBarProps {
+type SkillSearchBarProps = {
   value: string;
   onChange: (value: string) => void;
   onOptimize: () => void;
   canOptimize: boolean;
   isOptimizing: boolean;
-}
+};
 
 /**
  * Unified search input + "Find Sets" action. Owns no state; the query and the
  * optimize handler are injected.
  */
-export function SkillSearchBar({
+export const SkillSearchBar = ({
   value,
   onChange,
   onOptimize,
   canOptimize,
   isOptimizing,
-}: SkillSearchBarProps) {
+}: SkillSearchBarProps) => {
   return (
     <div className="flex h-10 shrink-0 items-stretch overflow-hidden rounded-md border border-border bg-card">
       <div className="flex shrink-0 items-center pl-3 pr-2 text-muted-foreground">
@@ -43,4 +43,4 @@ export function SkillSearchBar({
       </Button>
     </div>
   );
-}
+};

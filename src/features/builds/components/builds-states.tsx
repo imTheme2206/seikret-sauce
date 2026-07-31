@@ -9,7 +9,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Typography } from "@/components/ui/typography";
 
 /** Empty state for a list that loaded fine but has nothing in it. */
-export function BuildsEmptyState({
+export const BuildsEmptyState = ({
   icon: Icon = PackageOpen,
   title,
   body,
@@ -19,7 +19,7 @@ export function BuildsEmptyState({
   title: string;
   body: string;
   action?: React.ReactNode;
-}) {
+}) => {
   return (
     <div className="grid min-h-72 place-items-center border border-dashed border-border bg-card/40 p-8 text-center">
       <div>
@@ -34,10 +34,10 @@ export function BuildsEmptyState({
       </div>
     </div>
   );
-}
+};
 
 /** Placeholder grid matching the summary-card layout while builds load. */
-export function BuildsGridSkeleton({ count = 6 }: { count?: number }) {
+export const BuildsGridSkeleton = ({ count = 6 }: { count?: number }) => {
   return (
     <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
       {Array.from({ length: count }, (_, index) => (
@@ -45,19 +45,19 @@ export function BuildsGridSkeleton({ count = 6 }: { count?: number }) {
       ))}
     </div>
   );
-}
+};
 
 /** Full-height spinner for a screen that cannot render until its record arrives. */
-export function ScreenLoader() {
+export const ScreenLoader = () => {
   return (
     <div className="grid h-full place-items-center" aria-busy="true">
       <Loader2 className="size-7 animate-spin text-primary" />
     </div>
   );
-}
+};
 
 /** Full-height failure state for a screen whose record could not be loaded. */
-export function ScreenError({
+export const ScreenError = ({
   icon: Icon = AlertTriangle,
   title,
   body,
@@ -67,7 +67,7 @@ export function ScreenError({
   title: string;
   body?: string;
   action?: React.ReactNode;
-}) {
+}) => {
   return (
     <div className="grid h-full place-items-center p-6 text-center">
       <div>
@@ -84,4 +84,4 @@ export function ScreenError({
       </div>
     </div>
   );
-}
+};

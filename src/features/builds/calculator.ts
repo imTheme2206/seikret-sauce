@@ -2,16 +2,16 @@ import type { BuildSnapshot, BuildTotals } from "./types";
 
 const ELEMENTS = ["fire", "water", "thunder", "ice", "dragon"] as const;
 
-function add(target: Record<string, number>, name: string, level: number) {
+const add = (target: Record<string, number>, name: string, level: number) => {
   target[name] = (target[name] ?? 0) + level;
-}
+};
 
 /**
  * Pure projection from the backend-owned snapshot to display totals.
  * The backend deliberately stores facts, not aggregates, so both the editor and
  * public permalink use this same calculation.
  */
-export function calculateBuild(snapshot: BuildSnapshot): BuildTotals {
+export const calculateBuild = (snapshot: BuildSnapshot): BuildTotals => {
   const rawSkills: Record<string, number> = {};
   const bonusCounts: Record<string, number> = {};
   const resistances = { fire: 0, water: 0, thunder: 0, ice: 0, dragon: 0 };
@@ -86,4 +86,4 @@ export function calculateBuild(snapshot: BuildSnapshot): BuildTotals {
     defense,
     resistances,
   };
-}
+};

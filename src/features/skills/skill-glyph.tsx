@@ -8,20 +8,20 @@ const CATEGORY_COLORS: Record<SkillCategory, string> = {
   group: "hsl(150,32%,46%)",
 };
 
-interface SkillGlyphProps {
+type SkillGlyphProps = {
   icon: string | null;
   category: SkillCategory;
   label?: string;
   className?: string;
-}
+};
 
 /** Catalog icon with one asset convention and category-aware fallback. */
-export function SkillGlyph({
+export const SkillGlyph = ({
   icon,
   category,
   label = `${category} skill`,
   className,
-}: SkillGlyphProps) {
+}: SkillGlyphProps) => {
   if (icon) {
     return (
       <img
@@ -91,4 +91,4 @@ export function SkillGlyph({
       )}
     </svg>
   );
-}
+};

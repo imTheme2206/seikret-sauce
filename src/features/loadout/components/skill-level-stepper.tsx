@@ -1,24 +1,24 @@
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
-interface SkillLevelBlocksProps {
+type SkillLevelBlocksProps = {
   level: number;
   maxLevel: number;
   color: string;
   onChange: (level: number) => void;
-}
+};
 
 /**
  * The clickable level blocks for one skill.
  * The decrement/increment controls live in {@link StepButton} so callers can
  * position them independently (e.g. flanking the row).
  */
-export function SkillLevelBlocks({
+export const SkillLevelBlocks = ({
   level,
   maxLevel,
   color,
   onChange,
-}: SkillLevelBlocksProps) {
+}: SkillLevelBlocksProps) => {
   const interactive = maxLevel > 1;
 
   return (
@@ -43,9 +43,9 @@ export function SkillLevelBlocks({
       })}
     </div>
   );
-}
+};
 
-export function StepButton({
+export const StepButton = ({
   label,
   disabled,
   onClick,
@@ -53,7 +53,7 @@ export function StepButton({
   label: string;
   disabled: boolean;
   onClick: () => void;
-}) {
+}) => {
   return (
     <Button
       variant="secondary"
@@ -70,4 +70,4 @@ export function StepButton({
       {label}
     </Button>
   );
-}
+};

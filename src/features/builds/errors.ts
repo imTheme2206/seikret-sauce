@@ -11,7 +11,7 @@ export class BuildApiError extends Error {
 }
 
 /** Converts the generated client's transport error into the domain envelope used by build UI. */
-export function toBuildApiError(error: unknown): BuildApiError {
+export const toBuildApiError = (error: unknown): BuildApiError => {
   if (error instanceof BuildApiError) return error;
   if (error instanceof ApiError) {
     const body = error.data as {
@@ -32,7 +32,7 @@ export function toBuildApiError(error: unknown): BuildApiError {
     "NETWORK_ERROR",
     error instanceof Error ? error.message : "The Guild connection failed.",
   );
-}
+};
 
 /**
  * Hunter-facing copy per API error code — the single place these strings live,
@@ -49,7 +49,7 @@ const CODE_MESSAGES: Record<string, string> = {
 };
 
 /** Resolves any thrown value to a message worth showing, falling back to `fallback`. */
-export function buildErrorMessage(error: unknown, fallback: string): string {
+export const buildErrorMessage = (error: unknown, fallback: string): string => {
   if (error instanceof BuildApiError) {
     const known =
       CODE_MESSAGES[error.code] ??
@@ -57,9 +57,9 @@ export function buildErrorMessage(error: unknown, fallback: string): string {
     return known ?? error.message ?? fallback;
   }
   return error instanceof Error ? error.message : fallback;
-}
+};
 
 /** True when the save failed because someone else revised the build first. */
-export function isRevisionConflict(error: unknown): boolean {
+export const isRevisionConflict = (error: unknown): boolean => {
   return error instanceof BuildApiError && error.code === "REVISION_CONFLICT";
-}
+};

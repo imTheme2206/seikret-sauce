@@ -14,20 +14,20 @@ import {
 import { Typography } from "@/components/ui/typography";
 import type { WeaponSkills } from "../types";
 
-interface WeaponSelectorProps {
+type WeaponSelectorProps = {
   /** The Set/Group Skills the equipped weapon contributes. */
   value: WeaponSkills;
   onChange: (kind: keyof WeaponSkills, name: string | null) => void;
   /** Set/Group Skill names a weapon may carry. */
   options: { set: string[]; group: string[] };
   disabled?: boolean;
-}
+};
 
 /** Sentinel for "none" — Radix Select forbids an empty-string item value. */
 const NONE = "__none__";
 
 /** One labelled Select for a single kind of weapon skill contribution. */
-function SkillSelect({
+const SkillSelect = ({
   label,
   placeholder,
   value,
@@ -41,7 +41,7 @@ function SkillSelect({
   options: string[];
   disabled?: boolean;
   onChange: (name: string | null) => void;
-}) {
+}) => {
   return (
     <div className="flex items-center gap-2">
       <Typography
@@ -69,19 +69,19 @@ function SkillSelect({
       </Select>
     </div>
   );
-}
+};
 
 /**
  * Picks the Set and Group Skills the player's equipped weapon already provides —
  * its Pre-owned Piece Count. Feeds `initialSetCounts`/`initialGroupCounts` on
  * search. The two kinds are independent fields.
  */
-export function WeaponSelector({
+export const WeaponSelector = ({
   value,
   onChange,
   options,
   disabled,
-}: WeaponSelectorProps) {
+}: WeaponSelectorProps) => {
   // Skill names shown in the collapsed header so the selection stays visible.
   const summary = [value.set, value.group].filter(Boolean).join(", ");
 
@@ -126,4 +126,4 @@ export function WeaponSelector({
       </AccordionItem>
     </Accordion>
   );
-}
+};

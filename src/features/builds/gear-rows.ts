@@ -26,25 +26,25 @@ import type {
 const byName = (a: GearOption, b: GearOption) => a.name.localeCompare(b.name);
 
 /** Skills and bonuses a piece grants, so searching a skill finds the gear. */
-function gearKeywords(piece: {
+const gearKeywords = (piece: {
   skills: { name: string }[];
   bonuses?: { name: string }[];
-}): string[] {
+}): string[] => {
   return [
     ...piece.skills.map((skill) => skill.name),
     ...(piece.bonuses ?? []).map((bonus) => bonus.name),
   ];
-}
+};
 
 /**
  * Buckets options under a heading and orders both the headings and their
  * contents. `rank` sorts headings descending, which puts the best gear first.
  */
-function groupBy<T>(
+const groupBy = <T>(
   items: T[],
   key: (item: T) => { rank: number; label: string },
   toOption: (item: T) => GearOption,
-): GearOptionGroup[] {
+): GearOptionGroup[] => {
   const buckets = new Map<number, { label: string; options: GearOption[] }>();
 
   for (const item of items) {
@@ -60,10 +60,10 @@ function groupBy<T>(
       label: bucket.label,
       options: bucket.options.sort(byName),
     }));
-}
+};
 
 /** Armour pieces grouped by rarity, highest first. */
-function armorGroups(armors: Armor[]): GearOptionGroup[] {
+const armorGroups = (armors: Armor[]): GearOptionGroup[] => {
   return groupBy(
     armors,
     (armor) => ({ rank: armor.rarity, label: `Rarity ${armor.rarity}` }),
@@ -74,13 +74,13 @@ function armorGroups(armors: Armor[]): GearOptionGroup[] {
       keywords: gearKeywords(armor),
     }),
   );
-}
+};
 
 /** Decorations that fit a slot, grouped by jewel level, highest first. */
-function decorationGroups(
+const decorationGroups = (
   decorations: Decoration[],
   slot: GearSlot,
-): GearOptionGroup[] {
+): GearOptionGroup[] => {
   const fitting = decorations.filter(
     (decoration) =>
       decoration.type === slot.type && decoration.slotSize <= slot.size,
@@ -98,13 +98,13 @@ function decorationGroups(
       keywords: gearKeywords(decoration),
     }),
   );
-}
+};
 
-function toEditorSlots(
+const toEditorSlots = (
   slots: GearSlot[],
   assignments: DecorationAssignment[],
   decorations: Decoration[],
-): EditorSlot[] {
+): EditorSlot[] => {
   return slots.map((slot, slotIndex) => ({
     ...slot,
     slotIndex,
@@ -112,14 +112,14 @@ function toEditorSlots(
       assignments.find((item) => item.slotIndex === slotIndex)?.decorationId ?? "",
     groups: decorationGroups(decorations, slot),
   }));
-}
+};
 
 /** The five armour rows. Options are the catalog pieces for that position. */
-function armorRows(
+const armorRows = (
   draft: BuildDraft,
   armors: Armor[],
   decorations: Decoration[],
-): EditorGearRow[] {
+): EditorGearRow[] => {
   return ARMOR_POSITIONS.map((position) => {
     const selection = draft.composition[position];
     const armor = armors.find((item) => item.id === selection?.armorId);
@@ -140,18 +140,18 @@ function armorRows(
         : [],
     };
   });
-}
+};
 
 /**
  * The talisman row, whose options merge two sources: the hunter's own talismans
  * and the guild catalog (which, having rarities, groups by them).
  */
-function talismanRow(
+const talismanRow = (
   draft: BuildDraft,
   armors: Armor[],
   decorations: Decoration[],
   customTalismans: CustomTalisman[],
-): EditorGearRow {
+): EditorGearRow => {
   const selection = draft.composition.talisman;
   const guildTalismans = armors.filter((item) => item.type === "talisman");
   const guild = guildTalismans.find((item) => item.id === selection?.talismanId);
@@ -204,16 +204,16 @@ function talismanRow(
       ? toEditorSlots(slots, selection?.decorations ?? [], decorations)
       : [],
   };
-}
+};
 
-export function buildGearRows(
+export const buildGearRows = (
   draft: BuildDraft,
   armors: Armor[],
   decorations: Decoration[],
   customTalismans: CustomTalisman[],
-): EditorGearRow[] {
+): EditorGearRow[] => {
   return [
     ...armorRows(draft, armors, decorations),
     talismanRow(draft, armors, decorations, customTalismans),
   ];
-}
+};

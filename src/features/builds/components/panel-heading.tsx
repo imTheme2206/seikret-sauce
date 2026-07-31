@@ -2,18 +2,18 @@ import type { LucideIcon } from "lucide-react";
 import { Typography } from "@/components/ui/typography";
 import { cn } from "@/lib/utils";
 
-interface PanelHeadingProps {
+type PanelHeadingProps = {
   icon?: LucideIcon;
   className?: string;
   children: React.ReactNode;
-}
+};
 
 /** Accented, letter-spaced heading used at the top of a panel or stat block. */
-export function PanelHeading({
+export const PanelHeading = ({
   icon: Icon,
   className,
   children,
-}: PanelHeadingProps) {
+}: PanelHeadingProps) => {
   return (
     <Typography
       as="div"
@@ -26,4 +26,4 @@ export function PanelHeading({
       {children}
     </Typography>
   );
-}
+};

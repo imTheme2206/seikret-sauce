@@ -1,14 +1,14 @@
 import { Typography } from "@/components/ui/typography";
 import { cn } from "@/lib/utils";
 
-interface GearSkillLineProps {
+type GearSkillLineProps = {
   skills: { name: string; level: number }[];
   bonuses: { name: string }[];
   className?: string;
-}
+};
 
 /** The one-line "what this piece gives you" summary under a gear name. */
-export function GearSkillLine({ skills, bonuses, className }: GearSkillLineProps) {
+export const GearSkillLine = ({ skills, bonuses, className }: GearSkillLineProps) => {
   if (!skills.length && !bonuses.length) return null;
 
   return (
@@ -29,4 +29,4 @@ export function GearSkillLine({ skills, bonuses, className }: GearSkillLineProps
       ))}
     </div>
   );
-}
+};

@@ -26,28 +26,24 @@ import {
   type BuildsView,
 } from "../hooks/use-builds-hub";
 import type { BuildSummary } from "../types";
-import { AlertBanner } from "./alert-banner";
-import { BuildSetCard } from "./build-set-card";
+import { BuildCard } from "./build-card";
 import { BuildSummaryCard } from "./build-summary-card";
 import { BuildsEmptyState, BuildsGridSkeleton } from "./builds-states";
 import { CopyBuildLinkButton } from "./copy-build-link-button";
 
 /** Reusable build feeds for route pages and embedded feature surfaces. */
-export function BuildsHub({
+export const BuildsHub = ({
   view = "mine",
   showFullSets = false,
 }: {
   view?: BuildsView;
   /** Resolve and display each build's equipment and calculated skills. */
   showFullSets?: boolean;
-}) {
+}) => {
   const controller = useBuildsHub(view);
 
   return (
     <>
-      {controller.actionError && (
-        <AlertBanner message={controller.actionError} className="mb-5" />
-      )}
       {view === "mine" ? (
         <MyBuilds controller={controller} />
       ) : (
@@ -55,15 +51,15 @@ export function BuildsHub({
       )}
     </>
   );
-}
+};
 
-function BuildsGrid({ children }: React.PropsWithChildren) {
+const BuildsGrid = ({ children }: React.PropsWithChildren) => {
   return (
     <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">{children}</div>
   );
-}
+};
 
-function MyBuilds({ controller }: { controller: BuildsHubController }) {
+const MyBuilds = ({ controller }: { controller: BuildsHubController }) => {
   const { mine, session, signInWithDiscord, toggleShare, removeBuild } =
     controller;
   const [pendingDelete, setPendingDelete] = useState<BuildSummary | null>(null);
@@ -124,11 +120,11 @@ function MyBuilds({ controller }: { controller: BuildsHubController }) {
 
   return (
     <>
-      <BuildsGrid>
+      <div className="grid gap-5">
         {mine.builds.map((build) => (
-          <BuildSummaryCard
+          <BuildCard
             key={build.id}
-            build={build}
+            summary={build}
             actions={
               <div className="flex gap-1">
                 <CopyBuildLinkButton
@@ -172,7 +168,7 @@ function MyBuilds({ controller }: { controller: BuildsHubController }) {
             }
           />
         ))}
-      </BuildsGrid>
+      </div>
       <Dialog
         open={Boolean(pendingDelete)}
         onOpenChange={(open) => {
@@ -212,15 +208,15 @@ function MyBuilds({ controller }: { controller: BuildsHubController }) {
       </Dialog>
     </>
   );
-}
+};
 
-function SharedBuilds({
+const SharedBuilds = ({
   controller,
   showFullSets,
 }: {
   controller: BuildsHubController;
   showFullSets: boolean;
-}) {
+}) => {
   const { shared } = controller;
 
   if (shared.isLoadingFirstPage) return <BuildsGridSkeleton />;
@@ -253,7 +249,7 @@ function SharedBuilds({
       {showFullSets ? (
         <div className="grid gap-5">
           {shared.builds.map((build) => (
-            <BuildSetCard key={build.id} summary={build} />
+            <BuildCard key={build.id} summary={build} />
           ))}
         </div>
       ) : (
@@ -282,9 +278,9 @@ function SharedBuilds({
       )}
     </>
   );
-}
+};
 
-function CollectionHeading({
+const CollectionHeading = ({
   title,
   count,
   description,
@@ -292,7 +288,7 @@ function CollectionHeading({
   title: string;
   count: number;
   description: string;
-}) {
+}) => {
   return (
     <div className="mb-5 flex flex-col justify-between gap-2 border-b border-border pb-4 sm:flex-row sm:items-end">
       <div>
@@ -311,4 +307,4 @@ function CollectionHeading({
       </Typography>
     </div>
   );
-}
+};

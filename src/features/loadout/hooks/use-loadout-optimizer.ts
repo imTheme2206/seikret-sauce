@@ -27,11 +27,11 @@ const EMPTY_SKILLS: GroupedSkills = {
 };
 
 /** Compute the visible skill pool given the active tab / search query. */
-function buildPool(
+const buildPool = (
   skills: GroupedSkills,
   activeTab: SkillCategory,
   query: string,
-): PoolSkill[] {
+): PoolSkill[] => {
   const q = query.toLowerCase().trim();
 
   if (q.length > 0) {
@@ -46,17 +46,17 @@ function buildPool(
     ...s,
     category: activeTab,
   }));
-}
+};
 
-interface UseLoadoutOptimizerArgs {
+type UseLoadoutOptimizerArgs = {
   skills?: GroupedSkills;
   isLoadingSkills?: boolean;
-}
+};
 
-export function useLoadoutOptimizer({
+export const useLoadoutOptimizer = ({
   skills = EMPTY_SKILLS,
   isLoadingSkills = false,
-}: UseLoadoutOptimizerArgs) {
+}: UseLoadoutOptimizerArgs) => {
   // Search params are restored from localStorage so a returning user keeps the
   // skills / rank / weapon they last picked (see `../persistence`).
   const [persisted] = useState(loadOptimizerParams);
@@ -193,6 +193,6 @@ export function useLoadoutOptimizer({
     setRank,
     setWeaponSkill,
   };
-}
+};
 
 export type LoadoutOptimizerController = ReturnType<typeof useLoadoutOptimizer>;

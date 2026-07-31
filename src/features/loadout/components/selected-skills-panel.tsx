@@ -6,22 +6,22 @@ import { Typography } from "@/components/ui/typography";
 import type { SelectedSkill } from "../types";
 import { SelectedSkillRow } from "./selected-skill-row";
 
-interface SelectedSkillsPanelProps {
+type SelectedSkillsPanelProps = {
   skills: SelectedSkill[];
   count: number;
   onLevelChange: (name: string, level: number) => void;
   onRemove: (name: string) => void;
   onClearAll: () => void;
-}
+};
 
 /** Card listing the skills the user has chosen, with per-skill level control. */
-export function SelectedSkillsPanel({
+export const SelectedSkillsPanel = ({
   skills,
   count,
   onLevelChange,
   onRemove,
   onClearAll,
-}: SelectedSkillsPanelProps) {
+}: SelectedSkillsPanelProps) => {
   const hasSkills = count > 0;
 
   return (
@@ -58,7 +58,7 @@ export function SelectedSkillsPanel({
             Search and click skills below to add them
           </Typography>
         ) : (
-          <div className="grid grid-cols-2 gap-2 p-3">
+          <div className="grid md:grid-cols-2 gap-2 p-3">
             {skills.map((skill) => (
               <SelectedSkillRow
                 key={skill.name}
@@ -72,4 +72,4 @@ export function SelectedSkillsPanel({
       </ScrollArea>
     </Card>
   );
-}
+};

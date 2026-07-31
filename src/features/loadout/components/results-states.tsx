@@ -3,7 +3,7 @@ import { Typography } from "@/components/ui/typography";
 
 /** Non-result states for the results panel: empty prompt, searching, no-results. */
 
-export function ResultsEmptyState() {
+export const ResultsEmptyState = () => {
   return (
     <div className="flex flex-1 flex-col items-center justify-center gap-3.5 px-5 py-[60px] text-center">
       <svg width="52" height="52" viewBox="0 0 52 52" fill="none">
@@ -30,9 +30,9 @@ export function ResultsEmptyState() {
       </Typography>
     </div>
   );
-}
+};
 
-export function ResultsSearchingState() {
+export const ResultsSearchingState = () => {
   return (
     <div
       className="flex flex-1 flex-col gap-2 py-1"
@@ -55,9 +55,9 @@ export function ResultsSearchingState() {
       ))}
     </div>
   );
-}
+};
 
-export function ResultsNoResultsState() {
+export const ResultsNoResultsState = () => {
   return (
     <Typography
       as="div"
@@ -66,9 +66,9 @@ export function ResultsNoResultsState() {
       No matching sets found. Try adjusting skill levels or requirements.
     </Typography>
   );
-}
+};
 
-export function ResultsErrorState({ message }: { message: string }) {
+export const ResultsErrorState = ({ message }: { message: string }) => {
   return (
     <div className="flex flex-1 flex-col items-center justify-center gap-2.5 px-5 py-[60px] text-center">
       <svg width="40" height="40" viewBox="0 0 24 24" fill="none" aria-hidden>
@@ -92,4 +92,4 @@ export function ResultsErrorState({ message }: { message: string }) {
       </Typography>
     </div>
   );
-}
+};

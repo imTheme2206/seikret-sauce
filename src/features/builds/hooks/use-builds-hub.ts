@@ -15,7 +15,7 @@ import type { BuildSummary } from "../types";
 
 export type BuildsView = "mine" | "shared";
 
-export function useBuildsHub(view: BuildsView) {
+export const useBuildsHub = (view: BuildsView) => {
   const { signInWithDiscord } = useAuth();
   const mine = useMyBuilds();
   const shared = useSharedBuilds(view === "shared");
@@ -93,6 +93,6 @@ export function useBuildsHub(view: BuildsView) {
     toggleShare,
     removeBuild,
   };
-}
+};
 
 export type BuildsHubController = ReturnType<typeof useBuildsHub>;

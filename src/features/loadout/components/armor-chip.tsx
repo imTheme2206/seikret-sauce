@@ -3,15 +3,15 @@ import { Typography } from "@/components/ui/typography";
 import { EQUIPMENT_POSITIONS, rarityColor } from "@/lib/mh-wilds";
 import { shortArmorName } from "../utils";
 
-interface ArmorChipProps {
+type ArmorChipProps = {
   piece: string;
   slotIndex: number;
   /** Index-aligned rarity from the result. 0 = no rarity (talisman slot). */
   rarity?: number;
-}
+};
 
 /** Compact armour-piece chip with a slot glyph, shortened name and rarity. */
-export function ArmorChip({ piece, slotIndex, rarity }: ArmorChipProps) {
+export const ArmorChip = ({ piece, slotIndex, rarity }: ArmorChipProps) => {
   const color = rarityColor(rarity ?? 0);
   const position = EQUIPMENT_POSITIONS[slotIndex] ?? "head";
 
@@ -26,4 +26,4 @@ export function ArmorChip({ piece, slotIndex, rarity }: ArmorChipProps) {
       </Typography>
     </div>
   );
-}
+};

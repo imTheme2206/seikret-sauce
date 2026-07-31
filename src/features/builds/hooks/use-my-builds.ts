@@ -6,7 +6,7 @@ import { buildKeys } from "./keys";
 import type { BuildSummary } from "../types";
 
 /** The signed-in hunter's saved builds. Fetches nothing while signed out. */
-export function useMyBuilds() {
+export const useMyBuilds = () => {
   const { session, isLoading: authLoading } = useAuth();
   const { api } = useApi();
   const key = session ? buildKeys.mine(session.user.id) : null;
@@ -30,4 +30,4 @@ export function useMyBuilds() {
     session,
     cacheKey: key,
   };
-}
+};

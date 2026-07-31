@@ -4,31 +4,31 @@
  * reasoning as `LoadoutResult` in the loadout feature (docs/adr/0001-*).
  */
 
-export interface TalismanSkillInput {
+export type TalismanSkillInput = {
   skillId: string;
   level: number;
-}
+};
 
 /** Only index 0 of a talisman's slots may be `"weapon"` — the rest are always `"armor"`. */
-export interface TalismanSlot {
+export type TalismanSlot = {
   type: "weapon" | "armor";
   size: number;
-}
+};
 
-export interface CustomTalisman {
+export type CustomTalisman = {
   id: string;
   userId: string;
   name: string;
   skills: TalismanSkillInput[];
   slots: TalismanSlot[];
   createdAt: string;
-}
+};
 
-export interface CreateTalismanInput {
+export type CreateTalismanInput = {
   name: string;
   skills: TalismanSkillInput[];
   slots: TalismanSlot[];
-}
+};
 
 /** Mirrors the backend's `src/domains/talismans/schema.ts` limits. */
 export const MAX_SKILLS_PER_TALISMAN = 3;

@@ -1,20 +1,26 @@
+import { cn } from "@/lib/utils";
 import type { LoadoutOptimizerController } from "../hooks/use-loadout-optimizer";
 import { RankSelector } from "./rank-selector";
-import { SkillSearchBar } from "./skill-search-bar";
 import { SelectedSkillsPanel } from "./selected-skills-panel";
 import { SkillPool } from "./skill-pool";
+import { SkillSearchBar } from "./skill-search-bar";
 import { WeaponSelector } from "./weapon-selector";
 
-/**
- * Left configuration column: search/optimize, current selection, and the
- * browsable skill pool. Receives a single controller and routes its slices to
- * the leaf components.
- */
-export function LeftPanel({ controller }: { controller: LoadoutOptimizerController }) {
+type LeftPanelProps = {
+  controller: LoadoutOptimizerController;
+  className?: string;
+};
+
+export const LeftPanel = ({ controller, className }: LeftPanelProps) => {
   const c = controller;
 
   return (
-    <aside className="flex flex-col gap-2.5 overflow-hidden border-r border-border p-3.5">
+    <aside
+      className={cn(
+        "flex h-full flex-col gap-2.5 overflow-hidden border-r border-border p-3.5",
+        className,
+      )}
+    >
       <SkillSearchBar
         value={c.searchQuery}
         onChange={c.setSearchQuery}
@@ -23,7 +29,11 @@ export function LeftPanel({ controller }: { controller: LoadoutOptimizerControll
         isOptimizing={c.isSearching}
       />
 
-      <RankSelector value={c.rank} onChange={c.setRank} disabled={c.isSearching} />
+      <RankSelector
+        value={c.rank}
+        onChange={c.setRank}
+        disabled={c.isSearching}
+      />
 
       <WeaponSelector
         value={c.weapon}
@@ -51,4 +61,4 @@ export function LeftPanel({ controller }: { controller: LoadoutOptimizerControll
       />
     </aside>
   );
-}
+};

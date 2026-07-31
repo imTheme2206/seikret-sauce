@@ -6,21 +6,21 @@ import { Check, Plus } from "lucide-react";
 import { CATEGORY_CONFIG } from "../config";
 import type { PoolSkill } from "../types";
 
-interface SkillPoolRowProps {
+type SkillPoolRowProps = {
   skill: PoolSkill;
   isSelected: boolean;
   /** Show the category badge (used while searching across all categories). */
   showCategory: boolean;
   onAdd: () => void;
-}
+};
 
 /** A clickable row in the skill pool used to add a skill to the selection. */
-export function SkillPoolRow({
+export const SkillPoolRow = ({
   skill,
   isSelected,
   showCategory,
   onAdd,
-}: SkillPoolRowProps) {
+}: SkillPoolRowProps) => {
   const config = CATEGORY_CONFIG[skill.category];
   return (
     <button
@@ -82,4 +82,4 @@ export function SkillPoolRow({
       )}
     </button>
   );
-}
+};

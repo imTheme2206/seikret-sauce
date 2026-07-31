@@ -8,13 +8,13 @@ import { toBuildApiError } from "../errors";
 import { buildKeys } from "./keys";
 import type { Armor, Decoration } from "../types";
 
-export interface BuildCatalog {
+export type BuildCatalog = {
   armors: Armor[];
   decorations: Decoration[];
   skillCatalog: SharedSkillCatalog | undefined;
   isLoading: boolean;
   error: Error | null;
-}
+};
 
 /** Immutable reference data: never revalidated on focus, shared by all build screens. */
 const CATALOG_OPTIONS = { revalidateOnFocus: false } as const;
@@ -23,7 +23,7 @@ const CATALOG_OPTIONS = { revalidateOnFocus: false } as const;
  * The armour / decoration catalogs the editor resolves draft ids against,
  * composed with the shared Skill Catalog module.
  */
-export function useCatalog(): BuildCatalog {
+export const useCatalog = (): BuildCatalog => {
   const { api } = useApi();
   const {
     catalog: skillCatalog,
@@ -63,4 +63,4 @@ export function useCatalog(): BuildCatalog {
     isLoading: armors.isLoading || decorations.isLoading || isLoadingSkills,
     error: armors.error ?? decorations.error ?? skillsError,
   };
-}
+};
