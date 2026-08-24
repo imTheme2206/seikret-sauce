@@ -149,6 +149,12 @@ export type GearOption = {
   name: string;
   /** Rarity of the piece, used to tint its glyph. Absent when it has none. */
   rarity?: number;
+  /** Skills granted by this choice, shown directly in the picker. */
+  skills?: { name: string; level: number }[];
+  /** Set or group bonuses granted by this choice. */
+  bonuses?: { name: string }[];
+  /** Decoration slot levels. Undefined for choices that are not gear. */
+  slots?: number[];
   /** Extra terms the search should match, e.g. the skills a piece grants. */
   keywords?: string[];
 };

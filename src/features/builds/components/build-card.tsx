@@ -24,6 +24,7 @@ import { createHunterStatus } from "../hunter-status";
 import { useSavedBuild } from "../hooks/use-saved-build";
 import type { BuildSummary } from "../types";
 import { formatBuildDate } from "../utils";
+import { BuildStatusTag } from "./build-status-tag";
 import { HunterPanel } from "./hunter-panel";
 import { HunterSkills } from "./hunter-skills";
 import { PanelHeading } from "./panel-heading";
@@ -74,10 +75,18 @@ export const BuildCard = ({
         <div>
           <div className="mb-2 flex flex-wrap items-center gap-2">
             {build.isShared && (
-              <CardTag icon={Link2} label="Shared loadout" tone="primary" />
+              <BuildStatusTag
+                icon={Link2}
+                label="Shared loadout"
+                tone="primary"
+              />
             )}
             {build.isStale && (
-              <CardTag icon={AlertTriangle} label="Old catalog" tone="warning" />
+              <BuildStatusTag
+                icon={AlertTriangle}
+                label="Old catalog"
+                tone="warning"
+              />
             )}
           </div>
           <Link
@@ -203,28 +212,5 @@ const BuildLink = ({ id, name }: { id: string; name: string }) => {
       Inspect set
       <ChevronRight className="size-4 transition-transform group-hover:translate-x-1" />
     </Link>
-  );
-};
-
-const CardTag = ({
-  icon: Icon,
-  label,
-  tone,
-}: {
-  icon: typeof AlertTriangle;
-  label: string;
-  tone: "warning" | "primary";
-}) => {
-  return (
-    <Typography
-      as="span"
-      className={
-        tone === "warning"
-          ? "flex items-center gap-1 border border-amber-500/30 bg-amber-500/10 px-2 py-1 text-[9px] uppercase tracking-widest text-amber-300"
-          : "flex items-center gap-1 border border-primary/30 bg-primary/10 px-2 py-1 text-[9px] uppercase tracking-widest text-primary"
-      }
-    >
-      <Icon className="size-3" /> {label}
-    </Typography>
   );
 };

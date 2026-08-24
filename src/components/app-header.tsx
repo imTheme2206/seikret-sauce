@@ -11,7 +11,6 @@ import {
   NavigationMenuLink,
   NavigationMenuList,
 } from "@/components/ui/navigation-menu";
-import { Separator } from "@/components/ui/separator";
 import { Typography } from "@/components/ui/typography";
 import { cn } from "@/lib/utils";
 import { Link, useRouterState } from "@tanstack/react-router";
@@ -38,7 +37,7 @@ export const AppHeader = () => {
   const isLoadoutsRoute = pathname.startsWith("/builds");
 
   return (
-    <header className="flex h-16 shrink-0 items-center gap-1 border-b border-border px-2 sm:gap-2.5 sm:px-5">
+    <header className="flex h-16 shrink-0 items-center gap-2 border-b border-border bg-background px-3 sm:gap-4 sm:px-5">
       <Link
         to="/"
         aria-label="Seikret Sauce home and Gathering Hub"
@@ -61,14 +60,14 @@ export const AppHeader = () => {
               key={link.to}
               className="h-full flex items-stretch"
             >
-              <Separator orientation="vertical" className="h-full shrink-0" />
               <NavigationMenuLink asChild>
                 <Link
                   to={link.to}
                   activeOptions={{ exact: true }}
                   className="flex h-full flex-row items-center gap-1.5 rounded-none px-2 text-[10px] font-medium text-muted-foreground transition-colors hover:bg-transparent hover:text-foreground sm:px-4 sm:text-sm"
                   activeProps={{
-                    className: "bg-secondary text-primary",
+                    className:
+                      "text-foreground shadow-[inset_0_-2px_0_var(--primary)]",
                   }}
                 >
                   <span className="sm:hidden">{link.shortLabel}</span>
@@ -78,12 +77,12 @@ export const AppHeader = () => {
             </NavigationMenuItem>
           ))}
           <NavigationMenuItem className="h-full flex items-stretch">
-            <Separator orientation="vertical" className="h-full shrink-0" />
             <DropdownMenu>
               <DropdownMenuTrigger
                 className={cn(
                   "flex h-full items-center gap-1 rounded-none px-2 text-[10px] font-medium text-muted-foreground outline-none transition-colors hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring/50 sm:px-4 sm:text-sm",
-                  isLoadoutsRoute && "bg-secondary text-primary",
+                  isLoadoutsRoute &&
+                    "text-foreground shadow-[inset_0_-2px_0_var(--primary)]",
                 )}
               >
                 <span>Loadouts</span>

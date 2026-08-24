@@ -1,4 +1,5 @@
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { Typography } from "@/components/ui/typography";
 import { cn } from "@/lib/utils";
 import type { Rank } from "../types";
 
@@ -17,14 +18,17 @@ const OPTIONS: { rank: Rank; label: string; enabled: boolean }[] = [
 /** Segmented rank picker that feeds the search request's `rank` field. */
 export const RankSelector = ({ value, onChange, disabled }: RankSelectorProps) => {
   return (
-    <div className="flex shrink-0 items-center gap-2">
+    <div className="flex shrink-0 items-center justify-between gap-4">
+      <Typography as="span" className="text-xs font-medium text-muted-foreground">
+        Quest rank
+      </Typography>
       <ToggleGroup
         type="single"
         value={value}
         // Radix allows toggling the active item off (empty value); keep a rank always selected.
         onValueChange={(v) => v && onChange(v as Rank)}
         disabled={disabled}
-        className="flex-1 gap-1 rounded-md border border-border bg-card p-1"
+        className="w-auto gap-0 border-b border-border"
       >
         {OPTIONS.map((opt) => (
           <ToggleGroupItem
@@ -33,7 +37,7 @@ export const RankSelector = ({ value, onChange, disabled }: RankSelectorProps) =
             disabled={!opt.enabled}
             title={opt.enabled ? undefined : "Master Rank is not available yet"}
             className={cn(
-              "h-auto min-w-0 rounded-[4px] px-2 py-1 text-xs font-medium text-muted-foreground transition-colors hover:bg-transparent hover:text-foreground data-[state=on]:bg-secondary data-[state=on]:text-primary",
+              "relative h-7 min-w-0 rounded-none px-3 text-xs font-medium text-muted-foreground transition-colors hover:bg-transparent hover:text-foreground data-[state=on]:bg-transparent data-[state=on]:text-foreground data-[state=on]:after:absolute data-[state=on]:after:inset-x-0 data-[state=on]:after:-bottom-px data-[state=on]:after:h-px data-[state=on]:after:bg-primary",
               !opt.enabled &&
                 "cursor-not-allowed opacity-40 hover:text-muted-foreground",
             )}

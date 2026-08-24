@@ -17,6 +17,8 @@ import { cn } from "@/lib/utils";
 import { Check, ChevronsUpDown, CircleSlash } from "lucide-react";
 import { useState } from "react";
 import type { GearOption, GearOptionGroup } from "../types";
+import { GearSkillLine } from "./gear-skill-line";
+import { SlotPips } from "./slot-pips";
 
 type GearPickerProps = {
   value: string;
@@ -33,7 +35,10 @@ type GearPickerProps = {
   className?: string;
 };
 
-const findOption = (groups: GearOptionGroup[], id: string): GearOption | null => {
+const findOption = (
+  groups: GearOptionGroup[],
+  id: string,
+): GearOption | null => {
   if (!id) return null;
   for (const group of groups) {
     const match = group.options.find((option) => option.id === id);
@@ -122,13 +127,27 @@ export const GearPicker = ({
                     value={option.id}
                     keywords={[option.name, ...(option.keywords ?? [])]}
                     onSelect={() => choose(option.id)}
+                    className="items-start py-2"
                   >
-                    {renderIcon?.(option) ?? null}
-                    <span className="min-w-0 flex-1 truncate">
-                      {shortArmorName(option.name)}
-                    </span>
+                    <div className="mt-0.5 shrink-0">
+                      {renderIcon?.(option) ?? null}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <span className="block truncate">
+                        {shortArmorName(option.name)}
+                      </span>
+                      <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1">
+                        <GearSkillLine
+                          skills={option.skills ?? []}
+                          bonuses={option.bonuses ?? []}
+                        />
+                        {option.slots !== undefined && (
+                          <SlotPips slots={option.slots} />
+                        )}
+                      </div>
+                    </div>
                     {option.id === value && (
-                      <Check className="size-3.5 text-primary" />
+                      <Check className="mt-0.5 size-3.5 text-primary" />
                     )}
                   </CommandItem>
                 ))}

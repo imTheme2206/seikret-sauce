@@ -113,7 +113,7 @@ export const BuildEditorPage = ({ buildId }: { buildId?: string }) => {
         open={controller.hasRevisionConflict}
         onOpenChange={controller.setHasRevisionConflict}
       >
-        <DialogContent className="rounded-none sm:max-w-md">
+        <DialogContent className="rounded-sm sm:max-w-md">
           <DialogHeader>
             <DialogTitle>A newer revision exists</DialogTitle>
             <DialogDescription>

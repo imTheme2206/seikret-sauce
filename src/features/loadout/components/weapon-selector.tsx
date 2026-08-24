@@ -89,10 +89,10 @@ export const WeaponSelector = ({
     <Accordion
       type="single"
       collapsible
-      className="shrink-0 rounded-md border border-border bg-card px-3"
+      className="shrink-0"
     >
       <AccordionItem value="weapon" className="border-b-0">
-        <AccordionTrigger className="group items-center gap-2 py-2 text-xs font-medium text-muted-foreground hover:no-underline">
+        <AccordionTrigger className="group items-center gap-2 py-0 text-xs font-medium text-muted-foreground hover:no-underline">
           <Typography as="span" className="shrink-0">
             Weapon Setting
           </Typography>
@@ -105,7 +105,7 @@ export const WeaponSelector = ({
             </Typography>
           )}
         </AccordionTrigger>
-        <AccordionContent className="flex flex-col gap-1.5 pb-3">
+        <AccordionContent className="flex flex-col gap-2 pb-0 pt-3">
           <SkillSelect
             label="Set"
             placeholder="No set skill"

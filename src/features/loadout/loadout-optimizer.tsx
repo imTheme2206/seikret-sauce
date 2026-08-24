@@ -67,8 +67,8 @@ export const LoadoutOptimizer = () => {
         open={isFiltersOpen}
         onOpenChange={setIsFiltersOpen}
       >
-        <DrawerContent className="flex w-[85vw] max-w-[440px] flex-col overflow-hidden">
-          <DrawerHeader className="shrink-0 border-b border-border">
+        <DrawerContent className="flex w-[90vw] max-w-[440px] flex-col overflow-hidden">
+          <DrawerHeader className="sr-only">
             <DrawerTitle>Skills & filters</DrawerTitle>
           </DrawerHeader>
           <div className="min-h-0 flex-1 overflow-hidden">

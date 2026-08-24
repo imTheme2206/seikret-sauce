@@ -10,13 +10,13 @@ type ArmorChipProps = {
   rarity?: number;
 };
 
-/** Compact armour-piece chip with a slot glyph, shortened name and rarity. */
+/** Compact armour-piece summary with a slot glyph, shortened name and rarity. */
 export const ArmorChip = ({ piece, slotIndex, rarity }: ArmorChipProps) => {
   const color = rarityColor(rarity ?? 0);
   const position = EQUIPMENT_POSITIONS[slotIndex] ?? "head";
 
   return (
-    <div className="relative flex min-w-0 max-w-42 flex-1 flex-col items-center justify-center gap-[5px] overflow-hidden rounded-md bg-secondary px-1 py-2">
+    <div className="relative flex min-w-0 max-w-42 flex-1 flex-col items-center justify-center gap-1 overflow-hidden border-l border-border/60 px-2 py-1 first:border-l-0">
       <SlotIcon position={position} color={color} size={24} />
       <Typography
         as="span"

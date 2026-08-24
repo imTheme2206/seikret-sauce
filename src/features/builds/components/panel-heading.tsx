@@ -8,7 +8,7 @@ type PanelHeadingProps = {
   children: React.ReactNode;
 };
 
-/** Accented, letter-spaced heading used at the top of a panel or stat block. */
+/** Quiet heading used at the top of a panel or stat block. */
 export const PanelHeading = ({
   icon: Icon,
   className,
@@ -18,11 +18,11 @@ export const PanelHeading = ({
     <Typography
       as="div"
       className={cn(
-        "mb-2 flex items-center gap-2 text-[10px] font-bold uppercase tracking-[.22em] text-primary",
+        "mb-2 flex items-center gap-2 text-xs font-medium text-muted-foreground",
         className,
       )}
     >
-      {Icon && <Icon className="size-3.5" />}
+      {Icon && <Icon className="size-3.5 text-primary" />}
       {children}
     </Typography>
   );

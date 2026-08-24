@@ -7,12 +7,12 @@ import { ArrowRight, Hammer, SlidersHorizontal, Users } from "lucide-react";
 
 export const HomePage = () => (
   <>
-    <section className="border-b border-border bg-card py-12 md:py-16">
+    <section className="border-b border-border bg-background py-10 md:py-14">
       <PageContainer>
-        <div className="mb-5 flex items-center gap-2 text-primary">
+        <div className="mb-4 flex items-center gap-2 text-muted-foreground">
           <Typography
             as="span"
-            className="text-[10px] font-bold uppercase tracking-[.28em]"
+            className="text-xs font-medium"
           >
             Seikret Sauce
           </Typography>
@@ -20,7 +20,7 @@ export const HomePage = () => (
 
         <Typography
           as="h1"
-          className="max-w-3xl text-4xl font-semibold leading-tight tracking-tight md:text-6xl"
+          className="max-w-3xl text-4xl font-semibold leading-tight tracking-tight md:text-5xl"
         >
           Plan the hunt. Forge the loadout.
         </Typography>
@@ -30,14 +30,14 @@ export const HomePage = () => (
         </Typography>
 
         <div className="mt-7 flex flex-col gap-3 sm:flex-row">
-          <Button asChild size="lg" className="rounded-none">
+          <Button asChild size="lg">
             <Link to="/optimizer">
               <SlidersHorizontal className="size-4" />
               Go to optimizer
               <ArrowRight className="size-4" />
             </Link>
           </Button>
-          <Button asChild size="lg" variant="outline" className="rounded-none">
+          <Button asChild size="lg" variant="outline">
             <Link to="/builds/new">
               <Hammer className="size-4" />
               Open set builder
@@ -53,9 +53,9 @@ export const HomePage = () => (
           <div className="mb-6 border-b border-border pb-5">
             <Typography
               as="div"
-              className="mb-2 flex items-center gap-2 text-[10px] font-bold uppercase tracking-[.24em] text-primary"
+              className="mb-2 flex items-center gap-2 text-xs font-medium text-muted-foreground"
             >
-              <Users className="size-3.5" />
+              <Users className="size-3.5 text-primary" />
               Community equipment archive
             </Typography>
             <Typography

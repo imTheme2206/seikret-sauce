@@ -45,16 +45,16 @@ export const ResultCard = ({
 
   return (
     <Collapsible open={isExpanded} onOpenChange={onToggle} asChild>
-      <Card className="shrink-0 gap-0 overflow-hidden rounded-md border-border py-0 shadow-none">
+      <Card className="shrink-0 gap-0 overflow-hidden rounded-none border-x-0 border-t-0 border-b-border bg-transparent py-0 shadow-none first:border-t">
         <CollapsibleTrigger
           className={cn(
-            "flex min-h-20 w-full items-center gap-2.5 px-3 py-[9px] text-left transition-colors",
-            isExpanded ? "bg-[hsl(24,12%,11%)]" : "hover:bg-[hsl(24,12%,11%)]",
+            "flex min-h-24 w-full items-center gap-3 px-1 py-3 text-left transition-colors",
+            isExpanded ? "bg-foreground/[0.025]" : "hover:bg-foreground/[0.025]",
           )}
         >
-          <div className="flex size-[26px] shrink-0 items-center justify-center rounded-[4px] bg-secondary">
-            <Typography as="span" className="text-xs font-bold text-primary">
-              {index + 1}
+          <div className="flex w-7 shrink-0 items-center justify-center">
+            <Typography as="span" className="font-mono text-xs text-muted-foreground">
+              {String(index + 1).padStart(2, "0")}
             </Typography>
           </div>
 
@@ -84,14 +84,14 @@ export const ResultCard = ({
 
           <ChevronDown
             className={cn(
-              "size-3.5 shrink-0 text-muted-foreground transition-transform",
+              "size-4 shrink-0 text-muted-foreground transition-transform",
               isExpanded && "rotate-180",
             )}
           />
         </CollapsibleTrigger>
 
         <CollapsibleContent>
-          <div className="space-y-3 border-t border-border px-3.5 py-3">
+          <div className="space-y-4 border-t border-border/70 px-10 py-4">
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-[1fr_1.1fr]">
               <DecorationList decorations={result.decoNames} />
               <SkillBreakdown
@@ -105,12 +105,13 @@ export const ResultCard = ({
               elementalDefenses={result.elementalDefenses}
               freeSlots={result.freeSlots}
             />
-            <div className="flex justify-end border-t border-border pt-3">
+            <div className="flex justify-end border-t border-border/70 pt-4">
               <Button
                 type="button"
                 size="sm"
                 disabled={saveDisabled}
                 onClick={() => void onSave()}
+                className="rounded-sm shadow-none"
               >
                 {isSaving ? (
                   <Loader2 className="size-4 animate-spin" />

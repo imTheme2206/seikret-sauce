@@ -1,6 +1,4 @@
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -52,19 +50,19 @@ export const SkillPool = ({
   );
 
   return (
-    <Card className="flex min-h-0 flex-1 flex-col gap-0 rounded-md border-border py-0 shadow-none">
-      <div className="flex min-h-10 shrink-0 items-center justify-between border-b border-border px-3 py-1.5">
+    <section className="flex min-h-0 flex-1 flex-col">
+      <div className="flex min-h-11 shrink-0 items-center justify-between">
         <div className="flex items-center gap-2">
           <Typography
             as="span"
-            className="text-xs font-semibold uppercase tracking-[0.1em] text-muted-foreground"
+            className="text-sm font-medium text-foreground"
           >
             Skills
           </Typography>
           {selectedCount > 0 && (
-            <Badge className="h-5 min-w-5 rounded-full bg-primary/15 px-1.5 text-[10px] font-bold text-primary">
-              {selectedCount}
-            </Badge>
+            <Typography as="span" className="text-xs text-muted-foreground">
+              {selectedCount} selected
+            </Typography>
           )}
         </div>
         {selectedCount > 0 && (
@@ -72,28 +70,28 @@ export const SkillPool = ({
             type="button"
             variant="ghost"
             onClick={onClearAll}
-            className="h-7 px-2 text-xs font-normal text-muted-foreground hover:text-foreground"
+            className="h-7 rounded-none px-0 text-xs font-normal text-muted-foreground hover:bg-transparent hover:text-foreground"
           >
             Clear all
           </Button>
         )}
       </div>
 
-      <div className="shrink-0 border-b border-border p-2">
+      <div className="shrink-0 border-b border-border">
         <Tabs
           value={activeTab}
           onValueChange={(v) => onTabChange(v as SkillCategory)}
         >
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList variant="line" className="grid h-9 w-full grid-cols-4 gap-0 p-0">
             {CATEGORY_ORDER.map((category) => (
               <TabsTrigger
                 key={category}
                 value={category}
-                className="text-xs font-semibold uppercase tracking-[0.06em]"
+                className="h-9 rounded-none px-1 text-xs font-medium"
               >
                 <span className="truncate">{CATEGORY_CONFIG[category].label}</span>
                 {(selectedByCategory[category] ?? 0) > 0 && (
-                  <span className="ml-1 inline-flex min-w-4 items-center justify-center rounded-full bg-primary/15 px-1 text-[9px] leading-4 text-primary">
+                  <span className="text-[10px] font-normal text-primary">
                     {selectedByCategory[category]}
                   </span>
                 )}
@@ -102,7 +100,7 @@ export const SkillPool = ({
           </TabsList>
         </Tabs>
       </div>
-      <ScrollArea className="min-h-0 flex-1">
+      <ScrollArea className="-mx-5 min-h-0 flex-1">
         {isLoading ? (
           <PoolSkeleton />
         ) : sortedPool.length === 0 ? (
@@ -121,7 +119,7 @@ export const SkillPool = ({
           ))
         )}
       </ScrollArea>
-    </Card>
+    </section>
   );
 };
 
@@ -143,11 +141,11 @@ const PoolSkeleton = () => {
       {Array.from({ length: 7 }, (_, i) => (
         <div
           key={i}
-          className="flex min-h-[46px] items-center gap-2.5 border-b border-border px-3 py-2"
+          className="flex min-h-[52px] items-center gap-3 border-b border-border/70 px-5 py-2.5"
         >
-          <Skeleton className="size-8 shrink-0 rounded-md" />
+          <Skeleton className="size-7 shrink-0 rounded-sm" />
           <Skeleton className="h-3.5 flex-1" />
-          <Skeleton className="size-5 shrink-0 rounded-[4px]" />
+          <Skeleton className="h-3 w-10 shrink-0 rounded-sm" />
         </div>
       ))}
     </div>

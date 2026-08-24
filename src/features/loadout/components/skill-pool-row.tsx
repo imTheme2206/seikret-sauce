@@ -37,10 +37,10 @@ export const SkillPoolRow = ({
   return (
     <div
       className={cn(
-        "group relative flex min-h-[50px] w-full items-center gap-2.5 border-b border-border px-3 py-2 text-left transition-colors",
+        "group relative flex min-h-[52px] w-full items-center gap-3 border-b border-border/70 px-5 py-2.5 text-left transition-colors",
         isSelected
-          ? "bg-primary/[0.06] shadow-[inset_2px_0_0_var(--primary)]"
-          : "hover:bg-secondary/40",
+          ? "bg-primary/[0.035] shadow-[inset_2px_0_0_var(--primary)]"
+          : "hover:bg-foreground/[0.025]",
       )}
     >
       {!isSelected && (
@@ -52,7 +52,7 @@ export const SkillPoolRow = ({
         />
       )}
 
-      <div className="relative flex size-8 shrink-0 items-center justify-center overflow-hidden rounded-md bg-secondary [&_img]:size-5 [&_img]:object-contain">
+      <div className="relative flex size-7 shrink-0 items-center justify-center overflow-hidden [&_img]:size-5 [&_img]:object-contain">
         <SkillGlyph
           category={skill.category}
           icon={skill.icon}
@@ -64,17 +64,14 @@ export const SkillPoolRow = ({
       <div className="relative flex min-w-0 flex-1 flex-col gap-1">
         <Typography
           as="span"
-          className={cn(
-            "truncate text-sm",
-            isSelected ? "text-primary" : "text-foreground",
-          )}
+          className="truncate text-sm font-medium text-foreground"
         >
           {skill.name}
         </Typography>
         {showCategory && (
           <Badge
-            className="rounded-[3px] border-transparent px-1.5 py-px text-xs font-bold uppercase tracking-[0.08em]"
-            style={{ color: config.color, background: config.badgeBg }}
+            className="w-fit rounded-none border-0 bg-transparent p-0 text-[10px] font-normal"
+            style={{ color: config.color }}
           >
             {config.label}
           </Badge>
@@ -89,7 +86,7 @@ export const SkillPoolRow = ({
             />
             <Typography
               as="span"
-              className="text-[10px] font-semibold tabular-nums text-primary"
+              className="text-[10px] tabular-nums text-muted-foreground"
             >
               {selectedSkill.level}/{selectedSkill.maxLevel}
             </Typography>
@@ -115,7 +112,7 @@ export const SkillPoolRow = ({
             size="icon"
             onClick={onRemove}
             aria-label={`Remove ${skill.name}`}
-            className="ml-0.5 size-[24px] rounded-[3px] text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
+            className="ml-0.5 size-6 rounded-none text-muted-foreground hover:bg-transparent hover:text-destructive"
           >
             <X className="size-3.5" strokeWidth={2} />
           </Button>
@@ -128,7 +125,7 @@ export const SkillPoolRow = ({
           >
             Lv {skill.maxLevel}
           </Typography>
-          <div className="flex size-5 items-center justify-center rounded-[4px] border border-border text-muted-foreground">
+          <div className="flex size-5 items-center justify-center text-muted-foreground transition-colors group-hover:text-primary">
             <Plus className="size-2.5" strokeWidth={2} />
           </div>
         </div>

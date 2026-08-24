@@ -77,7 +77,7 @@ export const TalismanForm = ({
   };
 
   return (
-    <Card className="gap-0 rounded-none border-border py-0 shadow-none">
+    <Card className="gap-0 rounded-sm border-border py-0 shadow-none">
       <CardHeader className="border-b border-border bg-secondary/35 p-5">
         <div className="flex items-start gap-3">
           <div className="grid size-9 shrink-0 place-items-center border border-primary/30 bg-primary/10">

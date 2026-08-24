@@ -1,34 +1,16 @@
+import { EmptyState } from "@/components/empty-state";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Typography } from "@/components/ui/typography";
 
 /** Non-result states for the results panel: empty prompt, searching, no-results. */
 
 export const ResultsEmptyState = () => {
   return (
-    <div className="flex flex-1 flex-col items-center justify-center gap-3.5 px-5 py-[60px] text-center">
-      <svg width="52" height="52" viewBox="0 0 52 52" fill="none">
-        <circle
-          cx="26"
-          cy="26"
-          r="22"
-          stroke="var(--border)"
-          strokeWidth="1.5"
-        />
-        <polygon
-          points="26,12 28.5,20 37,20 30.5,25 33,33 26,28 19,33 21.5,25 15,20 23.5,20"
-          fill="var(--secondary)"
-          stroke="var(--border)"
-          strokeWidth="1"
-        />
-      </svg>
-      <Typography className="max-w-[270px] text-sm leading-[1.7] text-muted-foreground">
-        Add skills from the left panel, then click{" "}
-        <Typography as="span" className="font-semibold text-primary">
-          Find Sets
-        </Typography>{" "}
-        to discover optimal armor loadouts
-      </Typography>
-    </div>
+    <EmptyState
+      title="No loadouts yet"
+      description="Select your required skills, then choose Find loadouts."
+      compact
+      className="flex-1 border-y-0"
+    />
   );
 };
 
@@ -42,12 +24,12 @@ export const ResultsSearchingState = () => {
       {Array.from({ length: 10 }, (_, i) => (
         <div
           key={i}
-          className="flex min-h-20 items-center gap-2.5 rounded-md border border-border bg-card px-3 py-[9px]"
+          className="flex min-h-24 items-center gap-3 border-b border-border bg-transparent px-1 py-3"
         >
-          <Skeleton className="size-[26px] shrink-0 rounded-[4px]" />
+          <Skeleton className="h-3 w-7 shrink-0 rounded-sm" />
           <div className="flex flex-1 gap-1">
             {Array.from({ length: 6 }, (_, j) => (
-              <Skeleton key={j} className="h-14 flex-1 rounded-md" />
+              <Skeleton key={j} className="h-14 flex-1 rounded-sm" />
             ))}
           </div>
           <Skeleton className="size-3.5 shrink-0" />
@@ -59,37 +41,23 @@ export const ResultsSearchingState = () => {
 
 export const ResultsNoResultsState = () => {
   return (
-    <Typography
-      as="div"
-      className="flex flex-1 items-center justify-center p-[60px] text-center text-sm text-muted-foreground"
-    >
-      No matching sets found. Try adjusting skill levels or requirements.
-    </Typography>
+    <EmptyState
+      title="No matching loadouts"
+      description="Try lowering one or more skill levels, or remove a requirement and search again."
+      compact
+      className="flex-1 border-y-0"
+    />
   );
 };
 
 export const ResultsErrorState = ({ message }: { message: string }) => {
   return (
-    <div className="flex flex-1 flex-col items-center justify-center gap-2.5 px-5 py-[60px] text-center">
-      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" aria-hidden>
-        <circle
-          cx="12"
-          cy="12"
-          r="9"
-          stroke="hsl(8,60%,52%)"
-          strokeWidth="1.5"
-        />
-        <path
-          d="M12 7.5v5.5"
-          stroke="hsl(8,60%,52%)"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-        />
-        <circle cx="12" cy="16.25" r="0.9" fill="hsl(8,60%,52%)" />
-      </svg>
-      <Typography className="max-w-[300px] text-sm leading-[1.7] text-[hsl(8,55%,62%)]">
-        {message}
-      </Typography>
-    </div>
+    <EmptyState
+      title="Search failed"
+      description={message}
+      tone="error"
+      compact
+      className="flex-1 border-y-0"
+    />
   );
 };

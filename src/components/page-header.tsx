@@ -18,10 +18,8 @@ type PageHeaderProps = {
 };
 
 /**
- * The banner every document page opens with, so eyebrow, title scale and
- * spacing stay identical across the app. Flat surface by design — no gradient
- * washes. The band spans the viewport; only its content sits on the page
- * column, which keeps it aligned with the `<main>` below it.
+ * Shared route heading for every document page. It mirrors the optimizer's
+ * compact, flat header hierarchy.
  */
 export const PageHeader = ({
   icon: Icon,
@@ -33,20 +31,20 @@ export const PageHeader = ({
   className,
 }: PageHeaderProps) => (
   <header
-    className={cn("border-b border-border bg-card py-8 md:py-10", className)}
+    className={cn("border-b border-border bg-background py-6 md:py-8", className)}
   >
     <PageContainer className="flex flex-col justify-between gap-6 sm:flex-row sm:items-end">
       <div className="min-w-0">
         <Typography
           as="div"
-          className="mb-2 flex items-center gap-2 text-[10px] font-bold uppercase tracking-[.28em] text-primary"
+          className="mb-2 flex items-center gap-2 text-xs font-medium text-muted-foreground"
         >
-          <Icon className="size-3.5" />
+          <Icon className="size-3.5 text-primary" />
           {eyebrow}
         </Typography>
         <Typography
           as="h1"
-          className="text-3xl font-semibold tracking-wide md:text-4xl"
+          className="text-2xl font-semibold tracking-tight md:text-3xl"
         >
           {title}
         </Typography>

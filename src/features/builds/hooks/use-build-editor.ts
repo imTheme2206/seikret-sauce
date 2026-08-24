@@ -145,8 +145,15 @@ export const useBuildEditor = (buildId?: string) => {
         catalog.armors,
         catalog.decorations,
         talismans.talismans,
+        catalog.skillCatalog?.response,
       ),
-    [draft, catalog.armors, catalog.decorations, talismans.talismans],
+    [
+      draft,
+      catalog.armors,
+      catalog.decorations,
+      catalog.skillCatalog,
+      talismans.talismans,
+    ],
   );
 
   const hunterStatus = useMemo(

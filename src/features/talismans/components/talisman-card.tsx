@@ -34,7 +34,7 @@ export const TalismanCard = ({
   const [isConfirmingDelete, setIsConfirmingDelete] = useState(false);
 
   return (
-    <Card className="gap-0 rounded-none border-border py-0 shadow-none transition-colors hover:border-primary/40">
+    <Card className="gap-0 rounded-sm border-border py-0 shadow-none transition-colors hover:border-primary/40">
       <CardHeader className="flex-row items-center gap-3 border-b border-border bg-secondary/25 p-4">
         <span className="size-7 shrink-0 text-primary">
           <TalismanSVG color="currentColor" />
@@ -125,7 +125,7 @@ export const TalismanCard = ({
           if (!isDeleting) setIsConfirmingDelete(open);
         }}
       >
-        <DialogContent className="rounded-none sm:max-w-md">
+        <DialogContent className="rounded-sm sm:max-w-md">
           <DialogHeader>
             <DialogTitle>Delete “{talisman.name}”?</DialogTitle>
             <DialogDescription>

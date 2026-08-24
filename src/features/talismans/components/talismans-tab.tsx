@@ -1,3 +1,4 @@
+import { EmptyState } from "@/components/empty-state";
 import { PageHeader } from "@/components/page-header";
 import { PageContainer } from "@/components/page-layout";
 import { Button } from "@/components/ui/button";
@@ -11,7 +12,6 @@ import { useEffect, useState } from "react";
 import { useTalismans } from "../hooks/use-talismans";
 import { MAX_TALISMANS_PER_USER, type CreateTalismanInput } from "../types";
 import { TalismanCard } from "./talisman-card";
-import { TalismanEmptyState } from "./talisman-empty-state";
 import { TalismanForm } from "./talisman-form";
 
 /** Banner + page column shared by every state of the talismans screen. */
@@ -48,7 +48,7 @@ export const TalismansTab = () => {
     return (
       <TalismansFrame>
         <div className="py-5 md:py-8">
-          <Skeleton className="h-48 rounded-none" />
+          <Skeleton className="h-48 rounded-sm" />
         </div>
       </TalismansFrame>
     );
@@ -58,10 +58,10 @@ export const TalismansTab = () => {
     return (
       <TalismansFrame>
         <main className="py-5 md:py-8">
-          <TalismanEmptyState
+          <EmptyState
             icon={LockKeyhole}
             title="Your talisman box is sealed"
-            body="Sign in with Discord to forge custom talismans and use them in your saved loadouts."
+            description="Sign in with Discord to forge custom talismans and use them in your saved loadouts."
             action={
               <Button
                 onClick={() => void signInWithDiscord()}
@@ -141,9 +141,9 @@ export const TalismansTab = () => {
             <div>
               <Typography
                 as="div"
-                className="mb-1 flex items-center gap-2 text-[10px] font-bold uppercase tracking-[.22em] text-primary"
+                className="mb-1 flex items-center gap-2 text-xs font-medium text-muted-foreground"
               >
-                <Boxes className="size-3.5" />
+                <Boxes className="size-3.5 text-primary" />
                 Equipment box
               </Typography>
               <Typography
@@ -165,7 +165,7 @@ export const TalismansTab = () => {
           {isLoading && (
             <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
               {Array.from({ length: 6 }, (_, index) => (
-                <Skeleton key={index} className="h-48 rounded-none" />
+                <Skeleton key={index} className="h-48 rounded-sm" />
               ))}
             </div>
           )}
@@ -181,10 +181,10 @@ export const TalismansTab = () => {
             </div>
           )}
           {!isLoading && !error && talismans.length === 0 && (
-            <TalismanEmptyState
+            <EmptyState
               icon={Sparkles}
               title="No custom talismans yet"
-              body="Use the forge to add skills and decoration slots. Your talismans will then be available in the loadout editor."
+              description="Use the forge to add skills and decoration slots. Your talismans will then be available in the loadout editor."
               compact
             />
           )}

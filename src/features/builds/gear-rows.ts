@@ -21,6 +21,7 @@ import type {
   GearOption,
   GearOptionGroup,
   GearSlot,
+  SkillCatalog,
 } from "./types";
 
 const byName = (a: GearOption, b: GearOption) => a.name.localeCompare(b.name);
@@ -71,6 +72,9 @@ const armorGroups = (armors: Armor[]): GearOptionGroup[] => {
       id: armor.id,
       name: armor.name,
       rarity: armor.rarity,
+      skills: armor.skills,
+      bonuses: armor.bonuses,
+      slots: armor.slots,
       keywords: gearKeywords(armor),
     }),
   );
@@ -95,6 +99,7 @@ const decorationGroups = (
     (decoration) => ({
       id: decoration.id,
       name: decoration.name,
+      skills: decoration.skills,
       keywords: gearKeywords(decoration),
     }),
   );
@@ -151,6 +156,7 @@ const talismanRow = (
   armors: Armor[],
   decorations: Decoration[],
   customTalismans: CustomTalisman[],
+  skillCatalog?: SkillCatalog,
 ): EditorGearRow => {
   const selection = draft.composition.talisman;
   const guildTalismans = armors.filter((item) => item.type === "talisman");
@@ -162,16 +168,33 @@ const talismanRow = (
   const slots: GearSlot[] = isGuild
     ? toGearSlots(guild?.slots ?? [])
     : custom?.slots ?? [];
+  const skillById = new Map(
+    (skillCatalog?.skills ?? []).map((skill) => [skill.id, skill]),
+  );
+
+  const customSkills = (talisman: CustomTalisman) =>
+    talisman.skills.flatMap((skill) => {
+      const definition = skillById.get(skill.skillId);
+      return definition
+        ? [{ name: definition.name, level: skill.level }]
+        : [];
+    });
 
   const customGroup: GearOptionGroup[] = customTalismans.length
     ? [
         {
           label: "Your talismans",
           options: customTalismans
-            .map((talisman) => ({
-              id: `custom:${talisman.id}`,
-              name: talisman.name,
-            }))
+            .map((talisman) => {
+              const skills = customSkills(talisman);
+              return {
+                id: `custom:${talisman.id}`,
+                name: talisman.name,
+                skills,
+                slots: talisman.slots.map((slot) => slot.size),
+                keywords: skills.map((skill) => skill.name),
+              };
+            })
             .sort(byName),
         },
       ]
@@ -192,13 +215,16 @@ const talismanRow = (
           id: `scraped:${talisman.id}`,
           name: talisman.name,
           rarity: talisman.rarity,
+          skills: talisman.skills,
+          bonuses: talisman.bonuses,
+          slots: talisman.slots,
           keywords: gearKeywords(talisman),
         }),
       ),
     ],
     name: equipped?.name,
     rarity: isGuild ? guild?.rarity : undefined,
-    skills: isGuild ? guild?.skills ?? [] : [],
+    skills: isGuild ? guild?.skills ?? [] : custom ? customSkills(custom) : [],
     bonuses: isGuild ? guild?.bonuses ?? [] : [],
     slots: equipped
       ? toEditorSlots(slots, selection?.decorations ?? [], decorations)
@@ -211,9 +237,16 @@ export const buildGearRows = (
   armors: Armor[],
   decorations: Decoration[],
   customTalismans: CustomTalisman[],
+  skillCatalog?: SkillCatalog,
 ): EditorGearRow[] => {
   return [
     ...armorRows(draft, armors, decorations),
-    talismanRow(draft, armors, decorations, customTalismans),
+    talismanRow(
+      draft,
+      armors,
+      decorations,
+      customTalismans,
+      skillCatalog,
+    ),
   ];
 };

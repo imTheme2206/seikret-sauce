@@ -22,7 +22,7 @@ type ResultsPanelProps = {
   onSave: (result: LoadoutResult, index: number) => Promise<void>;
 };
 
-/** Right-hand panel: header subtitle + the list of optimised loadouts. */
+/** Right-hand panel: search status and the list of optimised loadouts. */
 export const ResultsPanel = ({
   results,
   status,
@@ -48,17 +48,22 @@ export const ResultsPanel = ({
             : "Select skills to begin";
 
   return (
-    <main className="flex flex-col overflow-hidden bg-[hsl(24,15%,7%)]">
-      <div className="flex shrink-0 items-baseline gap-2 border-b border-border px-[18px] py-[11px]">
+    <main className="flex flex-col overflow-hidden bg-background">
+      <div className="flex min-h-[73px] shrink-0 items-center justify-between gap-4 border-b border-border px-6 py-4">
+        <div>
+          <Typography as="h1" className="text-base font-semibold text-foreground">
+            Optimized loadouts
+          </Typography>
+          <Typography as="p" className="mt-1 text-xs text-muted-foreground">
+            Compare equipment, decorations, and defenses.
+          </Typography>
+        </div>
         <Typography
           as="span"
-          className="text-xs font-semibold tracking-[0.12em] text-muted-foreground"
-        >
-          RESULTS
-        </Typography>
-        <Typography
-          as="div"
-          className={cn("text-xs", hasResults ? "text-primary" : "text-muted-foreground")}
+          className={cn(
+            "shrink-0 text-xs",
+            hasResults ? "text-primary" : "text-muted-foreground",
+          )}
         >
           {subtitle}
         </Typography>
@@ -66,7 +71,7 @@ export const ResultsPanel = ({
 
       {hasResults ? (
         <ScrollArea className="min-h-0 flex-1">
-          <div className="flex flex-col gap-2 px-4 py-3">
+          <div className="flex flex-col px-6 py-3">
             {results.map((result, index) => (
               <ResultCard
                 key={index}
@@ -84,7 +89,7 @@ export const ResultsPanel = ({
           </div>
         </ScrollArea>
       ) : (
-        <div className="flex flex-1 flex-col overflow-hidden px-4 py-3">
+        <div className="flex flex-1 flex-col overflow-hidden px-6 py-3">
           {status === "idle" && <ResultsEmptyState />}
           {status === "searching" && <ResultsSearchingState />}
           {status === "empty" && <ResultsNoResultsState />}

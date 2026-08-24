@@ -1,46 +1,27 @@
 import { Search } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
 type SkillSearchBarProps = {
   value: string;
   onChange: (value: string) => void;
-  onOptimize: () => void;
-  canOptimize: boolean;
-  isOptimizing: boolean;
 };
 
-/**
- * Unified search input + "Find Sets" action. Owns no state; the query and the
- * optimize handler are injected.
- */
+/** Filters the visible skill catalog. */
 export const SkillSearchBar = ({
   value,
   onChange,
-  onOptimize,
-  canOptimize,
-  isOptimizing,
 }: SkillSearchBarProps) => {
   return (
-    <div className="flex h-10 shrink-0 items-stretch overflow-hidden rounded-md border border-border bg-card">
-      <div className="flex shrink-0 items-center pl-3 pr-2 text-muted-foreground">
-        <Search className="size-3.5" />
-      </div>
+    <div className="relative shrink-0">
+      <Search className="pointer-events-none absolute left-0 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
       <Input
         type="text"
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder="Search skills…"
-        className="h-full flex-1 rounded-none border-0 bg-transparent px-0 text-sm shadow-none focus-visible:ring-0 dark:bg-transparent"
+        aria-label="Search skills"
+        className="h-10 rounded-none border-0 border-b border-border bg-transparent pl-7 pr-0 text-sm shadow-none focus-visible:border-primary focus-visible:ring-0 dark:bg-transparent"
       />
-      <Button
-        type="button"
-        onClick={onOptimize}
-        disabled={!canOptimize}
-        className="h-full shrink-0 rounded-none border-l border-border px-4 text-xs font-bold tracking-[0.06em] disabled:bg-secondary disabled:text-muted-foreground disabled:opacity-100"
-      >
-        {isOptimizing ? "Searching…" : "Find Sets"}
-      </Button>
     </div>
   );
 };

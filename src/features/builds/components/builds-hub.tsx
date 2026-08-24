@@ -1,3 +1,4 @@
+import { EmptyState } from "@/components/empty-state";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -28,7 +29,7 @@ import {
 import type { BuildSummary } from "../types";
 import { BuildCard } from "./build-card";
 import { BuildSummaryCard } from "./build-summary-card";
-import { BuildsEmptyState, BuildsGridSkeleton } from "./builds-states";
+import { BuildsGridSkeleton } from "./builds-states";
 import { CopyBuildLinkButton } from "./copy-build-link-button";
 
 /** Reusable build feeds for route pages and embedded feature surfaces. */
@@ -67,10 +68,10 @@ const MyBuilds = ({ controller }: { controller: BuildsHubController }) => {
 
   if (!session && !mine.authLoading) {
     return (
-      <BuildsEmptyState
+      <EmptyState
         icon={LockKeyhole}
         title="Your equipment box is sealed"
-        body="Sign in with Discord to save, revise, and share your personal loadouts."
+        description="Sign in with Discord to save, revise, and share your personal loadouts."
         action={
           <Button onClick={signInWithDiscord} className="gap-2">
             <LockKeyhole className="size-4" /> Sign in with Discord
@@ -83,19 +84,19 @@ const MyBuilds = ({ controller }: { controller: BuildsHubController }) => {
   if (mine.authLoading || mine.isLoading) return <BuildsGridSkeleton />;
   if (mine.error) {
     return (
-      <BuildsEmptyState
+      <EmptyState
         icon={ShieldOff}
         title="Equipment records unavailable"
-        body="The Guild could not retrieve your saved loadouts."
+        description="The Guild could not retrieve your saved loadouts."
       />
     );
   }
   if (!mine.builds.length) {
     return (
-      <BuildsEmptyState
+      <EmptyState
         icon={Hammer}
         title="No loadouts forged yet"
-        body="Assemble your first armor set and keep it ready for the next hunt."
+        description="Assemble your first armor set and keep it ready for the next hunt."
         action={
           <Button asChild className="gap-2">
             <Link to="/builds/new">
@@ -175,7 +176,7 @@ const MyBuilds = ({ controller }: { controller: BuildsHubController }) => {
           if (!open && !isDeleting) setPendingDelete(null);
         }}
       >
-        <DialogContent className="rounded-none sm:max-w-md">
+        <DialogContent className="rounded-sm sm:max-w-md">
           <DialogHeader>
             <DialogTitle>Delete “{pendingDelete?.name}”?</DialogTitle>
             <DialogDescription>
@@ -222,19 +223,19 @@ const SharedBuilds = ({
   if (shared.isLoadingFirstPage) return <BuildsGridSkeleton />;
   if (shared.error) {
     return (
-      <BuildsEmptyState
+      <EmptyState
         icon={ShieldOff}
         title="The Gathering Hub is quiet"
-        body="Shared loadouts could not be retrieved right now."
+        description="Shared loadouts could not be retrieved right now."
       />
     );
   }
   if (!shared.builds.length) {
     return (
-      <BuildsEmptyState
+      <EmptyState
         icon={PackageOpen}
         title="No posted loadouts"
-        body="No hunters have shared an equipment record yet."
+        description="No hunters have shared an equipment record yet."
       />
     );
   }
