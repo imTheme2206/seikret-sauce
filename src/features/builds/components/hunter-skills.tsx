@@ -6,12 +6,17 @@ import { PanelHeading } from "./panel-heading";
 
 /** Regular and activated Set/Group Skill bars shared by every Build surface. */
 export const HunterSkills = ({ status }: { status: HunterStatus }) => {
+  const skillsByLevel = [...status.skills].sort(
+    (left, right) =>
+      right.level - left.level || left.name.localeCompare(right.name),
+  );
+
   return (
     <>
       <div>
         <PanelHeading icon={Sparkles}>Active skills</PanelHeading>
         <div className="grid gap-1.5 sm:grid-cols-2">
-          {status.skills.map((skill) => (
+          {skillsByLevel.map((skill) => (
             <div
               key={skill.name}
               className="flex items-center justify-between border-l-2 border-primary/50 bg-secondary/55 px-3 py-2"

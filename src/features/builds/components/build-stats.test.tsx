@@ -23,3 +23,24 @@ test("uses catalog icons for active skills", () => {
   expect(html).toContain('/images/icons/attack.png');
   expect(html).toContain('alt="Attack Boost"');
 });
+
+test("orders active skills by level without mutating the status", () => {
+  const orderedStatus: HunterStatus = {
+    ...status,
+    skills: [
+      { name: "Low Skill", level: 1, icon: null, category: "armor" },
+      { name: "High Skill", level: 3, icon: null, category: "armor" },
+      { name: "Alpha Skill", level: 1, icon: null, category: "armor" },
+    ],
+  };
+
+  const html = renderToStaticMarkup(<BuildStats status={orderedStatus} />);
+
+  expect(html.indexOf("High Skill")).toBeLessThan(html.indexOf("Alpha Skill"));
+  expect(html.indexOf("Alpha Skill")).toBeLessThan(html.indexOf("Low Skill"));
+  expect(orderedStatus.skills.map((skill) => skill.name)).toEqual([
+    "Low Skill",
+    "High Skill",
+    "Alpha Skill",
+  ]);
+});
