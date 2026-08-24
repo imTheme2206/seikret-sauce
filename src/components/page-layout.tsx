@@ -18,7 +18,7 @@ export const PageLayout = ({ children }: React.PropsWithChildren) => (
  * page's `<main>` — so everything lines up on the same column.
  */
 export const PageContainer = ({ className, children }: PageContainerProps) => (
-  <div className={cn("mx-auto w-full max-w-7xl px-5 md:px-10", className)}>
+  <div className={cn("mx-auto w-full max-w-360 px-5 md:px-10", className)}>
     {children}
   </div>
 );

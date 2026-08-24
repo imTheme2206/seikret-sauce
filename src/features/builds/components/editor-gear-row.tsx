@@ -1,15 +1,14 @@
-import { CircleCheck, Gem } from "lucide-react";
 import { SlotIcon } from "@/components/gear/slot-icon";
 import { Typography } from "@/components/ui/typography";
 import { POSITION_LABELS, rarityColor } from "@/lib/mh-wilds";
+import { CircleCheck, Gem } from "lucide-react";
+import type { DecorationAssignment, EditorGearRow } from "../types";
 import { slotSizes } from "../utils";
 import { GearPicker } from "./gear-picker";
 import { GearSkillLine } from "./gear-skill-line";
 import { HunterPanel } from "./hunter-panel";
-import { PositionBadge } from "./position-badge";
 import { RarityPips } from "./rarity-pips";
 import { SlotPips } from "./slot-pips";
-import type { DecorationAssignment, EditorGearRow } from "../types";
 
 type EditorGearRowProps = {
   row: EditorGearRow;
@@ -26,8 +25,8 @@ export const EditorGearRowCard = ({
   const label = POSITION_LABELS[row.position];
 
   return (
-    <HunterPanel className="grid md:grid-cols-[150px_minmax(220px,.8fr)_minmax(300px,1.2fr)]">
-      <PositionBadge position={row.position} caption="Equip" rarity={row.rarity} />
+    <HunterPanel className="grid md:grid-cols-[minmax(150px,.5fr)_minmax(300px,1.2fr)]">
+      {/*<PositionBadge position={row.position} caption="Equip" rarity={row.rarity} />*/}
 
       <div className="border-b border-border p-4 md:border-b-0 md:border-r">
         <GearPicker

@@ -1,7 +1,6 @@
 import { cn } from "@/lib/utils";
 import type { LoadoutOptimizerController } from "../hooks/use-loadout-optimizer";
 import { RankSelector } from "./rank-selector";
-import { SelectedSkillsPanel } from "./selected-skills-panel";
 import { SkillPool } from "./skill-pool";
 import { SkillSearchBar } from "./skill-search-bar";
 import { WeaponSelector } from "./weapon-selector";
@@ -42,22 +41,18 @@ export const LeftPanel = ({ controller, className }: LeftPanelProps) => {
         disabled={c.isSearching}
       />
 
-      <SelectedSkillsPanel
-        skills={c.selectedList}
-        count={c.selectedCount}
-        onLevelChange={c.setLevel}
-        onRemove={c.removeSkill}
-        onClearAll={c.clearAll}
-      />
-
       <SkillPool
         pool={c.pool}
         activeTab={c.activeTab}
         onTabChange={c.setActiveTab}
         isSearchActive={c.isSearchActive}
         isLoading={c.isLoadingSkills}
-        isSelected={(name) => Boolean(c.selected[name])}
+        selected={c.selected}
+        selectedCount={c.selectedCount}
         onAdd={c.addSkill}
+        onLevelChange={c.setLevel}
+        onRemove={c.removeSkill}
+        onClearAll={c.clearAll}
       />
     </aside>
   );

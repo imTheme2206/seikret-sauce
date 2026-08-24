@@ -1,10 +1,16 @@
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Typography } from "@/components/ui/typography";
 import { CATEGORY_CONFIG, CATEGORY_ORDER } from "../config";
-import type { PoolSkill, SkillCategory } from "../types";
+import type {
+  PoolSkill,
+  SelectedSkillMap,
+  SkillCategory,
+} from "../types";
 import { SkillPoolRow } from "./skill-pool-row";
 
 type SkillPoolProps = {
@@ -13,8 +19,12 @@ type SkillPoolProps = {
   onTabChange: (tab: SkillCategory) => void;
   isSearchActive: boolean;
   isLoading: boolean;
-  isSelected: (name: string) => boolean;
+  selected: SelectedSkillMap;
+  selectedCount: number;
   onAdd: (skill: PoolSkill) => void;
+  onLevelChange: (name: string, level: number) => void;
+  onRemove: (name: string) => void;
+  onClearAll: () => void;
 };
 
 /** Browsable, tabbed pool of all available skills. */
@@ -24,11 +34,51 @@ export const SkillPool = ({
   onTabChange,
   isSearchActive,
   isLoading,
-  isSelected,
+  selected,
+  selectedCount,
   onAdd,
+  onLevelChange,
+  onRemove,
+  onClearAll,
 }: SkillPoolProps) => {
+  const selectedByCategory = Object.values(selected).reduce<
+    Partial<Record<SkillCategory, number>>
+  >((counts, skill) => {
+    counts[skill.category] = (counts[skill.category] ?? 0) + 1;
+    return counts;
+  }, {});
+  const sortedPool = [...pool].sort(
+    (a, b) => Number(Boolean(selected[b.name])) - Number(Boolean(selected[a.name])),
+  );
+
   return (
     <Card className="flex min-h-0 flex-1 flex-col gap-0 rounded-md border-border py-0 shadow-none">
+      <div className="flex min-h-10 shrink-0 items-center justify-between border-b border-border px-3 py-1.5">
+        <div className="flex items-center gap-2">
+          <Typography
+            as="span"
+            className="text-xs font-semibold uppercase tracking-[0.1em] text-muted-foreground"
+          >
+            Skills
+          </Typography>
+          {selectedCount > 0 && (
+            <Badge className="h-5 min-w-5 rounded-full bg-primary/15 px-1.5 text-[10px] font-bold text-primary">
+              {selectedCount}
+            </Badge>
+          )}
+        </div>
+        {selectedCount > 0 && (
+          <Button
+            type="button"
+            variant="ghost"
+            onClick={onClearAll}
+            className="h-7 px-2 text-xs font-normal text-muted-foreground hover:text-foreground"
+          >
+            Clear all
+          </Button>
+        )}
+      </div>
+
       <div className="shrink-0 border-b border-border p-2">
         <Tabs
           value={activeTab}
@@ -41,7 +91,12 @@ export const SkillPool = ({
                 value={category}
                 className="text-xs font-semibold uppercase tracking-[0.06em]"
               >
-                {CATEGORY_CONFIG[category].label}
+                <span className="truncate">{CATEGORY_CONFIG[category].label}</span>
+                {(selectedByCategory[category] ?? 0) > 0 && (
+                  <span className="ml-1 inline-flex min-w-4 items-center justify-center rounded-full bg-primary/15 px-1 text-[9px] leading-4 text-primary">
+                    {selectedByCategory[category]}
+                  </span>
+                )}
               </TabsTrigger>
             ))}
           </TabsList>
@@ -50,16 +105,18 @@ export const SkillPool = ({
       <ScrollArea className="min-h-0 flex-1">
         {isLoading ? (
           <PoolSkeleton />
-        ) : pool.length === 0 ? (
+        ) : sortedPool.length === 0 ? (
           <PoolMessage>No skills match</PoolMessage>
         ) : (
-          pool.map((skill) => (
+          sortedPool.map((skill) => (
             <SkillPoolRow
               key={`${skill.category}:${skill.name}`}
               skill={skill}
-              isSelected={isSelected(skill.name)}
+              selectedSkill={selected[skill.name]}
               showCategory={isSearchActive}
               onAdd={() => onAdd(skill)}
+              onLevelChange={(level) => onLevelChange(skill.name, level)}
+              onRemove={() => onRemove(skill.name)}
             />
           ))
         )}
