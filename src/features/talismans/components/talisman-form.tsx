@@ -77,10 +77,10 @@ export const TalismanForm = ({
   };
 
   return (
-    <Card className="gap-0 rounded-sm border-border py-0 shadow-none">
-      <CardHeader className="border-b border-border bg-secondary/35 p-5">
+    <Card className="gap-0 rounded-md border-border bg-card/40 py-0 shadow-none">
+      <CardHeader className="border-b border-border bg-secondary/25 p-5">
         <div className="flex items-start gap-3">
-          <div className="grid size-9 shrink-0 place-items-center border border-primary/30 bg-primary/10">
+          <div className="grid size-9 shrink-0 place-items-center rounded-md border border-primary/30 bg-primary/10">
             <Sparkles className="size-4 text-primary" />
           </div>
           <div>
@@ -96,13 +96,13 @@ export const TalismanForm = ({
           <span className="mb-2 flex items-center justify-between gap-3">
             <Typography
               as="span"
-              className="text-[10px] font-bold uppercase tracking-[.18em] text-foreground"
+              className="text-sm font-medium text-foreground"
             >
               Talisman name
             </Typography>
             <Typography
               as="span"
-              className="text-[10px] tabular-nums text-muted-foreground"
+              className="text-xs tabular-nums text-muted-foreground"
             >
               {name.length}/100
             </Typography>
@@ -113,7 +113,7 @@ export const TalismanForm = ({
             onChange={(e) => setName(e.target.value)}
             placeholder="e.g. Challenger Charm"
             maxLength={100}
-            className="rounded-none bg-background/70"
+            className="bg-background/70"
           />
         </label>
 
@@ -121,12 +121,12 @@ export const TalismanForm = ({
           <div className="flex items-center justify-between gap-3">
             <Typography
               as="legend"
-              className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[.18em]"
+              className="flex items-center gap-2 text-sm font-medium"
             >
               <Sparkles className="size-3.5 text-primary" />
               Skills
             </Typography>
-            <Typography as="span" className="text-[10px] text-muted-foreground">
+            <Typography as="span" className="text-xs text-muted-foreground">
               {skillRows.length}/{MAX_SKILLS_PER_TALISMAN}
             </Typography>
           </div>
@@ -149,7 +149,7 @@ export const TalismanForm = ({
                   }
                 >
                   <SelectTrigger
-                    className="h-9 w-full rounded-none bg-background/70 text-xs"
+                    className="h-9 w-full bg-background/70 text-sm"
                     size="sm"
                     aria-label={`Skill ${i + 1}`}
                   >
@@ -197,7 +197,7 @@ export const TalismanForm = ({
                   }
                 >
                   <SelectTrigger
-                    className="h-9 w-full rounded-none bg-background/70 text-xs"
+                    className="h-9 w-full bg-background/70 text-sm"
                     size="sm"
                     aria-label={`Skill ${i + 1} level`}
                   >
@@ -235,7 +235,7 @@ export const TalismanForm = ({
             onClick={() =>
               setSkillRows((rows) => [...rows, { ...EMPTY_SKILL_ROW }])
             }
-            className="self-start rounded-none"
+            className="self-start"
           >
             <Plus /> Add skill
           </Button>
@@ -245,12 +245,12 @@ export const TalismanForm = ({
           <div className="flex items-center justify-between gap-3">
             <Typography
               as="legend"
-              className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[.18em]"
+              className="flex items-center gap-2 text-sm font-medium"
             >
               <Gem className="size-3.5 text-primary" />
               Decoration slots
             </Typography>
-            <Typography as="span" className="text-[10px] text-muted-foreground">
+            <Typography as="span" className="text-xs text-muted-foreground">
               Optional · {slotRows.length}/{MAX_SLOTS_PER_TALISMAN}
             </Typography>
           </div>
@@ -272,7 +272,7 @@ export const TalismanForm = ({
                 }
               >
                 <SelectTrigger
-                  className="h-9 w-full rounded-none bg-background/70 text-xs"
+                  className="h-9 w-full bg-background/70 text-sm"
                   size="sm"
                   aria-label={`Slot ${i + 1} type`}
                 >
@@ -298,7 +298,7 @@ export const TalismanForm = ({
                 }
               >
                 <SelectTrigger
-                  className="h-9 w-full rounded-none bg-background/70 text-xs"
+                  className="h-9 w-full bg-background/70 text-sm"
                   size="sm"
                   aria-label={`Slot ${i + 1} level`}
                 >
@@ -334,7 +334,7 @@ export const TalismanForm = ({
             onClick={() =>
               setSlotRows((rows) => [...rows, { ...EMPTY_SLOT_ROW }])
             }
-            className="self-start rounded-none"
+            className="self-start"
           >
             <Plus /> Add slot
           </Button>
@@ -353,7 +353,6 @@ export const TalismanForm = ({
           type="button"
           onClick={() => void handleSubmit()}
           disabled={!canSubmit}
-          className="rounded-none"
         >
           {isSubmitting ? (
             <Loader2 className="size-4 animate-spin" />

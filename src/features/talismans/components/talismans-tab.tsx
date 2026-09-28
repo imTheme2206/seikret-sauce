@@ -1,6 +1,6 @@
-import { EmptyState } from "@/components/empty-state";
-import { PageHeader } from "@/components/page-header";
-import { PageContainer } from "@/components/page-layout";
+import { EmptyState } from "@/components/feedback/empty-state";
+import { PageHeader } from "@/components/layout/page-header";
+import { PageContainer } from "@/components/layout/page-layout";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Typography } from "@/components/ui/typography";
@@ -127,7 +127,7 @@ export const TalismansTab = () => {
 
   return (
     <TalismansFrame>
-      <main className="grid items-start gap-6 py-5 md:py-8 lg:grid-cols-[360px_minmax(0,1fr)]">
+      <main className="grid items-start gap-6 py-5 md:py-8 lg:grid-cols-[minmax(360px,420px)_minmax(0,1fr)]">
         <aside className="lg:sticky lg:top-6">
           <TalismanForm
             catalog={catalog}

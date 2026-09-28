@@ -19,7 +19,7 @@ const OPTIONS: { rank: Rank; label: string; enabled: boolean }[] = [
 export const RankSelector = ({ value, onChange, disabled }: RankSelectorProps) => {
   return (
     <div className="flex shrink-0 items-center justify-between gap-4">
-      <Typography as="span" className="text-xs font-medium text-muted-foreground">
+      <Typography as="span" className="text-sm font-medium text-foreground">
         Quest rank
       </Typography>
       <ToggleGroup
@@ -28,7 +28,7 @@ export const RankSelector = ({ value, onChange, disabled }: RankSelectorProps) =
         // Radix allows toggling the active item off (empty value); keep a rank always selected.
         onValueChange={(v) => v && onChange(v as Rank)}
         disabled={disabled}
-        className="w-auto gap-0 border-b border-border"
+        className="w-auto gap-2 border-0"
       >
         {OPTIONS.map((opt) => (
           <ToggleGroupItem
@@ -37,7 +37,7 @@ export const RankSelector = ({ value, onChange, disabled }: RankSelectorProps) =
             disabled={!opt.enabled}
             title={opt.enabled ? undefined : "Master Rank is not available yet"}
             className={cn(
-              "relative h-7 min-w-0 rounded-none px-3 text-xs font-medium text-muted-foreground transition-colors hover:bg-transparent hover:text-foreground data-[state=on]:bg-transparent data-[state=on]:text-foreground data-[state=on]:after:absolute data-[state=on]:after:inset-x-0 data-[state=on]:after:-bottom-px data-[state=on]:after:h-px data-[state=on]:after:bg-primary",
+              "h-9 min-w-0 rounded-md border border-border px-3 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground data-[state=on]:border-primary/70 data-[state=on]:bg-primary/10 data-[state=on]:text-primary",
               !opt.enabled &&
                 "cursor-not-allowed opacity-40 hover:text-muted-foreground",
             )}

@@ -4,6 +4,7 @@ import index from "./index.html";
 const server = serve({
   routes: {
     // Serve static assets from public/ (icons, favicon, robots.txt, ...).
+    "/favicon.svg": () => new Response(Bun.file("public/favicon.svg")),
     "/images/*": (req) => {
       const path = new URL(req.url).pathname;
       return new Response(Bun.file(`public${path}`));

@@ -1,4 +1,4 @@
-import { PageContainer } from "@/components/page-layout";
+import { PageContainer } from "@/components/layout/page-layout";
 import { Button } from "@/components/ui/button";
 import { Typography } from "@/components/ui/typography";
 import { BuildsHub } from "@/features/builds";

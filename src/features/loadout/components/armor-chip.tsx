@@ -16,11 +16,12 @@ export const ArmorChip = ({ piece, slotIndex, rarity }: ArmorChipProps) => {
   const position = EQUIPMENT_POSITIONS[slotIndex] ?? "head";
 
   return (
-    <div className="relative flex min-w-0 max-w-42 flex-1 flex-col items-center justify-center gap-1 overflow-hidden border-l border-border/60 px-2 py-1 first:border-l-0">
-      <SlotIcon position={position} color={color} size={24} />
+    <div className="relative flex min-w-0 max-w-44 flex-1 flex-col items-center justify-center gap-2 overflow-hidden border-l border-border/60 px-2 py-1 first:border-l-0">
+      <SlotIcon position={position} color={color} size={28} />
       <Typography
         as="span"
         className="w-full truncate text-center text-xs text-foreground"
+        title={piece}
       >
         {shortArmorName(piece)}
       </Typography>

@@ -1,5 +1,5 @@
-import { PageHeader } from "@/components/page-header";
-import { PageContainer } from "@/components/page-layout";
+import { PageHeader } from "@/components/layout/page-header";
+import { PageContainer } from "@/components/layout/page-layout";
 import { Button } from "@/components/ui/button";
 import {
   Collapsible,

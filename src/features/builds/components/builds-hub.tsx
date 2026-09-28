@@ -1,4 +1,4 @@
-import { EmptyState } from "@/components/empty-state";
+import { EmptyState } from "@/components/feedback/empty-state";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,

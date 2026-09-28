@@ -5,7 +5,7 @@ export const SectionHeading = ({ children }: { children: React.ReactNode }) => {
   return (
     <Typography
       as="h4"
-      className="mb-2 border-b border-border pb-2 text-xs font-medium text-muted-foreground"
+      className="mb-2 border-b border-border pb-2 text-sm font-medium text-foreground"
     >
       {children}
     </Typography>

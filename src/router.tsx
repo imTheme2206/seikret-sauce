@@ -1,7 +1,7 @@
 import { createRootRoute, createRoute, createRouter, Outlet } from "@tanstack/react-router";
-import { ThemeProvider } from "./components/theme-provider";
-import { AppHeader } from "./components/app-header";
-import { PageLayout } from "./components/page-layout";
+import { ThemeProvider } from "./components/providers/theme-provider";
+import { AppHeader } from "./components/layout/app-header";
+import { PageLayout } from "./components/layout/page-layout";
 import { Toaster } from "./components/ui/toaster";
 import { HomePage } from "./features/home";
 import { LoadoutOptimizer } from "./features/loadout";

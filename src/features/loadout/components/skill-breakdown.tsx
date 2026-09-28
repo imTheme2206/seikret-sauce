@@ -20,7 +20,7 @@ export const SkillBreakdown = ({ skills, setGroupSkills, requestedNames }: Skill
         return (
           <div
             key={name}
-            className="flex items-center border-b border-[hsl(30,10%,11%)] py-[3px]"
+            className="flex items-center border-b border-border/70 py-1.5"
           >
             <Typography
               as="span"
@@ -52,7 +52,7 @@ export const SkillBreakdown = ({ skills, setGroupSkills, requestedNames }: Skill
             return (
               <div
                 key={name}
-                className="flex items-center border-b border-[hsl(30,10%,11%)] py-[3px]"
+                className="flex items-center border-b border-border/70 py-1.5"
               >
                 <Typography
                   as="span"

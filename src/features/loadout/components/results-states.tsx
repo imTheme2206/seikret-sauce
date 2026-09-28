@@ -1,4 +1,4 @@
-import { EmptyState } from "@/components/empty-state";
+import { EmptyState } from "@/components/feedback/empty-state";
 import { Skeleton } from "@/components/ui/skeleton";
 
 /** Non-result states for the results panel: empty prompt, searching, no-results. */

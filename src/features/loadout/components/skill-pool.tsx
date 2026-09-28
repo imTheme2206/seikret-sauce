@@ -23,6 +23,7 @@ type SkillPoolProps = {
   onLevelChange: (name: string, level: number) => void;
   onRemove: (name: string) => void;
   onClearAll: () => void;
+  showSummary?: boolean;
 };
 
 /** Browsable, tabbed pool of all available skills. */
@@ -38,6 +39,7 @@ export const SkillPool = ({
   onLevelChange,
   onRemove,
   onClearAll,
+  showSummary = true,
 }: SkillPoolProps) => {
   const selectedByCategory = Object.values(selected).reduce<
     Partial<Record<SkillCategory, number>>
@@ -50,8 +52,8 @@ export const SkillPool = ({
   );
 
   return (
-    <section className="flex min-h-0 flex-1 flex-col">
-      <div className="flex min-h-11 shrink-0 items-center justify-between">
+    <section className="flex h-full min-h-0 flex-col">
+      {showSummary && <div className="flex min-h-11 shrink-0 items-center justify-between border-b border-border px-4">
         <div className="flex items-center gap-2">
           <Typography
             as="span"
@@ -70,24 +72,24 @@ export const SkillPool = ({
             type="button"
             variant="ghost"
             onClick={onClearAll}
-            className="h-7 rounded-none px-0 text-xs font-normal text-muted-foreground hover:bg-transparent hover:text-foreground"
+            className="h-7 px-2 text-xs font-normal text-muted-foreground"
           >
             Clear all
           </Button>
         )}
-      </div>
+      </div>}
 
-      <div className="shrink-0 border-b border-border">
+      <div className="shrink-0 border-b border-border px-3 py-2">
         <Tabs
           value={activeTab}
           onValueChange={(v) => onTabChange(v as SkillCategory)}
         >
-          <TabsList variant="line" className="grid h-9 w-full grid-cols-4 gap-0 p-0">
+          <TabsList className="grid h-9 w-full grid-cols-4 gap-1 p-0 bg-transparent">
             {CATEGORY_ORDER.map((category) => (
               <TabsTrigger
                 key={category}
                 value={category}
-                className="h-9 rounded-none px-1 text-xs font-medium"
+                className="h-9 rounded-md border border-border bg-transparent px-1 text-xs font-medium data-[state=active]:border-primary/60 data-[state=active]:bg-primary/10 data-[state=active]:text-primary"
               >
                 <span className="truncate">{CATEGORY_CONFIG[category].label}</span>
                 {(selectedByCategory[category] ?? 0) > 0 && (
@@ -100,7 +102,12 @@ export const SkillPool = ({
           </TabsList>
         </Tabs>
       </div>
-      <ScrollArea className="-mx-5 min-h-0 flex-1">
+      {!showSummary && (
+        <div className="grid shrink-0 grid-cols-[1fr_auto] border-b border-border px-4 py-2 text-xs font-medium text-muted-foreground">
+          <span>Skill</span><span className="pr-16">Level</span>
+        </div>
+      )}
+      <ScrollArea className="min-h-0 flex-1">
         {isLoading ? (
           <PoolSkeleton />
         ) : sortedPool.length === 0 ? (
@@ -127,7 +134,7 @@ const PoolMessage = ({ children }: { children: React.ReactNode }) => {
   return (
     <Typography
       as="div"
-      className="px-6 py-6 text-center text-xs text-muted-foreground col-span-full"
+      className="flex min-h-[220px] items-center justify-center px-6 py-6 text-center text-sm text-muted-foreground"
     >
       {children}
     </Typography>

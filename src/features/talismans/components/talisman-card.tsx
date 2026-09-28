@@ -34,8 +34,8 @@ export const TalismanCard = ({
   const [isConfirmingDelete, setIsConfirmingDelete] = useState(false);
 
   return (
-    <Card className="gap-0 rounded-sm border-border py-0 shadow-none transition-colors hover:border-primary/40">
-      <CardHeader className="flex-row items-center gap-3 border-b border-border bg-secondary/25 p-4">
+    <Card className="gap-0 rounded-md border-border bg-card/40 py-0 shadow-none transition-colors hover:border-primary/40">
+      <CardHeader className="flex-row items-center gap-3 border-b border-border bg-secondary/20 p-4">
         <span className="size-7 shrink-0 text-primary">
           <TalismanSVG color="currentColor" />
         </span>

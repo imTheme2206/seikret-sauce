@@ -1,5 +1,3 @@
-import { useState } from "react";
-import { SlidersHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Drawer,
@@ -8,44 +6,49 @@ import {
   DrawerTitle,
 } from "@/components/ui/drawer";
 import { useSkillCatalog } from "@/features/skills/skill-catalog";
+import { SlidersHorizontal } from "lucide-react";
+import { useState } from "react";
 import { LeftPanel } from "./components/left-panel";
+import { OptimizerSettings } from "./components/optimizer-settings";
 import { ResultsPanel } from "./components/results-panel";
+import { SkillSelectionWorkspace } from "./components/skill-selection-workspace";
 import { useLoadoutOptimizer } from "./hooks/use-loadout-optimizer";
 import { useSaveOptimizerResult } from "./hooks/use-save-optimizer-result";
 
-/**
- * `/` route body: owns data fetching and the optimizer controller, then
- * composes the two-panel layout. The header/shell live in the root route.
- * Below `lg` the sidebar collapses into a Drawer, triggered from the results
- * panel, so narrow screens get the full-width results list by default.
- */
+/** The controller remains the sole owner of optimizer state and search behavior. */
 export const LoadoutOptimizer = () => {
   const { catalog, isLoading } = useSkillCatalog();
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
-
   const controller = useLoadoutOptimizer({
     skills: catalog?.grouped,
     isLoadingSkills: isLoading,
   });
-  const saveResult = useSaveOptimizerResult(controller.selectedList, controller.weapon);
+  const saveResult = useSaveOptimizerResult(
+    controller.selectedList,
+    controller.weapon,
+  );
 
   return (
-    <div className="grid h-full grid-cols-1 overflow-hidden lg:grid-cols-[440px_1fr]">
-      <div className="hidden lg:contents">
-        <LeftPanel controller={controller} />
-      </div>
+    <main className="h-full overflow-y-auto bg-background">
+      <div className="mx-auto w-full max-w-[1600px] px-4 pb-12 pt-5 sm:px-6 lg:px-8">
+        <div className="hidden lg:block">
+          <OptimizerSettings controller={controller} />
+          <SkillSelectionWorkspace controller={controller} />
+        </div>
 
-      <div className="flex min-h-0 flex-col overflow-hidden">
-        <div className="shrink-0 border-b border-border p-2.5 lg:hidden">
+        <div className="mb-5 lg:hidden">
           <Button
             type="button"
             variant="outline"
-            size="sm"
-            className="w-full"
+            className="h-11 w-full justify-between"
             onClick={() => setIsFiltersOpen(true)}
           >
-            <SlidersHorizontal className="size-4" />
-            Skills & filters
+            <span className="flex items-center gap-2">
+              <SlidersHorizontal className="size-4" /> Skills &amp; filters
+            </span>
+            <span className="text-xs text-muted-foreground">
+              {controller.selectedCount} selected
+            </span>
           </Button>
         </div>
 
@@ -67,15 +70,15 @@ export const LoadoutOptimizer = () => {
         open={isFiltersOpen}
         onOpenChange={setIsFiltersOpen}
       >
-        <DrawerContent className="flex w-[90vw] max-w-[440px] flex-col overflow-hidden">
+        <DrawerContent className="flex w-[min(92vw,440px)] flex-col overflow-hidden">
           <DrawerHeader className="sr-only">
-            <DrawerTitle>Skills & filters</DrawerTitle>
+            <DrawerTitle>Skills &amp; filters</DrawerTitle>
           </DrawerHeader>
           <div className="min-h-0 flex-1 overflow-hidden">
             <LeftPanel controller={controller} className="border-r-0" />
           </div>
         </DrawerContent>
       </Drawer>
-    </div>
+    </main>
   );
 };

@@ -25,6 +25,26 @@ To start a development server:
 bun dev
 ```
 
+## Frontend structure
+
+The app is organized by ownership:
+
+| Location | Responsibility |
+| --- | --- |
+| `src/components/ui/` | Shadcn/Radix primitives; keep product state and domain copy out of these files. |
+| `src/components/layout/` | Shared navigation and page frames. |
+| `src/components/feedback/` | Shared empty and error presentation. |
+| `src/components/gear/` | Reusable equipment visuals used by multiple features. |
+| `src/components/providers/` | App-wide React providers. |
+| `src/features/*/` | Feature pages, components, hooks, and types. |
+| `styles/globals.css` | Semantic Shadcn color and radius tokens for both themes. |
+
+For the optimizer, `use-loadout-optimizer.ts` owns selection, persistence, and
+search state. `loadout-optimizer.tsx` composes the screen. Components under
+`features/loadout/components/` only render that state and call controller actions.
+Keep new optimizer controls there instead of adding feature-specific behavior to
+`components/ui/`.
+
 ## Configuration
 
 All client-side configuration is read from `BUN_PUBLIC_*` environment variables and

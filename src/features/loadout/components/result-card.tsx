@@ -9,7 +9,6 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { ChevronDown, Loader2, LogIn, Save } from "lucide-react";
 import type { LoadoutResult } from "../types";
-import { statsSummary } from "../utils";
 import { ArmorChip } from "./armor-chip";
 import { DecorationList } from "./decoration-list";
 import { DefenseStats } from "./defense-stats";
@@ -45,20 +44,20 @@ export const ResultCard = ({
 
   return (
     <Collapsible open={isExpanded} onOpenChange={onToggle} asChild>
-      <Card className="shrink-0 gap-0 overflow-hidden rounded-none border-x-0 border-t-0 border-b-border bg-transparent py-0 shadow-none first:border-t">
+      <Card className="gap-0 overflow-hidden rounded-md border border-border bg-card/30 py-0 shadow-none">
         <CollapsibleTrigger
           className={cn(
-            "flex min-h-24 w-full items-center gap-3 px-1 py-3 text-left transition-colors",
-            isExpanded ? "bg-foreground/[0.025]" : "hover:bg-foreground/[0.025]",
+            "flex min-h-28 w-full flex-wrap items-center gap-4 px-4 py-4 text-left transition-colors md:flex-nowrap md:px-5",
+            isExpanded ? "bg-primary/[0.045]" : "hover:bg-foreground/[0.035]",
           )}
         >
-          <div className="flex w-7 shrink-0 items-center justify-center">
-            <Typography as="span" className="font-mono text-xs text-muted-foreground">
+          <div className="flex size-8 shrink-0 items-center justify-center rounded-md border border-border bg-background/60">
+            <Typography as="span" className="text-xs font-semibold tabular-nums text-muted-foreground">
               {String(index + 1).padStart(2, "0")}
             </Typography>
           </div>
 
-          <div className="flex min-w-0 flex-1 gap-1 overflow-hidden">
+          <div className="order-3 flex min-w-0 w-full flex-1 gap-1 overflow-hidden md:order-none">
             {result.armorNames.map((piece, slotIndex) => (
               <ArmorChip
                 key={`${piece}:${slotIndex}`}
@@ -68,18 +67,10 @@ export const ResultCard = ({
               />
             ))}
           </div>
-          <div className="flex flex-col gap-1">
-            {statsSummary(skillCount, result.decoNames.length, result.defense)
-              .split("·")
-              .map((char, i) => (
-                <Typography
-                  as="div"
-                  className="ml-1.5 shrink-0 whitespace-nowrap text-xs text-muted-foreground"
-                  key={i}
-                >
-                  {char}
-                </Typography>
-              ))}
+          <div className="ml-auto flex shrink-0 flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground md:ml-0 md:w-36 md:flex-col md:gap-1">
+            <span>{skillCount} skills</span>
+            <span>{result.decoNames.length} decorations</span>
+            <span><strong className="font-semibold tabular-nums text-foreground">{result.defense}</strong> base defense</span>
           </div>
 
           <ChevronDown
@@ -91,8 +82,8 @@ export const ResultCard = ({
         </CollapsibleTrigger>
 
         <CollapsibleContent>
-          <div className="space-y-4 border-t border-border/70 px-10 py-4">
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-[1fr_1.1fr]">
+          <div className="space-y-5 border-t border-border px-5 py-5 md:px-8">
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
               <DecorationList decorations={result.decoNames} />
               <SkillBreakdown
                 skills={result.skills}
@@ -111,7 +102,7 @@ export const ResultCard = ({
                 size="sm"
                 disabled={saveDisabled}
                 onClick={() => void onSave()}
-                className="rounded-sm shadow-none"
+                className="shadow-none"
               >
                 {isSaving ? (
                   <Loader2 className="size-4 animate-spin" />

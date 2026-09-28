@@ -37,10 +37,10 @@ export const SkillPoolRow = ({
   return (
     <div
       className={cn(
-        "group relative flex min-h-[52px] w-full items-center gap-3 border-b border-border/70 px-5 py-2.5 text-left transition-colors",
+        "group relative flex min-h-[46px] w-full items-center gap-3 border-b border-border/70 px-4 py-2 text-left transition-colors last:border-b-0",
         isSelected
-          ? "bg-primary/[0.035] shadow-[inset_2px_0_0_var(--primary)]"
-          : "hover:bg-foreground/[0.025]",
+          ? "bg-primary/[0.045]"
+          : "hover:bg-foreground/[0.035]",
       )}
     >
       {!isSelected && (
@@ -52,7 +52,7 @@ export const SkillPoolRow = ({
         />
       )}
 
-      <div className="relative flex size-7 shrink-0 items-center justify-center overflow-hidden [&_img]:size-5 [&_img]:object-contain">
+      <div className="relative flex size-8 shrink-0 items-center justify-center overflow-hidden [&_img]:size-5 [&_img]:object-contain">
         <SkillGlyph
           category={skill.category}
           icon={skill.icon}

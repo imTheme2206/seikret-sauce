@@ -1,4 +1,3 @@
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { Typography } from "@/components/ui/typography";
 import { cn } from "@/lib/utils";
 import { ResultCard } from "./result-card";
@@ -48,20 +47,21 @@ export const ResultsPanel = ({
             : "Select skills to begin";
 
   return (
-    <main className="flex flex-col overflow-hidden bg-background">
-      <div className="flex min-h-[73px] shrink-0 items-center justify-between gap-4 border-b border-border px-6 py-4">
+    <section aria-labelledby="results-heading" className="border-t border-border pt-6">
+      <div className="mb-5 flex flex-wrap items-end justify-between gap-4">
         <div>
-          <Typography as="h1" className="text-base font-semibold text-foreground">
+          <Typography id="results-heading" as="h2" className="text-2xl font-semibold tracking-tight text-foreground">
             Optimized loadouts
           </Typography>
-          <Typography as="p" className="mt-1 text-xs text-muted-foreground">
+          <Typography as="p" className="mt-1 text-sm text-muted-foreground">
             Compare equipment, decorations, and defenses.
           </Typography>
         </div>
         <Typography
           as="span"
+          aria-live="polite"
           className={cn(
-            "shrink-0 text-xs",
+            "shrink-0 text-sm",
             hasResults ? "text-primary" : "text-muted-foreground",
           )}
         >
@@ -70,8 +70,7 @@ export const ResultsPanel = ({
       </div>
 
       {hasResults ? (
-        <ScrollArea className="min-h-0 flex-1">
-          <div className="flex flex-col px-6 py-3">
+        <div className="flex flex-col gap-2">
             {results.map((result, index) => (
               <ResultCard
                 key={index}
@@ -86,10 +85,9 @@ export const ResultsPanel = ({
                 onSave={() => onSave(result, index)}
               />
             ))}
-          </div>
-        </ScrollArea>
+        </div>
       ) : (
-        <div className="flex flex-1 flex-col overflow-hidden px-6 py-3">
+        <div className="flex min-h-56 flex-col overflow-hidden rounded-md border border-border bg-card/20">
           {status === "idle" && <ResultsEmptyState />}
           {status === "searching" && <ResultsSearchingState />}
           {status === "empty" && <ResultsNoResultsState />}
@@ -100,6 +98,6 @@ export const ResultsPanel = ({
           )}
         </div>
       )}
-    </main>
+    </section>
   );
 };

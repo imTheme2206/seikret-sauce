@@ -43,10 +43,10 @@ const SkillSelect = ({
   onChange: (name: string | null) => void;
 }) => {
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-3">
       <Typography
         as="span"
-        className="w-9 shrink-0 text-xs font-medium text-muted-foreground"
+        className="w-12 shrink-0 text-sm font-medium text-muted-foreground"
       >
         {label}
       </Typography>
@@ -55,7 +55,7 @@ const SkillSelect = ({
         onValueChange={(v) => onChange(v === NONE ? null : v)}
         disabled={disabled}
       >
-        <SelectTrigger size="sm" className="h-7 flex-1 text-xs">
+        <SelectTrigger size="sm" className="h-9 flex-1 text-sm">
           <SelectValue placeholder={placeholder} />
         </SelectTrigger>
         <SelectContent>
@@ -92,7 +92,7 @@ export const WeaponSelector = ({
       className="shrink-0"
     >
       <AccordionItem value="weapon" className="border-b-0">
-        <AccordionTrigger className="group items-center gap-2 py-0 text-xs font-medium text-muted-foreground hover:no-underline">
+        <AccordionTrigger className="group min-h-9 items-center gap-2 py-0 text-sm font-medium text-foreground hover:no-underline">
           <Typography as="span" className="shrink-0">
             Weapon Setting
           </Typography>
@@ -105,7 +105,7 @@ export const WeaponSelector = ({
             </Typography>
           )}
         </AccordionTrigger>
-        <AccordionContent className="flex flex-col gap-2 pb-0 pt-3">
+        <AccordionContent className="grid gap-3 pb-0 pt-4 2xl:grid-cols-2">
           <SkillSelect
             label="Set"
             placeholder="No set skill"

@@ -1,6 +1,6 @@
 import { Boxes, Users } from "lucide-react";
-import { PageContainer } from "@/components/page-layout";
-import { PageHeader } from "@/components/page-header";
+import { PageContainer } from "@/components/layout/page-layout";
+import { PageHeader } from "@/components/layout/page-header";
 import { BuildsHub } from "../components/builds-hub";
 import type { BuildsView } from "../hooks/use-builds-hub";
 

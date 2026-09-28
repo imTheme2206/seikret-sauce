@@ -1,4 +1,4 @@
-import { PageContainer } from "@/components/page-layout";
+import { PageContainer } from "@/components/layout/page-layout";
 import { Typography } from "@/components/ui/typography";
 import { cn } from "@/lib/utils";
 import type { LucideIcon } from "lucide-react";

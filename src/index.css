@@ -19,17 +19,17 @@
     }
 }
 
-/* Thin scrollbars to match the design. */
+/* Keep long equipment lists unobtrusive without hiding scroll affordances. */
 ::-webkit-scrollbar {
-    width: 4px;
-    height: 4px;
+    width: 8px;
+    height: 8px;
 }
 ::-webkit-scrollbar-track {
     background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-    background: hsl(30, 10%, 24%);
-    border-radius: 2px;
+    background: var(--border);
+    border-radius: 999px;
 }
 
 @keyframes slide {
