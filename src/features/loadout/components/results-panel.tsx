@@ -21,7 +21,7 @@ type ResultsPanelProps = {
   onSave: (result: LoadoutResult, index: number) => Promise<void>;
 };
 
-/** Right-hand panel: search status and the list of optimised loadouts. */
+/** Search status and the list of optimised loadouts below the skill workspace. */
 export const ResultsPanel = ({
   results,
   status,

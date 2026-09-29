@@ -1,5 +1,4 @@
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import { Typography } from "@/components/ui/typography";
 import { cn } from "@/lib/utils";
 import type { Rank } from "../types";
 
@@ -16,12 +15,13 @@ const OPTIONS: { rank: Rank; label: string; enabled: boolean }[] = [
 ];
 
 /** Segmented rank picker that feeds the search request's `rank` field. */
-export const RankSelector = ({ value, onChange, disabled }: RankSelectorProps) => {
+export const RankSelector = ({
+  value,
+  onChange,
+  disabled,
+}: RankSelectorProps) => {
   return (
-    <div className="flex shrink-0 items-center justify-between gap-4">
-      <Typography as="span" className="text-sm font-medium text-foreground">
-        Quest rank
-      </Typography>
+    <div className="flex shrink-0 items-center justify-start gap-4">
       <ToggleGroup
         type="single"
         value={value}

@@ -1,10 +1,4 @@
 import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
-import {
   Select,
   SelectContent,
   SelectItem,
@@ -43,10 +37,10 @@ const SkillSelect = ({
   onChange: (name: string | null) => void;
 }) => {
   return (
-    <div className="flex items-center gap-3">
+    <div className="flex min-w-0 items-center gap-2">
       <Typography
         as="span"
-        className="w-12 shrink-0 text-sm font-medium text-muted-foreground"
+        className="shrink-0 text-xs font-medium text-muted-foreground"
       >
         {label}
       </Typography>
@@ -55,7 +49,11 @@ const SkillSelect = ({
         onValueChange={(v) => onChange(v === NONE ? null : v)}
         disabled={disabled}
       >
-        <SelectTrigger size="sm" className="h-9 flex-1 text-sm">
+        <SelectTrigger
+          size="sm"
+          aria-label={`${label} weapon skill`}
+          className="h-9 min-w-0 flex-1 text-sm"
+        >
           <SelectValue placeholder={placeholder} />
         </SelectTrigger>
         <SelectContent>
@@ -81,49 +79,29 @@ export const WeaponSelector = ({
   onChange,
   options,
   disabled,
-}: WeaponSelectorProps) => {
-  // Skill names shown in the collapsed header so the selection stays visible.
-  const summary = [value.set, value.group].filter(Boolean).join(", ");
-
-  return (
-    <Accordion
-      type="single"
-      collapsible
-      className="shrink-0"
+}: WeaponSelectorProps) => (
+  <div className="grid min-w-0 grid-cols-1 items-center gap-3 min-[420px]:grid-cols-2 sm:grid-cols-[auto_minmax(0,1fr)_minmax(0,1fr)]">
+    <Typography
+      as="span"
+      className="text-sm font-medium text-foreground min-[420px]:col-span-2 sm:col-span-1"
     >
-      <AccordionItem value="weapon" className="border-b-0">
-        <AccordionTrigger className="group min-h-9 items-center gap-2 py-0 text-sm font-medium text-foreground hover:no-underline">
-          <Typography as="span" className="shrink-0">
-            Weapon Setting
-          </Typography>
-          {summary && (
-            <Typography
-              as="span"
-              className="min-w-0 flex-1 truncate text-right font-normal text-foreground/80 group-data-[state=open]:hidden"
-            >
-              {summary}
-            </Typography>
-          )}
-        </AccordionTrigger>
-        <AccordionContent className="grid gap-3 pb-0 pt-4 2xl:grid-cols-2">
-          <SkillSelect
-            label="Set"
-            placeholder="No set skill"
-            value={value.set}
-            options={options.set}
-            disabled={disabled}
-            onChange={(name) => onChange("set", name)}
-          />
-          <SkillSelect
-            label="Group"
-            placeholder="No group skill"
-            value={value.group}
-            options={options.group}
-            disabled={disabled}
-            onChange={(name) => onChange("group", name)}
-          />
-        </AccordionContent>
-      </AccordionItem>
-    </Accordion>
-  );
-};
+      Weapon Setting
+    </Typography>
+    <SkillSelect
+      label="Set"
+      placeholder="No set skill"
+      value={value.set}
+      options={options.set}
+      disabled={disabled}
+      onChange={(name) => onChange("set", name)}
+    />
+    <SkillSelect
+      label="Group"
+      placeholder="No group skill"
+      value={value.group}
+      options={options.group}
+      disabled={disabled}
+      onChange={(name) => onChange("group", name)}
+    />
+  </div>
+);

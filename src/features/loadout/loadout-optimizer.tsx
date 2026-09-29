@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/drawer";
 import { useSkillCatalog } from "@/features/skills/skill-catalog";
 import { SlidersHorizontal } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { LeftPanel } from "./components/left-panel";
 import { OptimizerSettings } from "./components/optimizer-settings";
 import { ResultsPanel } from "./components/results-panel";
@@ -27,6 +27,29 @@ export const LoadoutOptimizer = () => {
     controller.selectedList,
     controller.weapon,
   );
+  const resultsRef = useRef<HTMLDivElement>(null);
+  const previousStatus = useRef(controller.status);
+
+  useEffect(() => {
+    if (controller.status === "searching") setIsFiltersOpen(false);
+
+    if (
+      previousStatus.current === "searching" &&
+      (controller.status === "success" ||
+        controller.status === "empty" ||
+        controller.status === "error")
+    ) {
+      const reduceMotion = window.matchMedia(
+        "(prefers-reduced-motion: reduce)",
+      ).matches;
+      resultsRef.current?.scrollIntoView({
+        behavior: reduceMotion ? "auto" : "smooth",
+        block: "start",
+      });
+    }
+
+    previousStatus.current = controller.status;
+  }, [controller.status]);
 
   return (
     <main className="h-full overflow-y-auto bg-background">
@@ -52,17 +75,22 @@ export const LoadoutOptimizer = () => {
           </Button>
         </div>
 
-        <ResultsPanel
-          results={controller.results}
-          status={controller.status}
-          error={controller.error}
-          expanded={controller.expanded}
-          requestedNames={controller.requestedNames}
-          onToggle={controller.toggleExpand}
-          isSignedIn={saveResult.isSignedIn}
-          savingIndex={saveResult.savingIndex}
-          onSave={saveResult.saveResult}
-        />
+        <div
+          ref={resultsRef}
+          className="min-h-[calc(100dvh-4rem)] scroll-mt-5"
+        >
+          <ResultsPanel
+            results={controller.results}
+            status={controller.status}
+            error={controller.error}
+            expanded={controller.expanded}
+            requestedNames={controller.requestedNames}
+            onToggle={controller.toggleExpand}
+            isSignedIn={saveResult.isSignedIn}
+            savingIndex={saveResult.savingIndex}
+            onSave={saveResult.saveResult}
+          />
+        </div>
       </div>
 
       <Drawer

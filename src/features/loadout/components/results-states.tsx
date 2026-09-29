@@ -1,5 +1,5 @@
 import { EmptyState } from "@/components/feedback/empty-state";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Loader2 } from "lucide-react";
 
 /** Non-result states for the results panel: empty prompt, searching, no-results. */
 
@@ -17,24 +17,16 @@ export const ResultsEmptyState = () => {
 export const ResultsSearchingState = () => {
   return (
     <div
-      className="flex flex-1 flex-col gap-2 py-1"
+      className="flex min-h-56 flex-1 flex-col items-center justify-center gap-3 px-6 py-10 text-center"
       aria-busy="true"
       aria-label="Searching for optimal sets"
+      role="status"
     >
-      {Array.from({ length: 10 }, (_, i) => (
-        <div
-          key={i}
-          className="flex min-h-24 items-center gap-3 border-b border-border bg-transparent px-1 py-3"
-        >
-          <Skeleton className="h-3 w-7 shrink-0 rounded-sm" />
-          <div className="flex flex-1 gap-1">
-            {Array.from({ length: 6 }, (_, j) => (
-              <Skeleton key={j} className="h-14 flex-1 rounded-sm" />
-            ))}
-          </div>
-          <Skeleton className="size-3.5 shrink-0" />
-        </div>
-      ))}
+      <Loader2 className="size-7 animate-spin text-primary" aria-hidden="true" />
+      <p className="text-sm font-medium text-foreground">Finding loadouts…</p>
+      <p className="text-xs text-muted-foreground">
+        Checking equipment and decoration combinations.
+      </p>
     </div>
   );
 };

@@ -1,8 +1,8 @@
-import { SkillPool } from "./skill-pool";
-import { SkillSearchBar } from "./skill-search-bar";
-import { SelectedSkillsPanel } from "./selected-skills-panel";
 import { Button } from "@/components/ui/button";
 import type { LoadoutOptimizerController } from "../hooks/use-loadout-optimizer";
+import { SelectedSkillsPanel } from "./selected-skills-panel";
+import { SkillPool } from "./skill-pool";
+import { SkillSearchBar } from "./skill-search-bar";
 
 export const SkillSelectionWorkspace = ({
   controller: c,
@@ -11,9 +11,9 @@ export const SkillSelectionWorkspace = ({
 }) => (
   <section
     aria-labelledby="skill-selection-heading"
-    className="mb-6 grid gap-8 xl:grid-cols-[minmax(0,1fr)_310px]"
+    className="mb-6 grid gap-8 lg:h-[calc(100dvh-14rem)] lg:min-h-[560px] lg:grid-cols-[minmax(0,1fr)_310px]"
   >
-    <div className="min-w-0">
+    <div className="flex min-h-0 min-w-0 flex-col">
       <div className="mb-5 flex flex-wrap items-end justify-between gap-4">
         <div>
           <h1
@@ -30,7 +30,7 @@ export const SkillSelectionWorkspace = ({
           <SkillSearchBar value={c.searchQuery} onChange={c.setSearchQuery} />
         </div>
       </div>
-      <div className="h-[320px] overflow-hidden rounded-md border border-border bg-card/30">
+      <div className="min-h-0 flex-1 overflow-hidden rounded-md border border-border bg-card/30">
         <SkillPool
           pool={c.pool}
           activeTab={c.activeTab}
