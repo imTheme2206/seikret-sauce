@@ -1,6 +1,15 @@
-import { expect, test } from "bun:test";
+import { afterEach, expect, test } from "bun:test";
 import { EMPTY_DRAFT } from "./config";
-import { parseWorkingBuild } from "./working-build";
+import {
+  clearWorkingBuild,
+  loadWorkingBuild,
+  loadWorkingTarget,
+  parseWorkingBuild,
+  parseWorkingTarget,
+  saveWorkingBuild,
+  saveWorkingTarget,
+  WORKING_BUILD_KEY,
+} from "./working-build";
 import { toCreateBody } from "./utils";
 
 test("a persisted weapon selection survives the JSON round trip", () => {
@@ -94,4 +103,71 @@ test("stray weapon decorations are dropped when no weapon is chosen", () => {
     },
   });
   expect(body.composition.weapon?.decorations).toEqual([]);
+});
+
+// ── Hunt target stored beside the draft ─────────────────────────────────────
+
+const stubStorage = (initial?: string) => {
+  const store = new Map<string, string>();
+  if (initial !== undefined) store.set(WORKING_BUILD_KEY, initial);
+  (globalThis as { window?: unknown }).window = {
+    localStorage: {
+      getItem: (key: string) => store.get(key) ?? null,
+      setItem: (key: string, value: string) => void store.set(key, value),
+      removeItem: (key: string) => void store.delete(key),
+    },
+  };
+  return store;
+};
+
+afterEach(() => {
+  delete (globalThis as { window?: unknown }).window;
+});
+
+test("a draft stored before targets existed still loads, with no target", () => {
+  const legacy = { ...EMPTY_DRAFT, name: "Old draft" };
+  stubStorage(JSON.stringify(legacy));
+  expect(loadWorkingBuild().name).toBe("Old draft");
+  expect(loadWorkingTarget()).toBeNull();
+});
+
+test("the target survives draft saves and does not leak into the draft", () => {
+  const store = stubStorage();
+  saveWorkingTarget({ monsterId: "rathalos", partId: "head" });
+  saveWorkingBuild({ ...EMPTY_DRAFT, name: "Thunder lance" });
+
+  expect(loadWorkingTarget()).toEqual({ monsterId: "rathalos", partId: "head" });
+  expect(loadWorkingBuild()).toEqual({ ...EMPTY_DRAFT, name: "Thunder lance" });
+  expect(Object.keys(parseWorkingBuild(JSON.parse(store.get(WORKING_BUILD_KEY)!)))).not.toContain("target");
+});
+
+test("saving the draft keeps the target but drops the draft content", () => {
+  stubStorage();
+  saveWorkingBuild({ ...EMPTY_DRAFT, name: "Gone after save" });
+  saveWorkingTarget({ monsterId: "rathalos", partId: null });
+  clearWorkingBuild();
+  expect(loadWorkingBuild()).toEqual(EMPTY_DRAFT);
+  expect(loadWorkingTarget()).toEqual({ monsterId: "rathalos", partId: null });
+});
+
+test("clearing the target leaves the draft alone, and an empty entry is removed", () => {
+  const store = stubStorage();
+  saveWorkingTarget({ monsterId: "rathalos", partId: null });
+  saveWorkingTarget(null);
+  expect(store.has(WORKING_BUILD_KEY)).toBe(false);
+
+  saveWorkingBuild({ ...EMPTY_DRAFT, name: "Kept" });
+  saveWorkingTarget({ monsterId: "rathian", partId: null });
+  saveWorkingTarget(null);
+  expect(loadWorkingBuild().name).toBe("Kept");
+  expect(loadWorkingTarget()).toBeNull();
+});
+
+test("a malformed stored target means no target", () => {
+  expect(parseWorkingTarget({ target: { monsterId: 7 } })).toBeNull();
+  expect(parseWorkingTarget({ target: "x" })).toBeNull();
+  expect(parseWorkingTarget({ target: { monsterId: "m", partId: 3 } })).toEqual({
+    monsterId: "m",
+    partId: null,
+  });
 });

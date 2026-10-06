@@ -44,6 +44,9 @@ by type first, then by item (grouped by rarity). Carries base raw (and in-game d
 element/status specials, sharpness (melee only), weapon-type decoration slots, ordinary weapon skills, and
 type-specific data. Distinct from the **weapon bonus** pair below (backend ADR-0013).
 
+**Target**:
+The monster (and optionally one of its parts) the hunter is preparing for, chosen on `/monsters` from the catalog served by `/api/mh-wilds/monsters` (backend ADR-0015). It is persisted beside the **Working Build** draft in `working-build.ts` but is never part of a Saved Build; `useSelectedTarget()` resolves it to live catalog data. A hitzone multiplier of 0.45 or more for the selected damage type is a **weak point**.
+
 **Working Build**:
 The unsaved Build Editor draft. A new build's draft is persisted to localStorage (`working-build.ts`) so picks
 such as the **Weapon** survive a reload; it is sent to the API only when the hunter saves. The

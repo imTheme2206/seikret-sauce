@@ -5,6 +5,7 @@ import { PageLayout } from "./components/layout/page-layout";
 import { Toaster } from "./components/ui/toaster";
 import { HomePage } from "./features/home";
 import { LoadoutOptimizer } from "./features/loadout";
+import { MonstersPage } from "./features/monsters";
 import { TalismansTab } from "./features/talismans";
 import {
   BuildDetailPage,
@@ -52,6 +53,12 @@ const talismansRoute = createRoute({
   component: TalismansTab,
 });
 
+const monstersRoute = createRoute({
+  getParentRoute: () => pageLayoutRoute,
+  path: "/monsters",
+  component: MonstersPage,
+});
+
 const buildsRoute = createRoute({
   getParentRoute: () => pageLayoutRoute,
   path: "/builds",
@@ -93,6 +100,7 @@ const routeTree = rootRoute.addChildren([
   pageLayoutRoute.addChildren([
     indexRoute,
     talismansRoute,
+    monstersRoute,
     buildsRoute,
     sharedBuildsRoute,
     newBuildRoute,

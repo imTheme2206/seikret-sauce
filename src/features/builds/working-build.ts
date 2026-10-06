@@ -59,6 +59,26 @@ const parseTalisman = (raw: unknown): EditorTalismanSelection | null => {
   };
 };
 
+/**
+ * The hunter's chosen target (a monster, optionally one of its parts), stored
+ * next to the draft under the same key but outside `BuildDraft`: the target is
+ * a calculation choice, never part of the saved build (backend ADR-0015). Ids
+ * are catalog ids; ones the catalog no longer holds are resolved away on read.
+ */
+export type HuntTarget = {
+  monsterId: string;
+  partId: string | null;
+};
+
+/** Read the target out of an arbitrary stored entry; anything malformed means "no target". */
+export const parseWorkingTarget = (raw: unknown): HuntTarget | null => {
+  if (!isRecord(raw) || !isRecord(raw.target)) return null;
+  const monsterId = parseId(raw.target.monsterId);
+  return monsterId
+    ? { monsterId, partId: parseId(raw.target.partId) }
+    : null;
+};
+
 /** Coerce arbitrary stored JSON into a usable draft. */
 export const parseWorkingBuild = (raw: unknown): BuildDraft => {
   if (!isRecord(raw)) return EMPTY_DRAFT;
@@ -87,6 +107,29 @@ export const parseWorkingBuild = (raw: unknown): BuildDraft => {
   };
 };
 
+/** The raw stored entry, or an empty record when absent, unreadable or not an object. */
+const readEntry = (): Record<string, unknown> => {
+  try {
+    const stored = window.localStorage.getItem(WORKING_BUILD_KEY);
+    const parsed: unknown = stored ? JSON.parse(stored) : null;
+    return isRecord(parsed) ? parsed : {};
+  } catch {
+    return {};
+  }
+};
+
+const writeEntry = (entry: Record<string, unknown>): void => {
+  try {
+    if (Object.keys(entry).length === 0) {
+      window.localStorage.removeItem(WORKING_BUILD_KEY);
+    } else {
+      window.localStorage.setItem(WORKING_BUILD_KEY, JSON.stringify(entry));
+    }
+  } catch {
+    // Storage unavailable or full — persistence is best-effort.
+  }
+};
+
 /** Read the stored draft, falling back to an empty one when absent or unreadable. */
 export const loadWorkingBuild = (): BuildDraft => {
   if (typeof window === "undefined") return EMPTY_DRAFT;
@@ -99,21 +142,29 @@ export const loadWorkingBuild = (): BuildDraft => {
   }
 };
 
-/** Write the draft, silently ignoring quota / access errors. */
+/** Write the draft, keeping the stored target; silently ignores quota / access errors. */
 export const saveWorkingBuild = (draft: BuildDraft): void => {
   if (typeof window === "undefined") return;
-  try {
-    window.localStorage.setItem(WORKING_BUILD_KEY, JSON.stringify(draft));
-  } catch {
-    // Storage unavailable or full — persistence is best-effort.
-  }
+  const target = parseWorkingTarget(readEntry());
+  writeEntry(target ? { ...draft, target } : { ...draft });
 };
 
+/**
+ * Discard the draft after a save. The target stays: it is a choice about the
+ * hunt, not content of the build that was just saved.
+ */
 export const clearWorkingBuild = (): void => {
   if (typeof window === "undefined") return;
-  try {
-    window.localStorage.removeItem(WORKING_BUILD_KEY);
-  } catch {
-    // Nothing to clean up if storage is unavailable.
-  }
+  const target = parseWorkingTarget(readEntry());
+  writeEntry(target ? { target } : {});
+};
+
+export const loadWorkingTarget = (): HuntTarget | null =>
+  typeof window === "undefined" ? null : parseWorkingTarget(readEntry());
+
+/** Persist (or clear, with `null`) the target without touching the draft. */
+export const saveWorkingTarget = (target: HuntTarget | null): void => {
+  if (typeof window === "undefined") return;
+  const { target: _previous, ...rest } = readEntry();
+  writeEntry(target ? { ...rest, target } : rest);
 };
