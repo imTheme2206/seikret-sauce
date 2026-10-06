@@ -33,6 +33,7 @@ import { useEffect, useRef } from "react";
 import { ScreenError, ScreenLoader } from "../components/builds-states";
 import { EditorGearRowCard } from "../components/editor-gear-row";
 import { EditorWeaponCard } from "../components/editor-weapon-card";
+import { EfrPanel } from "../components/efr-panel";
 import { HunterPanel } from "../components/hunter-panel";
 import { HunterStatusPanel } from "../components/hunter-status-panel";
 import { PanelHeading } from "../components/panel-heading";
@@ -142,6 +143,11 @@ export const BuildEditorPage = ({ buildId }: { buildId?: string }) => {
                   )}
               </div>
             </section>
+
+            <EfrPanel
+              weapon={controller.weaponRow.weapon}
+              skills={controller.hunterStatus.skills}
+            />
           </div>
 
           <aside className="hidden h-fit space-y-4 lg:sticky lg:top-4 lg:block">

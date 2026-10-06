@@ -1,0 +1,388 @@
+{
+ "source": "https://wilds.mhdb.io/en/skills",
+ "retrievedAt": "2026-10-06",
+ "skills": {
+  "Critical Eye": [
+   {
+    "level": 1,
+    "description": "Affinity +4%"
+   },
+   {
+    "level": 2,
+    "description": "Affinity +8%"
+   },
+   {
+    "level": 3,
+    "description": "Affinity +12%"
+   },
+   {
+    "level": 4,
+    "description": "Affinity +16%"
+   },
+   {
+    "level": 5,
+    "description": "Affinity +20%"
+   }
+  ],
+  "Punishing Draw": [
+   {
+    "level": 1,
+    "description": "Draw attacks deal a small amount of stun damage and gain attack +3."
+   },
+   {
+    "level": 2,
+    "description": "Draw attacks deal a medium amount of stun damage and gain attack +5."
+   },
+   {
+    "level": 3,
+    "description": "Draw attacks deal a large amount of stun damage and gain attack +7."
+   }
+  ],
+  "Critical Boost": [
+   {
+    "level": 1,
+    "description": "Increases damage dealt by critical hits to 28%."
+   },
+   {
+    "level": 2,
+    "description": "Increases damage dealt by critical hits to 31%."
+   },
+   {
+    "level": 3,
+    "description": "Increases damage dealt by critical hits to 34%."
+   },
+   {
+    "level": 4,
+    "description": "Increases damage dealt by critical hits to 37%."
+   },
+   {
+    "level": 5,
+    "description": "Increases damage dealt by critical hits to 40%."
+   }
+  ],
+  "Dragon Attack": [
+   {
+    "level": 1,
+    "description": "Dragon attack +40"
+   },
+   {
+    "level": 2,
+    "description": "Dragon attack +10% Bonus: +50"
+   },
+   {
+    "level": 3,
+    "description": "Dragon attack +20% Bonus: +60"
+   }
+  ],
+  "Fire Attack": [
+   {
+    "level": 1,
+    "description": "Fire attack +40"
+   },
+   {
+    "level": 2,
+    "description": "Fire attack +10% Bonus: +50"
+   },
+   {
+    "level": 3,
+    "description": "Fire attack +20% Bonus: +60"
+   }
+  ],
+  "Weakness Exploit": [
+   {
+    "level": 1,
+    "description": "Attacks that hit weak points gain affinity +5%, with an extra 3% on wounds."
+   },
+   {
+    "level": 2,
+    "description": "Attacks that hit weak points gain affinity +10%, with an extra 5% on wounds."
+   },
+   {
+    "level": 3,
+    "description": "Attacks that hit weak points gain affinity +15%, with an extra 10% on wounds."
+   },
+   {
+    "level": 4,
+    "description": "Attacks that hit weak points have 20% increased affinity, with an extra 15% on wounds."
+   },
+   {
+    "level": 5,
+    "description": "Attacks that hit weak points have 30% increased affinity, with an extra 20% on wounds."
+   }
+  ],
+  "Offensive Guard": [
+   {
+    "level": 1,
+    "description": "Attack +5% while active."
+   },
+   {
+    "level": 2,
+    "description": "Attack +10% while active."
+   },
+   {
+    "level": 3,
+    "description": "Attack +15% while active."
+   }
+  ],
+  "Attack Boost": [
+   {
+    "level": 1,
+    "description": "Attack +3"
+   },
+   {
+    "level": 2,
+    "description": "Attack +5"
+   },
+   {
+    "level": 3,
+    "description": "Attack +7"
+   },
+   {
+    "level": 4,
+    "description": "Attack +2% Bonus: +8"
+   },
+   {
+    "level": 5,
+    "description": "Attack +4% Bonus: +9"
+   }
+  ],
+  "Foray": [
+   {
+    "level": 1,
+    "description": "Attack +6 against large monsters affected by poison or paralysis."
+   },
+   {
+    "level": 2,
+    "description": "Attack +8 and affinity +5% against large monsters affected by poison or paralysis."
+   },
+   {
+    "level": 3,
+    "description": "Attack +10 and affinity +10% against large monsters affected by poison or paralysis."
+   },
+   {
+    "level": 4,
+    "description": "Attack +12 and affinity +15% against large monsters affected by poison or paralysis."
+   },
+   {
+    "level": 5,
+    "description": "Attack +15 and affinity +20% against large monsters affected by poison or paralysis."
+   }
+  ],
+  "Counterstrike": [
+   {
+    "level": 1,
+    "description": "Attack +10 while active."
+   },
+   {
+    "level": 2,
+    "description": "Attack +15 while active. Moderately extends effect time."
+   },
+   {
+    "level": 3,
+    "description": "Attack +25 while active. Extends effect time."
+   }
+  ],
+  "Heroics": [
+   {
+    "level": 1,
+    "description": "Defense +50 while active."
+   },
+   {
+    "level": 2,
+    "description": "Attack +5% and defense +50 while active."
+   },
+   {
+    "level": 3,
+    "description": "Attack +5% and defense +100 while active."
+   },
+   {
+    "level": 4,
+    "description": "Attack +10% and defense +100 while active."
+   },
+   {
+    "level": 5,
+    "description": "Attack +30% and defense-increasing effects are negated while active."
+   }
+  ],
+  "Water Attack": [
+   {
+    "level": 1,
+    "description": "Water attack +40"
+   },
+   {
+    "level": 2,
+    "description": "Water attack +10% Bonus: +50"
+   },
+   {
+    "level": 3,
+    "description": "Water attack +20% Bonus: +60"
+   }
+  ],
+  "Maximum Might": [
+   {
+    "level": 1,
+    "description": "Affinity +10% while active"
+   },
+   {
+    "level": 2,
+    "description": "Affinity +20% while active"
+   },
+   {
+    "level": 3,
+    "description": "Affinity +30% while active"
+   }
+  ],
+  "Critical Draw": [
+   {
+    "level": 1,
+    "description": "Affinity +50%"
+   },
+   {
+    "level": 2,
+    "description": "Affinity +75%"
+   },
+   {
+    "level": 3,
+    "description": "Affinity +100%"
+   }
+  ],
+  "Adrenaline Rush": [
+   {
+    "level": 1,
+    "description": "Attack +10 while active."
+   },
+   {
+    "level": 2,
+    "description": "Attack +15 while active."
+   },
+   {
+    "level": 3,
+    "description": "Attack +20 while active."
+   },
+   {
+    "level": 4,
+    "description": "Attack +25 while active."
+   },
+   {
+    "level": 5,
+    "description": "Attack +30 while active."
+   }
+  ],
+  "Ice Attack": [
+   {
+    "level": 1,
+    "description": "Ice attack +40"
+   },
+   {
+    "level": 2,
+    "description": "Ice attack +10% Bonus: +50"
+   },
+   {
+    "level": 3,
+    "description": "Ice attack +20% Bonus: +60"
+   }
+  ],
+  "Resentment": [
+   {
+    "level": 1,
+    "description": "Attack +5 while active."
+   },
+   {
+    "level": 2,
+    "description": "Attack +10 while active."
+   },
+   {
+    "level": 3,
+    "description": "Attack +15 while active."
+   },
+   {
+    "level": 4,
+    "description": "Attack +20 while active."
+   },
+   {
+    "level": 5,
+    "description": "Attack +25 while active."
+   }
+  ],
+  "Thunder Attack": [
+   {
+    "level": 1,
+    "description": "Thunder attack +40"
+   },
+   {
+    "level": 2,
+    "description": "Thunder attack +10% Bonus: +50"
+   },
+   {
+    "level": 3,
+    "description": "Thunder attack +20% Bonus: +60"
+   }
+  ],
+  "Latent Power": [
+   {
+    "level": 1,
+    "description": "While active, affinity +10% and reduces stamina depletion by 30%."
+   },
+   {
+    "level": 2,
+    "description": "While active, affinity +20% and reduces stamina depletion by 30%."
+   },
+   {
+    "level": 3,
+    "description": "While active, affinity +30% and reduces stamina depletion by 50%."
+   },
+   {
+    "level": 4,
+    "description": "While active, affinity +40% and reduces stamina depletion by 50%."
+   },
+   {
+    "level": 5,
+    "description": "While active, affinity +50% and reduces stamina depletion by 50%."
+   }
+  ],
+  "Agitator": [
+   {
+    "level": 1,
+    "description": "Attack +4 and affinity +3% while active."
+   },
+   {
+    "level": 2,
+    "description": "Attack +8 and affinity +5% while active."
+   },
+   {
+    "level": 3,
+    "description": "Attack +12 and affinity +7% while active."
+   },
+   {
+    "level": 4,
+    "description": "Attack +16 and affinity +10% while active."
+   },
+   {
+    "level": 5,
+    "description": "Attack +20 and affinity +15% while active."
+   }
+  ],
+  "Peak Performance": [
+   {
+    "level": 1,
+    "description": "Attack +3 while active."
+   },
+   {
+    "level": 2,
+    "description": "Attack +6 while active."
+   },
+   {
+    "level": 3,
+    "description": "Attack +10 while active."
+   },
+   {
+    "level": 4,
+    "description": "Attack +15 while active."
+   },
+   {
+    "level": 5,
+    "description": "Attack +20 while active."
+   }
+  ]
+ }
+}
