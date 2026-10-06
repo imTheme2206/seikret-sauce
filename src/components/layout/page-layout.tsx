@@ -9,7 +9,7 @@ type PageContainerProps = React.PropsWithChildren<{ className?: string }>;
  * border reach the viewport edge.
  */
 export const PageLayout = ({ children }: React.PropsWithChildren) => (
-  <div className="h-full overflow-y-auto">{children ?? <Outlet />}</div>
+  <div className="h-full scroll-pb-24 overflow-y-auto lg:scroll-pb-0">{children ?? <Outlet />}</div>
 );
 
 /**

@@ -302,7 +302,7 @@ const CollectionHeading = ({
       </div>
       <Typography
         as="span"
-        className="text-[10px] font-bold uppercase tracking-[.18em] text-primary"
+        className="text-[11px] font-bold uppercase tracking-[.18em] text-primary"
       >
         {count} {count === 1 ? "record" : "records"}
       </Typography>

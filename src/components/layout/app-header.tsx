@@ -14,10 +14,10 @@ export const AppHeader = () => {
   const isLoadoutsRoute = pathname.startsWith("/builds") || pathname.startsWith("/b/");
 
   return (
-    <header className="z-10 flex h-16 shrink-0 items-center gap-5 border-b border-border bg-background px-4 sm:px-6 lg:px-8">
+    <header className="z-10 flex h-16 shrink-0 items-center gap-5 border-b border-gold/40 bg-card px-4 sm:px-6 lg:px-8">
       <Link to="/" aria-label="Seikret Sauce home and Gathering Hub" className="flex shrink-0 items-center gap-2.5 text-foreground hover:text-primary">
         <img src="/favicon.svg" alt="" className="size-8 rounded-md" />
-        <span className="hidden text-sm font-semibold tracking-[0.1em] sm:inline">SEIKRET SAUCE</span>
+        <span className="hidden font-display text-base font-bold tracking-[0.12em] sm:inline">SEIKRET SAUCE</span>
       </Link>
 
       <nav aria-label="Primary navigation" className="flex h-full min-w-0 items-stretch gap-1 overflow-x-auto sm:ml-5">

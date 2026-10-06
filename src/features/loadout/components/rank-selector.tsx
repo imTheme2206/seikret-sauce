@@ -21,7 +21,7 @@ export const RankSelector = ({
   disabled,
 }: RankSelectorProps) => {
   return (
-    <div className="flex shrink-0 items-center justify-start gap-4">
+    <div role="group" aria-label="Hunter rank" className="flex shrink-0 items-center justify-start gap-4">
       <ToggleGroup
         type="single"
         value={value}
@@ -35,14 +35,19 @@ export const RankSelector = ({
             key={opt.rank}
             value={opt.rank}
             disabled={!opt.enabled}
-            title={opt.enabled ? undefined : "Master Rank is not available yet"}
+            aria-label={opt.enabled ? opt.label : `${opt.label}, coming soon`}
             className={cn(
-              "h-9 min-w-0 rounded-md border border-border px-3 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground data-[state=on]:border-primary/70 data-[state=on]:bg-primary/10 data-[state=on]:text-primary",
+              "h-9 min-w-0 gap-2 rounded-sm border border-border px-3 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground data-[state=on]:border-primary/70 data-[state=on]:bg-primary/10 data-[state=on]:text-primary",
               !opt.enabled &&
-                "cursor-not-allowed opacity-40 hover:text-muted-foreground",
+                "cursor-not-allowed border-dashed hover:text-muted-foreground disabled:opacity-100",
             )}
           >
             {opt.label}
+            {!opt.enabled && (
+              <span className="rounded-sm bg-secondary px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground">
+                Soon
+              </span>
+            )}
           </ToggleGroupItem>
         ))}
       </ToggleGroup>

@@ -81,12 +81,14 @@ export const WeaponSelector = ({
   disabled,
 }: WeaponSelectorProps) => (
   <div className="grid min-w-0 grid-cols-1 items-center gap-3 min-[420px]:grid-cols-2 sm:grid-cols-[auto_minmax(0,1fr)_minmax(0,1fr)]">
-    <Typography
-      as="span"
-      className="text-sm font-medium text-foreground min-[420px]:col-span-2 sm:col-span-1"
-    >
-      Weapon Setting
-    </Typography>
+    <div className="min-[420px]:col-span-2 sm:col-span-1">
+      <Typography as="span" className="block text-sm font-medium text-foreground">
+        Weapon bonus
+      </Typography>
+      <Typography as="span" className="block text-xs text-muted-foreground">
+        Counts as one piece toward that skill
+      </Typography>
+    </div>
     <SkillSelect
       label="Set"
       placeholder="No set skill"

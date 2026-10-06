@@ -2,6 +2,8 @@
 
 @theme {
     --font-sans: "Inter", system-ui, sans-serif;
+    /* Display serif for page and panel titles — the hunter-menu voice. Body copy stays Inter. */
+    --font-display: "Cinzel", "Times New Roman", serif;
 }
 
 @layer base {

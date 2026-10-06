@@ -75,13 +75,13 @@ export const BuildDetailPage = ({ buildId }: BuildDetailPageProps) => {
             <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
               <Typography
                 as="span"
-                className="flex items-center gap-1 text-[10px] uppercase tracking-[.18em] text-muted-foreground"
+                className="flex items-center gap-1 text-[11px] uppercase tracking-[.18em] text-muted-foreground"
               >
                 <History className="size-3" /> Revision {build.revision}
               </Typography>
               <Typography
                 as="span"
-                className="flex items-center gap-1 text-[10px] uppercase tracking-[.18em] text-muted-foreground"
+                className="flex items-center gap-1 text-[11px] uppercase tracking-[.18em] text-muted-foreground"
               >
                 <CalendarDays className="size-3" />{" "}
                 {formatBuildDate(build.updatedAt)}
@@ -89,7 +89,7 @@ export const BuildDetailPage = ({ buildId }: BuildDetailPageProps) => {
               {build.isShared && (
                 <Typography
                   as="span"
-                  className="flex items-center gap-1 text-[10px] uppercase tracking-[.18em] text-primary"
+                  className="flex items-center gap-1 text-[11px] uppercase tracking-[.18em] text-primary"
                 >
                   <Share2 className="size-3" /> Shared
                 </Typography>
@@ -97,7 +97,7 @@ export const BuildDetailPage = ({ buildId }: BuildDetailPageProps) => {
               {build.isStale && (
                 <Typography
                   as="span"
-                  className="flex items-center gap-1 text-[10px] uppercase tracking-[.18em] text-amber-300"
+                  className="flex items-center gap-1 text-[11px] uppercase tracking-[.18em] text-warning"
                   title="The catalog changed after this build was saved."
                 >
                   <AlertTriangle className="size-3" /> Catalog changed

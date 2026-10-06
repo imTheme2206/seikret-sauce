@@ -17,7 +17,7 @@ type DefenseStatsProps = {
 export const DefenseStats = ({ defense, elementalDefenses, freeSlots }: DefenseStatsProps) => {
   return (
     <div>
-      <SectionHeading>Defense &amp; Slots</SectionHeading>
+      <SectionHeading>Defense &amp; slots</SectionHeading>
 
       <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
         <div className="flex items-baseline gap-1.5">
@@ -53,7 +53,7 @@ export const DefenseStats = ({ defense, elementalDefenses, freeSlots }: DefenseS
                   as="span"
                   className={cn(
                     "text-xs font-semibold tabular-nums",
-                    value < 0 ? "text-[hsl(8,60%,58%)]" : "text-foreground/80",
+                    value < 0 ? "text-destructive" : "text-foreground/80",
                   )}
                 >
                   {formatResistance(value)}

@@ -24,11 +24,11 @@ export const LeftPanel = ({ controller, className }: LeftPanelProps) => {
       )}
     >
       <div className="shrink-0 border-b border-border px-5 pb-4 pt-5">
-        <Typography as="h2" className="text-base font-semibold text-foreground">
+        <Typography as="h2" className="font-display text-lg font-semibold tracking-wide text-foreground">
           Build requirements
         </Typography>
         <Typography as="p" className="mt-1 text-xs text-muted-foreground">
-          Choose the skills and levels your loadout needs.
+          Add a skill, then set the level your loadout must reach.
         </Typography>
       </div>
 
@@ -70,6 +70,7 @@ export const LeftPanel = ({ controller, className }: LeftPanelProps) => {
           type="button"
           onClick={c.runSearch}
           disabled={c.selectedCount === 0 || c.isSearching}
+          aria-describedby={c.selectedCount === 0 ? "drawer-search-hint" : undefined}
           className="h-11 w-full rounded-sm text-sm font-semibold shadow-none disabled:bg-secondary disabled:text-muted-foreground disabled:opacity-100"
         >
           {c.isSearching && <Loader2 className="size-4 animate-spin" />}
@@ -78,6 +79,11 @@ export const LeftPanel = ({ controller, className }: LeftPanelProps) => {
             <span className="font-normal opacity-70">· {c.selectedCount} skills</span>
           )}
         </Button>
+        {c.selectedCount === 0 && (
+          <Typography id="drawer-search-hint" as="p" className="mt-2 text-center text-xs text-muted-foreground">
+            Add at least one skill to search.
+          </Typography>
+        )}
       </div>
     </aside>
   );

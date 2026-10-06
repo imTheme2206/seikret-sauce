@@ -37,14 +37,14 @@ export const PageHeader = ({
       <div className="min-w-0">
         <Typography
           as="div"
-          className="mb-2 flex items-center gap-2 text-xs font-medium text-muted-foreground"
+          className="mb-2 flex items-center gap-2 text-xs font-medium text-primary"
         >
-          <Icon className="size-3.5 text-primary" />
+          <Icon className="size-3.5" aria-hidden="true" />
           {eyebrow}
         </Typography>
         <Typography
           as="h1"
-          className="text-2xl font-semibold tracking-tight md:text-3xl"
+          className="font-display text-2xl font-semibold tracking-wide md:text-3xl"
         >
           {title}
         </Typography>

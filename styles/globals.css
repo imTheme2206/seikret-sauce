@@ -2,7 +2,12 @@
 @plugin "tailwindcss-animate";
 @custom-variant dark (&:is(.dark *));
 
-/* Shadcn semantic colors. Accent is a quiet hover surface; primary carries the amber action color. */
+/*
+ * Shadcn semantic colors, tuned to the MH Wilds menu palette: warm charcoal
+ * surfaces, parchment text and a single brass-gold accent. Accent is a quiet
+ * hover surface; primary carries the action color. Everything below the shadcn
+ * set (gold, level, category, status) is app-specific and still semantic.
+ */
 :root {
   --background: hsl(36 25% 97%);
   --foreground: hsl(26 18% 13%);
@@ -37,41 +42,61 @@
   --sidebar-accent-foreground: var(--accent-foreground);
   --sidebar-border: var(--border);
   --sidebar-ring: var(--ring);
+
+  --gold: hsl(38 52% 42%);
+  --surface-raised: hsl(36 18% 95%);
+  --level-empty: hsl(32 12% 84%);
+  --success: hsl(140 45% 30%);
+  --warning: hsl(32 85% 36%);
+  --category-armor: hsl(36 65% 38%);
+  --category-weapon: hsl(195 50% 34%);
+  --category-set: hsl(270 30% 45%);
+  --category-group: hsl(150 38% 30%);
 }
 
 .dark {
-  --background: hsl(25 13% 6%);
-  --foreground: hsl(35 15% 91%);
-  --card: hsl(24 11% 9%);
-  --card-foreground: hsl(35 15% 91%);
-  --popover: hsl(24 11% 11%);
-  --popover-foreground: hsl(35 15% 91%);
-  --primary: hsl(37 75% 56%);
-  --primary-foreground: hsl(25 18% 7%);
-  --secondary: hsl(25 10% 16%);
-  --secondary-foreground: hsl(35 14% 86%);
-  --muted: hsl(25 9% 18%);
-  --muted-foreground: hsl(32 8% 64%);
-  --accent: hsl(27 11% 18%);
-  --accent-foreground: hsl(35 15% 92%);
-  --destructive: hsl(0 60% 42%);
+  --background: hsl(28 14% 6%);
+  --foreground: hsl(40 24% 90%);
+  --card: hsl(27 12% 9%);
+  --card-foreground: hsl(40 24% 90%);
+  --popover: hsl(27 12% 11%);
+  --popover-foreground: hsl(40 24% 90%);
+  --primary: hsl(40 68% 58%);
+  --primary-foreground: hsl(28 20% 7%);
+  --secondary: hsl(28 10% 15%);
+  --secondary-foreground: hsl(40 18% 86%);
+  --muted: hsl(28 9% 17%);
+  --muted-foreground: hsl(36 10% 65%);
+  --accent: hsl(30 12% 17%);
+  --accent-foreground: hsl(40 24% 92%);
+  --destructive: hsl(4 62% 48%);
   --destructive-foreground: hsl(0 0% 98%);
-  --border: hsl(27 9% 22%);
-  --input: hsl(27 9% 26%);
-  --ring: hsl(37 75% 56%);
-  --chart-1: hsl(37 75% 56%);
+  --border: hsl(30 10% 21%);
+  --input: hsl(32 10% 34%);
+  --ring: hsl(40 68% 58%);
+  --chart-1: hsl(40 68% 58%);
   --chart-2: hsl(20 65% 50%);
   --chart-3: hsl(195 40% 50%);
   --chart-4: hsl(270 30% 55%);
   --chart-5: hsl(150 35% 45%);
-  --sidebar-background: hsl(24 11% 9%);
-  --sidebar-foreground: hsl(35 15% 84%);
+  --sidebar-background: hsl(27 12% 9%);
+  --sidebar-foreground: hsl(40 20% 84%);
   --sidebar-primary: var(--primary);
   --sidebar-primary-foreground: var(--primary-foreground);
   --sidebar-accent: var(--accent);
   --sidebar-accent-foreground: var(--accent-foreground);
   --sidebar-border: var(--border);
   --sidebar-ring: var(--ring);
+
+  --gold: hsl(40 45% 46%);
+  --surface-raised: hsl(28 11% 12%);
+  --level-empty: hsl(30 10% 22%);
+  --success: hsl(140 40% 55%);
+  --warning: hsl(36 85% 60%);
+  --category-armor: hsl(38 65% 55%);
+  --category-weapon: hsl(195 50% 55%);
+  --category-set: hsl(270 35% 66%);
+  --category-group: hsl(150 38% 52%);
 }
 
 @theme inline {
@@ -99,6 +124,15 @@
   --color-chart-3: var(--chart-3);
   --color-chart-4: var(--chart-4);
   --color-chart-5: var(--chart-5);
+  --color-gold: var(--gold);
+  --color-surface-raised: var(--surface-raised);
+  --color-level-empty: var(--level-empty);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-category-armor: var(--category-armor);
+  --color-category-weapon: var(--category-weapon);
+  --color-category-set: var(--category-set);
+  --color-category-group: var(--category-group);
   --color-sidebar: var(--sidebar-background);
   --color-sidebar-foreground: var(--sidebar-foreground);
   --color-sidebar-primary: var(--sidebar-primary);
@@ -121,4 +155,37 @@
 @layer base {
   * { @apply border-border outline-ring/50; }
   body { @apply bg-background text-foreground; }
+}
+
+/*
+ * Hunter-menu frame: short gold brackets on two opposite corners, the way
+ * MH Wilds frames its equipment windows. The brackets sit inside the border so
+ * `overflow-hidden` panels keep them. Decorative only — never carries state.
+ */
+@utility frame-corners {
+  position: relative;
+
+  &::before,
+  &::after {
+    content: "";
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    z-index: 1;
+    pointer-events: none;
+    border-color: var(--gold);
+    border-style: solid;
+  }
+
+  &::before {
+    top: 0;
+    left: 0;
+    border-width: 2px 0 0 2px;
+  }
+
+  &::after {
+    right: 0;
+    bottom: 0;
+    border-width: 0 2px 2px 0;
+  }
 }

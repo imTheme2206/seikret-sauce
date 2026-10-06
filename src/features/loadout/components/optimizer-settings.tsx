@@ -9,7 +9,7 @@ export const OptimizerSettings = ({
 }) => (
   <section
     aria-label="Search settings"
-    className="mb-6 grid gap-5 rounded-md border border-border bg-card/40 px-6 py-5 lg:grid-cols-[auto_minmax(0,1fr)] lg:items-center lg:gap-8"
+    className="frame-corners mb-6 grid gap-5 rounded-sm border border-border bg-card px-6 py-4 lg:grid-cols-[auto_minmax(0,1fr)] lg:items-center lg:gap-8"
   >
     <RankSelector value={c.rank} onChange={c.setRank} disabled={c.isSearching} />
     <WeaponSelector

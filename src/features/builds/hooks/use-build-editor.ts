@@ -1,6 +1,6 @@
 import { useTalismans } from "@/features/talismans/hooks/use-talismans";
 import { toast } from "@/hooks/use-toast";
-import { useNavigate } from "@tanstack/react-router";
+import { useBlocker, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { EMPTY_DRAFT } from "../config";
 import { draftFromBuild, snapshotFromDraft } from "../draft";
@@ -15,6 +15,17 @@ import type {
 } from "../types";
 import { decodeTalismanValue, hasAnyPiece, toCreateBody } from "../utils";
 import { useBuildApi } from "./use-build-api";
+
+/** Field-level problems that block saving, keyed by what the page renders them under. */
+export type DraftErrors = {
+  name?: string;
+  equipment?: string;
+};
+
+const validateDraft = (draft: BuildDraft): DraftErrors => ({
+  name: draft.name.trim() ? undefined : "Enter a name for this loadout",
+  equipment: hasAnyPiece(draft) ? undefined : "Equip at least one piece",
+});
 import { useCatalog } from "./use-catalog";
 import { useSavedBuild } from "./use-saved-build";
 
@@ -26,6 +37,10 @@ export const useBuildEditor = (buildId?: string) => {
   const { createBuild, replaceBuild } = useBuildApi();
 
   const [draft, setDraft] = useState<BuildDraft>(EMPTY_DRAFT);
+  // The last saved (or freshly opened) draft; edits are "unsaved" until they match it again.
+  const [baseline, setBaseline] = useState<BuildDraft>(EMPTY_DRAFT);
+  // Errors stay hidden until the first save attempt, then track the draft live so they clear when fixed.
+  const [showErrors, setShowErrors] = useState(false);
   const [hydratedId, setHydratedId] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
@@ -35,7 +50,9 @@ export const useBuildEditor = (buildId?: string) => {
 
   useEffect(() => {
     if (existing.build && hydratedId !== existing.build.id) {
-      setDraft(draftFromBuild(existing.build));
+      const hydrated = draftFromBuild(existing.build);
+      setDraft(hydrated);
+      setBaseline(hydrated);
       setHydratedId(existing.build.id);
     }
   }, [existing.build, hydratedId]);
@@ -161,27 +178,32 @@ export const useBuildEditor = (buildId?: string) => {
     [snapshot, catalog.skillCatalog],
   );
 
+  // ── Dirty state & leave guard ─────────────────────────────────────────────
+  const isDirty = useMemo(
+    () => JSON.stringify(draft) !== JSON.stringify(baseline),
+    [draft, baseline],
+  );
+  const errors = showErrors ? validateDraft(draft) : {};
+
+  // Read through refs: a successful save navigates before React re-renders.
+  const isDirtyRef = useRef(isDirty);
+  isDirtyRef.current = isDirty;
+  const isLeavingAfterSave = useRef(false);
+  const leaveGuard = useBlocker({
+    shouldBlockFn: () => isDirtyRef.current && !isLeavingAfterSave.current,
+    enableBeforeUnload: () => isDirtyRef.current,
+    withResolver: true,
+  });
+
   // ── Save ──────────────────────────────────────────────────────────────────
-  const save = async () => {
-    if (!draft.name.trim()) {
-      const validationMessage = "Give this loadout a name before saving.";
-      setMessage(validationMessage);
-      toast({
-        variant: "destructive",
-        title: "Loadout needs a name",
-        description: validationMessage,
-      });
-      return;
-    }
-    if (!hasAnyPiece(draft)) {
-      const validationMessage = "Equip at least one piece before saving.";
-      setMessage(validationMessage);
-      toast({
-        variant: "destructive",
-        title: "Loadout is empty",
-        description: validationMessage,
-      });
-      return;
+  /** Resolves to the first invalid field, if any, so the page can move focus to it. */
+  const save = async (): Promise<keyof DraftErrors | null> => {
+    if (isSaving) return null;
+    const validation = validateDraft(draft);
+    if (validation.name || validation.equipment) {
+      setShowErrors(true);
+      setMessage(null);
+      return validation.name ? "name" : "equipment";
     }
 
     setIsSaving(true);
@@ -196,6 +218,8 @@ export const useBuildEditor = (buildId?: string) => {
             )
           : await createBuild(toCreateBody(draft), idempotencyKey.current);
       idempotencyKey.current = crypto.randomUUID();
+      isLeavingAfterSave.current = true;
+      setBaseline(draft);
       toast({
         variant: "success",
         title: buildId ? "Loadout updated" : "Loadout forged",
@@ -204,14 +228,9 @@ export const useBuildEditor = (buildId?: string) => {
       await navigate({ to: "/b/$buildId", params: { buildId: saved.id } });
     } catch (error) {
       if (isRevisionConflict(error)) {
+        // The conflict dialog explains the choice; a toast on top would repeat it.
         setHasRevisionConflict(true);
-        toast({
-          variant: "destructive",
-          title: "A newer revision exists",
-          description:
-            "Choose whether to keep editing or reload the latest saved version.",
-        });
-        return;
+        return null;
       }
       const errorMessage = buildErrorMessage(
         error,
@@ -226,6 +245,7 @@ export const useBuildEditor = (buildId?: string) => {
     } finally {
       setIsSaving(false);
     }
+    return null;
   };
 
   const reloadNewest = async () => {
@@ -247,6 +267,9 @@ export const useBuildEditor = (buildId?: string) => {
     rows,
     hunterStatus,
     message,
+    errors,
+    isDirty,
+    leaveGuard,
     hasRevisionConflict,
     isSaving,
     isLoadingCatalog: catalog.isLoading,

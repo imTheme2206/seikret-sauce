@@ -36,7 +36,7 @@ export const PositionBadge = ({
       <div>
         <Typography
           as="div"
-          className="text-[9px] uppercase tracking-[.2em] text-muted-foreground"
+          className="text-[11px] uppercase tracking-[.2em] text-muted-foreground"
         >
           {caption}
         </Typography>

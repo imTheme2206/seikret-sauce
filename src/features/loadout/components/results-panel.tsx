@@ -19,6 +19,10 @@ type ResultsPanelProps = {
   isSignedIn: boolean;
   savingIndex: number | null;
   onSave: (result: LoadoutResult, index: number) => Promise<void>;
+  /** Re-runs the last search; offered on recoverable errors. */
+  onRetry: () => void;
+  /** Opens the skills drawer on small screens. */
+  onChooseSkills: () => void;
 };
 
 /** Search status and the list of optimised loadouts below the skill workspace. */
@@ -32,6 +36,8 @@ export const ResultsPanel = ({
   isSignedIn,
   savingIndex,
   onSave,
+  onRetry,
+  onChooseSkills,
 }: ResultsPanelProps) => {
   const hasResults = status === "success";
 
@@ -50,7 +56,7 @@ export const ResultsPanel = ({
     <section aria-labelledby="results-heading" className="border-t border-border pt-6">
       <div className="mb-5 flex flex-wrap items-end justify-between gap-4">
         <div>
-          <Typography id="results-heading" as="h2" className="text-2xl font-semibold tracking-tight text-foreground">
+          <Typography id="results-heading" as="h2" className="font-display text-2xl font-semibold tracking-wide text-foreground">
             Optimized loadouts
           </Typography>
           <Typography as="p" className="mt-1 text-sm text-muted-foreground">
@@ -61,7 +67,7 @@ export const ResultsPanel = ({
           as="span"
           aria-live="polite"
           className={cn(
-            "shrink-0 text-sm",
+            "shrink-0 text-sm tabular-nums",
             hasResults ? "text-primary" : "text-muted-foreground",
           )}
         >
@@ -87,13 +93,15 @@ export const ResultsPanel = ({
             ))}
         </div>
       ) : (
-        <div className="flex min-h-56 flex-col overflow-hidden rounded-md border border-border bg-card/20">
-          {status === "idle" && <ResultsEmptyState />}
+        <div className="flex min-h-56 flex-col">
+          {status === "idle" && <ResultsEmptyState onChooseSkills={onChooseSkills} />}
           {status === "searching" && <ResultsSearchingState />}
           {status === "empty" && <ResultsNoResultsState />}
           {status === "error" && (
             <ResultsErrorState
               message={error?.message ?? "Something went wrong. Please try again."}
+              // Validation errors need different input, not another attempt.
+              onRetry={error?.kind === "validation" ? undefined : onRetry}
             />
           )}
         </div>

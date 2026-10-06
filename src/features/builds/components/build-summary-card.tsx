@@ -48,7 +48,7 @@ export const BuildSummaryCard = ({
       <div className="mt-auto flex items-end justify-between gap-3 pt-5">
         <Typography
           as="span"
-          className="flex items-center gap-1 text-[10px] uppercase tracking-[.15em] text-muted-foreground"
+          className="flex items-center gap-1 text-[11px] uppercase tracking-[.15em] text-muted-foreground"
         >
           <Clock3 className="size-3" /> Revised {formatBuildDate(build.updatedAt)}
         </Typography>

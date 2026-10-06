@@ -89,6 +89,8 @@ export const LoadoutOptimizer = () => {
             isSignedIn={saveResult.isSignedIn}
             savingIndex={saveResult.savingIndex}
             onSave={saveResult.saveResult}
+            onRetry={controller.runSearch}
+            onChooseSkills={() => setIsFiltersOpen(true)}
           />
         </div>
       </div>

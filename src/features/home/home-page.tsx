@@ -7,20 +7,15 @@ import { ArrowRight, Hammer, SlidersHorizontal, Users } from "lucide-react";
 
 export const HomePage = () => (
   <>
-    <section className="border-b border-border bg-background py-10 md:py-14">
+    <section className="border-b border-border bg-card py-10 md:py-14">
       <PageContainer>
-        <div className="mb-4 flex items-center gap-2 text-muted-foreground">
-          <Typography
-            as="span"
-            className="text-xs font-medium"
-          >
-            Seikret Sauce
-          </Typography>
-        </div>
+        <Typography as="p" className="mb-4 text-xs font-medium text-primary">
+          Monster Hunter Wilds loadout optimizer
+        </Typography>
 
         <Typography
           as="h1"
-          className="max-w-3xl text-4xl font-semibold leading-tight tracking-tight md:text-5xl"
+          className="max-w-3xl font-display text-4xl font-bold leading-tight tracking-wide md:text-5xl"
         >
           Plan the hunt. Forge the loadout.
         </Typography>
@@ -53,15 +48,15 @@ export const HomePage = () => (
           <div className="mb-6 border-b border-border pb-5">
             <Typography
               as="div"
-              className="mb-2 flex items-center gap-2 text-xs font-medium text-muted-foreground"
+              className="mb-2 flex items-center gap-2 text-xs font-medium text-primary"
             >
-              <Users className="size-3.5 text-primary" />
+              <Users className="size-3.5" aria-hidden="true" />
               Community equipment archive
             </Typography>
             <Typography
               id="gathering-hub-heading"
               as="h2"
-              className="text-2xl font-semibold md:text-3xl"
+              className="font-display text-2xl font-semibold tracking-wide md:text-3xl"
             >
               Gathering Hub
             </Typography>

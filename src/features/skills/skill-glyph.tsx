@@ -2,10 +2,10 @@ import { cn } from "@/lib/utils";
 import type { SkillCategory } from "./skill-catalog";
 
 const CATEGORY_COLORS: Record<SkillCategory, string> = {
-  armor: "hsl(36,65%,52%)",
-  weapon: "hsl(195,45%,45%)",
-  set: "hsl(270,28%,55%)",
-  group: "hsl(150,32%,46%)",
+  armor: "var(--category-armor)",
+  weapon: "var(--category-weapon)",
+  set: "var(--category-set)",
+  group: "var(--category-group)",
 };
 
 type SkillGlyphProps = {

@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 import { Plus, X } from "lucide-react";
 import { CATEGORY_CONFIG } from "../config";
 import type { PoolSkill, SelectedSkill } from "../types";
-import { SkillLevelBlocks, StepButton } from "./skill-level-stepper";
+import { SkillLevelControl } from "./skill-level-stepper";
 
 type SkillPoolRowProps = {
   skill: PoolSkill;
@@ -18,7 +18,7 @@ type SkillPoolRowProps = {
   onRemove: () => void;
 };
 
-/** A clickable row in the skill pool used to add a skill to the selection. */
+/** A row in the skill pool: click to add, then tune the level in place. */
 export const SkillPoolRow = ({
   skill,
   selectedSkill,
@@ -28,106 +28,78 @@ export const SkillPoolRow = ({
   onRemove,
 }: SkillPoolRowProps) => {
   const config = CATEGORY_CONFIG[skill.category];
-  const isSelected = Boolean(selectedSkill);
-  const canDecrease = Boolean(selectedSkill && selectedSkill.level > 1);
-  const canIncrease = Boolean(
-    selectedSkill && selectedSkill.level < selectedSkill.maxLevel,
-  );
 
   return (
     <div
       className={cn(
-        "group relative flex min-h-[46px] w-full items-center gap-3 border-b border-border/70 px-4 py-2 text-left transition-colors last:border-b-0",
-        isSelected
-          ? "bg-primary/[0.045]"
-          : "hover:bg-foreground/[0.035]",
+        "group relative flex min-h-12 w-full flex-wrap items-center gap-x-3 gap-y-1 border-b border-l-2 border-b-border/70 px-4 py-1.5 text-left transition-colors last:border-b-0",
+        selectedSkill
+          ? "border-l-primary bg-primary/[0.06]"
+          : "border-l-transparent hover:bg-accent/60",
       )}
     >
-      {!isSelected && (
+      {!selectedSkill && (
         <button
           type="button"
           onClick={onAdd}
-          aria-label={`Add ${skill.name}`}
-          className="absolute inset-0 z-10 cursor-pointer"
+          aria-label={`Add ${skill.name}, max level ${skill.maxLevel}`}
+          className="absolute inset-0 z-10 cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring"
         />
       )}
 
-      <div className="relative flex size-8 shrink-0 items-center justify-center overflow-hidden [&_img]:size-5 [&_img]:object-contain">
+      <div className="flex size-8 shrink-0 items-center justify-center [&_img]:size-6 [&_img]:object-contain">
         <SkillGlyph
           category={skill.category}
           icon={skill.icon}
-          label={skill.name}
-          className="size-5"
+          label=""
+          className="size-6"
         />
       </div>
 
-      <div className="relative flex min-w-0 flex-1 flex-col gap-1">
-        <Typography
-          as="span"
-          className="truncate text-sm font-medium text-foreground"
-        >
+      {/* A selected row's level control drops to a second line before the name gets too narrow. */}
+      <div className={cn("flex min-w-0 flex-1 flex-col", selectedSkill && "min-w-28 basis-28")}>
+        <Typography as="span" className="truncate text-sm font-medium text-foreground">
           {skill.name}
         </Typography>
         {showCategory && (
           <Badge
-            className="w-fit rounded-none border-0 bg-transparent p-0 text-[10px] font-normal"
+            className="w-fit rounded-none border-0 bg-transparent p-0 text-[11px] font-normal"
             style={{ color: config.color }}
           >
-            {config.label}
+            {config.label} skill
           </Badge>
-        )}
-        {selectedSkill && (
-          <div className="flex items-center gap-2">
-            <SkillLevelBlocks
-              level={selectedSkill.level}
-              maxLevel={selectedSkill.maxLevel}
-              color={config.color}
-              onChange={onLevelChange}
-            />
-            <Typography
-              as="span"
-              className="text-[10px] tabular-nums text-muted-foreground"
-            >
-              {selectedSkill.level}/{selectedSkill.maxLevel}
-            </Typography>
-          </div>
         )}
       </div>
 
       {selectedSkill ? (
-        <div className="relative z-20 flex shrink-0 items-center gap-1">
-          <StepButton
-            label="−"
-            disabled={!canDecrease}
-            onClick={() => onLevelChange(selectedSkill.level - 1)}
-          />
-          <StepButton
-            label="+"
-            disabled={!canIncrease}
-            onClick={() => onLevelChange(selectedSkill.level + 1)}
+        <div className="relative z-20 ml-auto flex shrink-0 items-center gap-2">
+          <SkillLevelControl
+            skillName={skill.name}
+            level={selectedSkill.level}
+            maxLevel={selectedSkill.maxLevel}
+            color={config.color}
+            onChange={onLevelChange}
           />
           <Button
             type="button"
             variant="ghost"
-            size="icon"
+            size="icon-xs"
             onClick={onRemove}
             aria-label={`Remove ${skill.name}`}
-            className="ml-0.5 size-6 rounded-none text-muted-foreground hover:bg-transparent hover:text-destructive"
+            title="Remove"
+            className="text-muted-foreground hover:text-destructive"
           >
-            <X className="size-3.5" strokeWidth={2} />
+            <X className="size-3.5" />
           </Button>
         </div>
       ) : (
-        <div className="pointer-events-none relative flex shrink-0 items-center gap-2">
-          <Typography
-            as="span"
-            className="whitespace-nowrap text-xs text-muted-foreground"
-          >
-            Lv {skill.maxLevel}
+        <div className="pointer-events-none flex shrink-0 items-center gap-3">
+          <Typography as="span" className="text-xs tabular-nums text-muted-foreground">
+            Max Lv {skill.maxLevel}
           </Typography>
-          <div className="flex size-5 items-center justify-center text-muted-foreground transition-colors group-hover:text-primary">
-            <Plus className="size-2.5" strokeWidth={2} />
-          </div>
+          <span className="grid size-6 place-items-center rounded-sm border border-border text-muted-foreground transition-colors group-hover:border-primary/60 group-hover:text-primary">
+            <Plus className="size-3.5" strokeWidth={2.25} />
+          </span>
         </div>
       )}
     </div>

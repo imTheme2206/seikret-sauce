@@ -17,10 +17,8 @@ export type CategoryConfig = {
   label: string;
   /** Which bucket of `GroupedSkills` this category reads from. */
   groupKey: keyof GroupedSkills;
-  /** Accent colour for icons / level blocks. */
+  /** Accent colour for icons / level blocks — a theme token, so it re-maps per theme. */
   color: string;
-  /** Translucent background used behind the category badge. */
-  badgeBg: string;
 };
 
 export const CATEGORY_CONFIG: Record<SkillCategory, CategoryConfig> = {
@@ -28,29 +26,25 @@ export const CATEGORY_CONFIG: Record<SkillCategory, CategoryConfig> = {
     id: "armor",
     label: "Armor",
     groupKey: "armorSkills",
-    color: "hsl(36,65%,52%)",
-    badgeBg: "rgba(165,115,30,0.18)",
+    color: "var(--category-armor)",
   },
   weapon: {
     id: "weapon",
     label: "Weapon",
     groupKey: "weaponSkills",
-    color: "hsl(195,45%,45%)",
-    badgeBg: "rgba(40,130,160,0.18)",
+    color: "var(--category-weapon)",
   },
   set: {
     id: "set",
     label: "Set",
     groupKey: "setSkills",
-    color: "hsl(270,28%,55%)",
-    badgeBg: "rgba(120,80,160,0.18)",
+    color: "var(--category-set)",
   },
   group: {
     id: "group",
     label: "Group",
     groupKey: "groupSkills",
-    color: "hsl(150,32%,46%)",
-    badgeBg: "rgba(40,130,80,0.18)",
+    color: "var(--category-group)",
   },
 };
 

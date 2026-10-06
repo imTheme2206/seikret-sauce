@@ -40,7 +40,7 @@ const BonusSelect = ({
     <label className="block">
       <Typography
         as="span"
-        className="mb-1.5 block text-[9px] uppercase tracking-widest text-muted-foreground"
+        className="mb-1.5 block text-[11px] uppercase tracking-widest text-muted-foreground"
       >
         {label}
       </Typography>
@@ -87,7 +87,7 @@ export const WeaponBonusRow = ({
         <div>
           <Typography
             as="div"
-            className="text-[9px] uppercase tracking-[.2em] text-muted-foreground"
+            className="text-[11px] uppercase tracking-[.2em] text-muted-foreground"
           >
             Equip
           </Typography>

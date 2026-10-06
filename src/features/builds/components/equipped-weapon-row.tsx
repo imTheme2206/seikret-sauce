@@ -41,7 +41,7 @@ export const EquippedWeaponRow = ({ weapon }: EquippedWeaponRowProps) => {
         <div>
           <Typography
             as="div"
-            className="text-[9px] uppercase tracking-[.2em] text-muted-foreground"
+            className="text-[11px] uppercase tracking-[.2em] text-muted-foreground"
           >
             Equipped
           </Typography>
@@ -68,7 +68,7 @@ export const EquippedWeaponCell = ({ weapon }: EquippedWeaponRowProps) => {
       <div className="min-w-0 flex-1">
         <Typography
           as="div"
-          className="text-[9px] uppercase tracking-[.18em] text-muted-foreground"
+          className="text-[11px] uppercase tracking-[.18em] text-muted-foreground"
         >
           Equipped
         </Typography>

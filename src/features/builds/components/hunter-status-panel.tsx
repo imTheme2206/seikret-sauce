@@ -22,17 +22,17 @@ export const HunterStatusPanel = ({
     <HunterPanel className={cn("h-fit p-5", className)}>
       <div className="mb-5 flex items-center justify-between">
         <div>
-          <Typography as="h2" className="text-xl font-semibold">
+          <Typography as="h2" className="font-display text-xl font-semibold tracking-wide">
             Hunter Status
           </Typography>
           <Typography
             as="p"
-            className="text-[9px] uppercase tracking-[.22em] text-primary"
+            className="text-[11px] uppercase tracking-[.16em] text-primary"
           >
             {subtitle}
           </Typography>
         </div>
-        <Shield className="size-6 text-primary/60" />
+        <Shield className="size-6 text-primary/60" aria-hidden="true" />
       </div>
       <BuildStats status={status} />
     </HunterPanel>

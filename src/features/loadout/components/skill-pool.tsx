@@ -89,11 +89,12 @@ export const SkillPool = ({
               <TabsTrigger
                 key={category}
                 value={category}
-                className="h-9 rounded-md border border-border bg-transparent px-1 text-xs font-medium data-[state=active]:border-primary/60 data-[state=active]:bg-primary/10 data-[state=active]:text-primary"
+                className="relative h-9 rounded-sm border border-border bg-transparent px-1 text-xs font-medium text-muted-foreground hover:text-foreground data-[state=active]:border-primary/60 data-[state=active]:bg-primary/10 data-[state=active]:text-primary dark:data-[state=active]:border-primary/60 dark:data-[state=active]:bg-primary/10 dark:data-[state=active]:text-primary"
               >
                 <span className="truncate">{CATEGORY_CONFIG[category].label}</span>
                 {(selectedByCategory[category] ?? 0) > 0 && (
-                  <span className="text-[10px] font-normal text-primary">
+                  <span className="absolute -right-1.5 -top-1.5 min-w-4 rounded-sm bg-primary px-1 text-[10px] font-semibold leading-4 tabular-nums text-primary-foreground">
+                    <span className="sr-only">, selected: </span>
                     {selectedByCategory[category]}
                   </span>
                 )}
@@ -104,10 +105,11 @@ export const SkillPool = ({
       </div>
       {!showSummary && (
         <div className="grid shrink-0 grid-cols-[1fr_auto] border-b border-border px-4 py-2 text-xs font-medium text-muted-foreground">
-          <span>Skill</span><span className="pr-16">Level</span>
+          <span>Skill</span><span className="pr-9">Max level</span>
         </div>
       )}
-      <ScrollArea className="min-h-0 flex-1">
+      {/* Radix wraps content in a `display: table` div, which defeats `truncate`; force block. */}
+      <ScrollArea className="min-h-0 flex-1 [&_[data-slot=scroll-area-viewport]>div]:!block">
         {isLoading ? (
           <PoolSkeleton />
         ) : sortedPool.length === 0 ? (

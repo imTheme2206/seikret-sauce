@@ -44,16 +44,24 @@ export const ResultCard = ({
 
   return (
     <Collapsible open={isExpanded} onOpenChange={onToggle} asChild>
-      <Card className="gap-0 overflow-hidden rounded-md border border-border bg-card/30 py-0 shadow-none">
+      <Card
+        className={cn(
+          "gap-0 overflow-hidden rounded-sm border bg-card py-0 shadow-none transition-colors",
+          isExpanded ? "frame-corners border-gold/50" : "border-border",
+        )}
+      >
         <CollapsibleTrigger
           className={cn(
-            "flex min-h-28 w-full flex-wrap items-center gap-4 px-4 py-4 text-left transition-colors md:flex-nowrap md:px-5",
-            isExpanded ? "bg-primary/[0.045]" : "hover:bg-foreground/[0.035]",
+            "flex min-h-28 w-full flex-wrap items-center gap-4 px-4 py-4 text-left outline-none transition-colors focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring md:flex-nowrap md:px-5",
+            isExpanded ? "bg-primary/[0.05]" : "hover:bg-accent/60",
           )}
         >
-          <div className="flex size-8 shrink-0 items-center justify-center rounded-md border border-border bg-background/60">
-            <Typography as="span" className="text-xs font-semibold tabular-nums text-muted-foreground">
-              {String(index + 1).padStart(2, "0")}
+          <div
+            className="grid size-8 shrink-0 rotate-45 place-items-center border border-gold/60 bg-background"
+          >
+            <Typography as="span" className="-rotate-45 font-display text-xs font-bold tabular-nums text-primary">
+              <span className="sr-only">Rank </span>
+              {index + 1}
             </Typography>
           </div>
 
@@ -67,9 +75,11 @@ export const ResultCard = ({
               />
             ))}
           </div>
-          <div className="ml-auto flex shrink-0 flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground md:ml-0 md:w-36 md:flex-col md:gap-1">
-            <span>{skillCount} skills</span>
-            <span>{result.decoNames.length} decorations</span>
+          <div className="ml-auto flex shrink-0 flex-wrap gap-x-4 gap-y-1 text-xs tabular-nums text-muted-foreground md:ml-0 md:w-36 md:flex-col md:gap-1">
+            <span>{skillCount} {skillCount === 1 ? "skill" : "skills"}</span>
+            <span>
+              {result.decoNames.length} {result.decoNames.length === 1 ? "decoration" : "decorations"}
+            </span>
             <span><strong className="font-semibold tabular-nums text-foreground">{result.defense}</strong> base defense</span>
           </div>
 

@@ -17,8 +17,10 @@ import {
 import { Input } from "@/components/ui/input";
 import { Toggle } from "@/components/ui/toggle";
 import { Typography } from "@/components/ui/typography";
+import { cn } from "@/lib/utils";
 import {
   ChevronDown,
+  CircleAlert,
   FileQuestion,
   Hammer,
   ListChecks,
@@ -26,9 +28,8 @@ import {
   Save,
   Share2,
   Sparkles,
-  Tag,
-  Text,
 } from "lucide-react";
+import { useEffect, useRef } from "react";
 import { ScreenError, ScreenLoader } from "../components/builds-states";
 import { EditorGearRowCard } from "../components/editor-gear-row";
 import { HunterPanel } from "../components/hunter-panel";
@@ -44,6 +45,35 @@ import {
 /** `/builds/new` and `/builds/$buildId/edit`. */
 export const BuildEditorPage = ({ buildId }: { buildId?: string }) => {
   const controller = useBuildEditor(buildId);
+  const nameInputRef = useRef<HTMLInputElement>(null);
+  const equipmentErrorRef = useRef<HTMLParagraphElement>(null);
+
+  /** Saves, or moves focus to the first field that blocks saving. */
+  const handleSave = async () => {
+    const invalidField = await controller.save();
+    if (invalidField === "name") nameInputRef.current?.focus();
+    if (invalidField === "equipment") {
+      // Wait a frame so the freshly rendered error exists.
+      requestAnimationFrame(() => {
+        equipmentErrorRef.current?.scrollIntoView({ block: "center" });
+        equipmentErrorRef.current?.focus();
+      });
+    }
+  };
+  const handleSaveRef = useRef(handleSave);
+  handleSaveRef.current = handleSave;
+
+  // ⌘S / Ctrl+S saves, matching every other editor.
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "s") {
+        event.preventDefault();
+        void handleSaveRef.current();
+      }
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, []);
 
   if (controller.isLoadingBuild) return <ScreenLoader />;
   if (controller.loadError) {
@@ -68,12 +98,12 @@ export const BuildEditorPage = ({ buildId }: { buildId?: string }) => {
       <PageContainer>
         <main className="grid gap-5 py-4 pb-24 lg:grid-cols-[minmax(0,1.3fr)_minmax(340px,.7fr)] lg:py-7">
           <div className="space-y-5">
-            <IdentityPanel controller={controller} />
+            <IdentityPanel controller={controller} nameInputRef={nameInputRef} />
 
             <MobileBuildSummary controller={controller} />
 
             <section aria-labelledby="equipment-heading">
-              <EquipmentHeading controller={controller} />
+              <EquipmentHeading controller={controller} errorRef={equipmentErrorRef} />
               <div className="grid gap-3">
                 {controller.rows.map((row) => (
                   <EditorGearRowCard
@@ -98,7 +128,7 @@ export const BuildEditorPage = ({ buildId }: { buildId?: string }) => {
           </div>
 
           <aside className="hidden h-fit space-y-4 lg:sticky lg:top-4 lg:block">
-            <SavePanel controller={controller} />
+            <SavePanel controller={controller} onSave={handleSave} />
             <HunterStatusPanel
               status={controller.hunterStatus}
               subtitle="Live equipment totals"
@@ -107,7 +137,30 @@ export const BuildEditorPage = ({ buildId }: { buildId?: string }) => {
         </main>
       </PageContainer>
 
-      <MobileSaveBar controller={controller} />
+      <MobileSaveBar controller={controller} onSave={handleSave} />
+
+      <Dialog
+        open={controller.leaveGuard.status === "blocked"}
+        onOpenChange={(open) => !open && controller.leaveGuard.reset?.()}
+      >
+        <DialogContent className="rounded-sm sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Leave without saving?</DialogTitle>
+            <DialogDescription>
+              Your changes to this loadout haven&apos;t been saved and will be
+              lost.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => controller.leaveGuard.reset?.()}>
+              Keep editing
+            </Button>
+            <Button variant="destructive" onClick={() => controller.leaveGuard.proceed?.()}>
+              Discard and leave
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       <Dialog
         open={controller.hasRevisionConflict}
@@ -138,16 +191,20 @@ export const BuildEditorPage = ({ buildId }: { buildId?: string }) => {
   );
 };
 
+type SaveActionProps = {
+  controller: BuildEditorController;
+  onSave: () => Promise<void>;
+};
+
 const SaveButton = ({
   controller,
+  onSave,
   className,
-}: {
-  controller: BuildEditorController;
-  className?: string;
-}) => {
+}: SaveActionProps & { className?: string }) => {
   return (
     <Button
-      onClick={() => void controller.save()}
+      onClick={() => void onSave()}
+      aria-keyshortcuts="Meta+S Control+S"
       disabled={controller.isSaving || controller.isLoadingCatalog}
       className={className}
     >
@@ -165,15 +222,28 @@ const SaveButton = ({
   );
 };
 
-const SavePanel = ({ controller }: { controller: BuildEditorController }) => {
+/** "Unsaved changes" / "All changes saved" line shared by the desktop panel and mobile bar. */
+const SaveStateLine = ({ controller }: { controller: BuildEditorController }) =>
+  controller.isDirty ? (
+    <Typography as="span" className="flex items-center gap-1.5 text-xs font-medium text-warning">
+      <span className="size-1.5 rotate-45 bg-warning" aria-hidden="true" />
+      Unsaved changes
+    </Typography>
+  ) : (
+    <Typography as="span" className="text-xs text-muted-foreground">
+      {controller.isEditing ? "No unsaved changes" : "Nothing to save yet"}
+    </Typography>
+  );
+
+const SavePanel = ({ controller, onSave }: SaveActionProps) => {
   const equippedCount = controller.rows.filter((row) => row.name).length;
 
   return (
-    <HunterPanel className="p-5">
+    <HunterPanel className="frame-corners p-5">
       <PanelHeading icon={Save} className="mb-2">
         Save equipment record
       </PanelHeading>
-      <Typography as="h2" className="text-lg font-semibold">
+      <Typography as="h2" className="font-display text-lg font-semibold tracking-wide">
         {controller.isEditing ? "Commit this revision" : "Ready to forge?"}
       </Typography>
       <Typography className="mt-1 text-xs leading-relaxed text-muted-foreground">
@@ -182,7 +252,7 @@ const SavePanel = ({ controller }: { controller: BuildEditorController }) => {
       <div className="mt-4 flex items-center justify-between border-y border-border py-3">
         <Typography
           as="span"
-          className="text-[10px] uppercase tracking-[.18em] text-muted-foreground"
+          className="text-xs text-muted-foreground"
         >
           Equipment
         </Typography>
@@ -195,25 +265,46 @@ const SavePanel = ({ controller }: { controller: BuildEditorController }) => {
       </div>
       <SaveButton
         controller={controller}
-        className="mt-4 w-full rounded-none uppercase tracking-wider"
+        onSave={onSave}
+        className="mt-4 h-10 w-full font-semibold"
       />
+      <div className="mt-3 flex items-center justify-between gap-2" aria-live="polite">
+        <SaveStateLine controller={controller} />
+        <Typography as="span" className="text-[11px] text-muted-foreground">
+          <kbd className="font-mono">⌘S</kbd> / <kbd className="font-mono">Ctrl+S</kbd>
+        </Typography>
+      </div>
+      {controller.message && (
+        <Typography
+          role="alert"
+          className="mt-3 flex items-start gap-2 rounded-sm border border-destructive/40 bg-destructive/10 px-3 py-2 text-xs text-foreground"
+        >
+          <CircleAlert className="mt-px size-3.5 shrink-0 text-destructive" aria-hidden="true" />
+          {controller.message}
+        </Typography>
+      )}
     </HunterPanel>
   );
 };
 
-const MobileSaveBar = ({ controller }: { controller: BuildEditorController }) => {
+const MobileSaveBar = ({ controller, onSave }: SaveActionProps) => {
   return (
-    <div className="fixed inset-x-0 bottom-0 z-30 border-t border-border bg-background/95 p-3 backdrop-blur lg:hidden">
-      <SaveButton
-        controller={controller}
-        className="w-full rounded-none uppercase tracking-wider"
-      />
+    <div className="fixed inset-x-0 bottom-0 z-30 flex items-center gap-3 border-t border-border bg-card p-3 lg:hidden">
+      <div className="min-w-0 flex-1" aria-live="polite">
+        <SaveStateLine controller={controller} />
+      </div>
+      <SaveButton controller={controller} onSave={onSave} className="h-10 font-semibold" />
     </div>
   );
 };
 
-const IdentityPanel = ({ controller }: { controller: BuildEditorController }) => {
-  const { draft, patchDraft } = controller;
+type IdentityPanelProps = {
+  controller: BuildEditorController;
+  nameInputRef: React.RefObject<HTMLInputElement | null>;
+};
+
+const IdentityPanel = ({ controller, nameInputRef }: IdentityPanelProps) => {
+  const { draft, patchDraft, errors } = controller;
 
   return (
     <HunterPanel className="p-5">
@@ -221,67 +312,88 @@ const IdentityPanel = ({ controller }: { controller: BuildEditorController }) =>
         1 · Record details
       </PanelHeading>
 
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-[1fr_1.5fr_auto]">
-        <label className="block">
-          <span className="mb-1.5 flex items-center justify-between gap-2">
+      <div className="grid gap-5 md:grid-cols-2">
+        <div>
+          <div className="mb-1.5 flex items-baseline justify-between gap-2">
+            <label htmlFor="build-name" className="text-sm font-medium">
+              Name <span className="text-destructive" aria-hidden="true">*</span>
+            </label>
             <Typography
               as="span"
-              className="flex items-center gap-1 text-[10px] uppercase tracking-widest text-muted-foreground"
-            >
-              <Tag className="size-3" /> Name
-            </Typography>
-            <Typography
-              as="span"
-              className="text-[9px] tabular-nums text-muted-foreground"
+              className="text-xs tabular-nums text-muted-foreground"
+              aria-hidden="true"
             >
               {draft.name.length}/{DRAFT_LIMITS.name}
             </Typography>
-          </span>
+          </div>
           <Input
+            id="build-name"
+            ref={nameInputRef}
             value={draft.name}
             maxLength={DRAFT_LIMITS.name}
+            required
+            aria-required="true"
+            aria-invalid={Boolean(errors.name)}
+            aria-describedby={errors.name ? "build-name-error" : undefined}
             placeholder="e.g. Scarlet Arkveld"
             onChange={(event) => patchDraft({ name: event.target.value })}
-            className="rounded-none bg-background/70"
+            className="rounded-sm bg-background/70"
           />
-        </label>
-        <label className="block">
-          <Typography
-            as="span"
-            className="mb-1.5 flex items-center gap-1 text-[10px] uppercase tracking-widest text-muted-foreground"
-          >
-            <Text className="size-3" /> Field notes
-          </Typography>
+          {errors.name && <FieldError id="build-name-error">{errors.name}</FieldError>}
+        </div>
+        <div>
+          <label htmlFor="build-notes" className="mb-1.5 block text-sm font-medium">
+            Field notes <span className="font-normal text-muted-foreground">(optional)</span>
+          </label>
           <Input
+            id="build-notes"
             value={draft.description}
             maxLength={DRAFT_LIMITS.description}
-            placeholder="What this loadout is built to hunt…"
+            placeholder="e.g. Burst build for Arkveld"
             onChange={(event) =>
               patchDraft({ description: event.target.value })
             }
-            className="rounded-none bg-background/70"
+            className="rounded-sm bg-background/70"
           />
-        </label>
-        <Toggle
-          variant="outline"
-          pressed={draft.isShared}
-          onPressedChange={(pressed) => patchDraft({ isShared: pressed })}
-          className="gap-2 self-end md:col-span-2 xl:col-span-1 data-[state=on]:border-primary/50 data-[state=on]:bg-primary/15 data-[state=on]:text-primary"
-        >
-          <Share2 className="size-4" />
-          {draft.isShared ? "Shared with hunters" : "Keep private"}
-        </Toggle>
+        </div>
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 md:col-span-2">
+          <Toggle
+            variant="outline"
+            pressed={draft.isShared}
+            onPressedChange={(pressed) => patchDraft({ isShared: pressed })}
+            aria-describedby="build-share-help"
+            className="gap-2 data-[state=on]:border-primary/50 data-[state=on]:bg-primary/15 data-[state=on]:text-primary"
+          >
+            <Share2 className="size-4" />
+            Share in Gathering Hub
+          </Toggle>
+          <Typography id="build-share-help" as="span" className="text-xs text-muted-foreground">
+            {draft.isShared
+              ? "Other hunters can find this loadout on the home page."
+              : "Only you can see this loadout."}
+          </Typography>
+        </div>
       </div>
     </HunterPanel>
   );
 };
 
+const FieldError = ({ id, children }: React.PropsWithChildren<{ id: string }>) => (
+  <Typography id={id} className="mt-1.5 flex items-center gap-1.5 text-xs text-destructive">
+    <CircleAlert className="size-3.5 shrink-0" aria-hidden="true" />
+    {children}
+  </Typography>
+);
+
 const EquipmentHeading = ({
   controller,
+  errorRef,
 }: {
   controller: BuildEditorController;
+  errorRef: React.RefObject<HTMLParagraphElement | null>;
 }) => {
   const equippedCount = controller.rows.filter((row) => row.name).length;
+  const error = controller.errors.equipment;
 
   return (
     <div className="mb-3 flex items-end justify-between gap-4 border-b border-border pb-3">
@@ -292,12 +404,29 @@ const EquipmentHeading = ({
         <Typography
           id="equipment-heading"
           as="h2"
-          className="text-lg font-semibold"
+          className="font-display text-lg font-semibold tracking-wide"
         >
-          Choose each piece
+          Choose each piece <span className="text-destructive" aria-hidden="true">*</span>
         </Typography>
+        {error && (
+          // Raw <p>: Typography doesn't forward refs, and the page focuses this on a failed save.
+          <p
+            ref={errorRef}
+            tabIndex={-1}
+            role="alert"
+            className="mt-1 flex items-center gap-1.5 text-xs text-destructive outline-none"
+          >
+            <CircleAlert className="size-3.5 shrink-0" aria-hidden="true" />
+            {error}
+          </p>
+        )}
       </div>
-      <Typography className="text-xs tabular-nums text-muted-foreground">
+      <Typography
+        className={cn(
+          "text-xs tabular-nums",
+          equippedCount > 0 ? "text-primary" : "text-muted-foreground",
+        )}
+      >
         {equippedCount}/6 equipped
       </Typography>
     </div>
@@ -322,7 +451,7 @@ const MobileBuildSummary = ({
           <div className="min-w-0 flex-1">
             <Typography
               as="div"
-              className="text-[9px] font-bold uppercase tracking-[.2em] text-primary"
+              className="text-[11px] font-semibold uppercase tracking-[.16em] text-primary"
             >
               Live summary
             </Typography>

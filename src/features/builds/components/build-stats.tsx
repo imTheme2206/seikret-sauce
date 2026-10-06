@@ -22,7 +22,7 @@ export const BuildStats = ({
           <div>
             <Typography
               as="div"
-              className="text-[9px] uppercase tracking-[.2em] text-muted-foreground"
+              className="text-[11px] uppercase tracking-[.2em] text-muted-foreground"
             >
               Defense
             </Typography>
@@ -44,7 +44,7 @@ export const BuildStats = ({
             >
               <Typography
                 as="span"
-                className="flex items-center gap-1 text-[9px] font-bold tracking-widest"
+                className="flex items-center gap-1 text-[11px] font-bold tracking-widest"
                 style={{ color }}
               >
                 <ElementIcon className="size-3" style={{ color }} />

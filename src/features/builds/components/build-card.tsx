@@ -122,7 +122,7 @@ export const BuildCard = ({
         <div className="flex shrink-0 items-center gap-4 sm:flex-col sm:items-end sm:gap-2">
           <Typography
             as="span"
-            className="flex items-center gap-1 text-[10px] uppercase tracking-[.15em] text-muted-foreground"
+            className="flex items-center gap-1 text-[11px] uppercase tracking-[.15em] text-muted-foreground"
           >
             <Clock3 className="size-3" />
             Revised {formatBuildDate(build.updatedAt)}
@@ -158,7 +158,7 @@ export const BuildCard = ({
                   <div className="min-w-0">
                     <Typography
                       as="div"
-                      className="text-[9px] uppercase tracking-[.18em] text-muted-foreground"
+                      className="text-[11px] uppercase tracking-[.18em] text-muted-foreground"
                     >
                       {POSITION_LABELS[position]}
                     </Typography>
