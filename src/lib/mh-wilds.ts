@@ -62,16 +62,21 @@ export type ElementConfig = {
   /** Three-letter form used in dense stat rows. */
   abbr: string;
   color: string;
+  /** In-game element glyph (the blight icon art, from monsterhunterwiki.org). */
+  icon: string;
 };
 
 /** The five elements in in-game order, with the accent colour used everywhere. */
 export const ELEMENTS: ElementConfig[] = [
-  { key: "fire", label: "Fire", abbr: "FIR", color: "hsl(8,65%,55%)" },
-  { key: "water", label: "Water", abbr: "WAT", color: "hsl(205,55%,55%)" },
-  { key: "thunder", label: "Thunder", abbr: "THN", color: "hsl(50,75%,55%)" },
-  { key: "ice", label: "Ice", abbr: "ICE", color: "hsl(190,45%,60%)" },
-  { key: "dragon", label: "Dragon", abbr: "DRA", color: "hsl(280,40%,62%)" },
+  { key: "fire", label: "Fire", abbr: "FIR", color: "hsl(8,65%,55%)", icon: "/images/elements/fire.png" },
+  { key: "water", label: "Water", abbr: "WAT", color: "hsl(205,55%,55%)", icon: "/images/elements/water.png" },
+  { key: "thunder", label: "Thunder", abbr: "THN", color: "hsl(50,75%,55%)", icon: "/images/elements/thunder.png" },
+  { key: "ice", label: "Ice", abbr: "ICE", color: "hsl(190,45%,60%)", icon: "/images/elements/ice.png" },
+  { key: "dragon", label: "Dragon", abbr: "DRA", color: "hsl(280,40%,62%)", icon: "/images/elements/dragon.png" },
 ];
+
+/** In-game defense shield icon. */
+export const DEFENSE_ICON = "/images/defense.png";
 
 /**
  * In-game armour rarity colours for MH Wilds (rarity 1–8), keyed by rarity.

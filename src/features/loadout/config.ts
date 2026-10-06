@@ -57,3 +57,22 @@ export const categoryOf = (skill: Skill): SkillCategory => {
   if (skill.isGroupSkill) return "group";
   return skill.type === "weapon" ? "weapon" : "armor";
 };
+
+/**
+ * Armor skills are grouped by their in-game icon type, in this order. Any icon
+ * not listed here (or a missing icon) falls into a trailing "Other" group.
+ */
+export const ARMOR_SKILL_GROUPS: { icon: string; label: string }[] = [
+  { icon: "attack", label: "Attack" },
+  { icon: "offense", label: "Offense" },
+  { icon: "affinity", label: "Affinity" },
+  { icon: "element", label: "Element" },
+  { icon: "handicraft", label: "Handicraft" },
+  { icon: "ranged", label: "Ranged" },
+  { icon: "defense", label: "Defense" },
+  { icon: "health", label: "Health" },
+  { icon: "stamina", label: "Stamina" },
+  { icon: "utility", label: "Utility" },
+  { icon: "item", label: "Item" },
+  { icon: "gathering", label: "Gathering" },
+];

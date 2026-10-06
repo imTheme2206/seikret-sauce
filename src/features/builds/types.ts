@@ -1,3 +1,4 @@
+import type { DecorationColor } from "@/lib/decoration-sprite";
 /**
  * Domain types for the Builds feature.
  *
@@ -157,6 +158,8 @@ export type GearOption = {
   slots?: number[];
   /** Extra terms the search should match, e.g. the skills a piece grants. */
   keywords?: string[];
+  /** For decorations: the jewel's size and in-game colour, to draw it in its socket. */
+  jewel?: { level: number; color: DecorationColor };
 };
 
 /**

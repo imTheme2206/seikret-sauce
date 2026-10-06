@@ -115,6 +115,18 @@ export const createSkillCatalog = (
   };
 };
 
+// SWR hands every consumer the same response object, so project it once and
+// share the result — skill lines render once per row in long pickers.
+const projections = new WeakMap<SkillCatalogResponse, SkillCatalog>();
+const catalogFor = (response: SkillCatalogResponse): SkillCatalog => {
+  let catalog = projections.get(response);
+  if (!catalog) {
+    catalog = createSkillCatalog(response);
+    projections.set(response, catalog);
+  }
+  return catalog;
+};
+
 /** One fetch and one projection seam for every consumer of the Skill Catalog. */
 export const useSkillCatalog = () => {
   const { api } = useApi();
@@ -124,9 +136,7 @@ export const useSkillCatalog = () => {
       (await api("/api/mh-wilds/skills").method("get").create()({})).data,
     SKILL_CATALOG_OPTIONS,
   );
-  const catalog = useMemo(() => (data ? createSkillCatalog(data) : undefined), [
-    data,
-  ]);
+  const catalog = useMemo(() => (data ? catalogFor(data) : undefined), [data]);
 
   return {
     catalog,

@@ -1,4 +1,6 @@
-import { CircleSlash, Gem } from "lucide-react";
+import { DecorationSlotIcon } from "@/components/gear/decoration-slot-icon";
+import { decorationColor } from "@/lib/decoration-sprite";
+import { CircleSlash } from "lucide-react";
 import { Typography } from "@/components/ui/typography";
 import { slotSizes } from "../utils";
 import { GearSkillLine } from "./gear-skill-line";
@@ -41,10 +43,15 @@ export const EquippedGearRow = ({ position, piece }: EquippedGearRowProps) => {
                   <Typography
                     as="span"
                     key={`${decoration.slotIndex}-${decoration.decorationId}`}
-                    className="flex items-center gap-1 border border-primary/25 bg-primary/[.06] px-2 py-1 text-[10px] text-primary"
+                    className="flex items-center gap-1.5 border border-border bg-background/40 py-0.5 pl-1 pr-2 text-xs text-foreground/85"
                   >
-                    <Gem className="size-3" />
-                    {decoration.name} · Lv {decoration.slotSize}
+                    <DecorationSlotIcon
+                      level={slotSizes(piece.slots)[decoration.slotIndex] ?? decoration.slotSize}
+                      jewel={{ level: decoration.slotSize, color: decorationColor(decoration.name) }}
+                      size={18}
+                      decorative
+                    />
+                    {decoration.name}
                   </Typography>
                 ))}
               </div>

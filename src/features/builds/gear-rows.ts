@@ -8,6 +8,7 @@
  * than short dropdowns.
  */
 
+import { decorationColor } from "@/lib/decoration-sprite";
 import type { CustomTalisman } from "@/features/talismans/types";
 import { ARMOR_POSITIONS } from "./config";
 import { encodeTalismanValue, toGearSlots } from "./utils";
@@ -101,6 +102,10 @@ const decorationGroups = (
       name: decoration.name,
       skills: decoration.skills,
       keywords: gearKeywords(decoration),
+      jewel: {
+        level: decoration.slotSize,
+        color: decorationColor(decoration.name),
+      },
     }),
   );
 };

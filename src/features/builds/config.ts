@@ -6,26 +6,11 @@
  * gains or renames a position these assignments stop compiling.
  */
 
-import { Droplets, Flame, Skull, Snowflake, Zap } from "lucide-react";
-import type { LucideIcon } from "lucide-react";
 import {
   ARMOR_POSITIONS as MH_ARMOR_POSITIONS,
   EQUIPMENT_POSITIONS,
-  type ElementalDefenses,
 } from "@/lib/mh-wilds";
 import type { ArmorPosition, BuildDraft, PositionKey } from "./types";
-
-/**
- * Glyph per element for the stats panel. Kept here rather than in the shared
- * domain module so that module stays free of UI dependencies.
- */
-export const ELEMENT_ICONS: Record<keyof ElementalDefenses, LucideIcon> = {
-  fire: Flame,
-  water: Droplets,
-  thunder: Zap,
-  ice: Snowflake,
-  dragon: Skull,
-};
 
 /** All six positions, in equip order. */
 export const POSITION_KEYS: PositionKey[] = EQUIPMENT_POSITIONS;

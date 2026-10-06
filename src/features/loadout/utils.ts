@@ -1,7 +1,8 @@
 /** Pure presentation helpers for the Loadout Optimizer. */
 
 import { DRAFT_LIMITS } from "@/features/builds/config";
-import type { SelectedSkill } from "./types";
+import { ARMOR_SKILL_GROUPS } from "./config";
+import type { PoolSkill, SelectedSkill } from "./types";
 
 const TIER_SYMBOLS: Record<string, string> = {
   Gamma: "γ",
@@ -46,4 +47,31 @@ export const resultName = (
     ? `Optimized: ${skills}${suffix}`
     : `Optimizer Result ${resultNumber}`;
   return name.slice(0, DRAFT_LIMITS.name);
+};
+
+export type SkillIconGroup = {
+  /** The icon type shared by every skill in the group; null for "Other". */
+  icon: string | null;
+  label: string;
+  skills: PoolSkill[];
+};
+
+/**
+ * Split armor skills into their in-game icon-type groups, in the configured
+ * order. Order inside a group follows the input, so callers keep their sort.
+ * Empty groups are dropped; unknown or missing icons land in a trailing "Other".
+ */
+export const groupSkillsByIcon = (skills: PoolSkill[]): SkillIconGroup[] => {
+  const known = new Set(ARMOR_SKILL_GROUPS.map((group) => group.icon));
+  const groups: SkillIconGroup[] = ARMOR_SKILL_GROUPS.map((group) => ({
+    icon: group.icon,
+    label: group.label,
+    skills: skills.filter((skill) => skill.icon === group.icon),
+  }));
+  groups.push({
+    icon: null,
+    label: "Other",
+    skills: skills.filter((skill) => !skill.icon || !known.has(skill.icon)),
+  });
+  return groups.filter((group) => group.skills.length > 0);
 };

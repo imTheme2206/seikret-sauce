@@ -3,13 +3,13 @@ import {
   AlertTriangle,
   ChevronRight,
   Clock3,
-  Gem,
   Link2,
   Loader2,
   ShieldOff,
   Swords,
   UserRound,
 } from "lucide-react";
+import { DecorationSlotIcon } from "@/components/gear/decoration-slot-icon";
 import { SlotIcon } from "@/components/gear/slot-icon";
 import {
   Avatar,
@@ -18,12 +18,13 @@ import {
 } from "@/components/ui/avatar";
 import { Typography } from "@/components/ui/typography";
 import { useSkillCatalog } from "@/features/skills/skill-catalog";
+import { decorationColor } from "@/lib/decoration-sprite";
 import { POSITION_LABELS, rarityColor } from "@/lib/mh-wilds";
 import { POSITION_KEYS } from "../config";
 import { createHunterStatus } from "../hunter-status";
 import { useSavedBuild } from "../hooks/use-saved-build";
 import type { BuildSummary } from "../types";
-import { formatBuildDate } from "../utils";
+import { formatBuildDate, slotSizes } from "../utils";
 import { BuildStatusTag } from "./build-status-tag";
 import { HunterPanel } from "./hunter-panel";
 import { HunterSkills } from "./hunter-skills";
@@ -142,6 +143,7 @@ export const BuildCard = ({
               const piece = build.composition.positions[position];
               const rarity =
                 piece && "rarity" in piece ? piece.rarity : undefined;
+              const sockets = piece ? slotSizes(piece.slots) : [];
 
               return (
                 <div
@@ -170,18 +172,26 @@ export const BuildCard = ({
                       {piece?.name ?? "Empty"}
                     </Typography>
                     {piece && piece.decorations.length > 0 && (
-                      <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1">
+                      <ul className="mt-2 flex flex-wrap gap-x-3 gap-y-1">
                         {piece.decorations.map((decoration) => (
-                          <Typography
-                            as="span"
+                          <li
                             key={`${decoration.slotIndex}-${decoration.decorationId}`}
-                            className="flex items-center gap-1 text-[10px] text-primary"
+                            className="flex min-w-0 items-center gap-1 text-xs text-foreground/85"
                           >
-                            <Gem className="size-2.5" />
-                            {decoration.name}
-                          </Typography>
+                            {/* The jewel seated in its actual socket, in its in-game colour. */}
+                            <DecorationSlotIcon
+                              level={sockets[decoration.slotIndex] ?? decoration.slotSize}
+                              jewel={{
+                                level: decoration.slotSize,
+                                color: decorationColor(decoration.name),
+                              }}
+                              size={18}
+                              decorative
+                            />
+                            <span className="truncate">{decoration.name}</span>
+                          </li>
                         ))}
-                      </div>
+                      </ul>
                     )}
                   </div>
                 </div>

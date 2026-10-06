@@ -1,4 +1,6 @@
+import { DecorationSlotIcon } from "@/components/gear/decoration-slot-icon";
 import { SectionHeading } from "@/components/gear/section-heading";
+import { DefenseIcon, ElementIcon } from "@/components/gear/stat-icons";
 import { Typography } from "@/components/ui/typography";
 import {
   ELEMENTS,
@@ -19,36 +21,30 @@ export const DefenseStats = ({ defense, elementalDefenses, freeSlots }: DefenseS
     <div>
       <SectionHeading>Defense &amp; slots</SectionHeading>
 
-      <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
-        <div className="flex items-baseline gap-1.5">
-          <Typography
-            as="span"
-            className="text-sm font-bold tabular-nums text-foreground"
-            title="Base defense over the 5 body pieces — excludes talisman, augments and floor bonuses, so it won't exactly match the in-game total."
-          >
+      <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
+        <div
+          className="flex items-center gap-2"
+          title="Base defense over the 5 body pieces — excludes talisman, augments and floor bonuses, so it won't exactly match the in-game total."
+        >
+          <DefenseIcon className="size-6" />
+          <Typography as="span" className="text-sm font-bold tabular-nums text-foreground">
             {defense}
           </Typography>
-          <Typography
-            as="span"
-            className="text-xs uppercase tracking-[0.1em] text-muted-foreground"
-          >
-            Base Def
+          <Typography as="span" className="text-xs text-muted-foreground">
+            Base defense
           </Typography>
         </div>
 
-        <div className="flex items-center gap-2">
-          {ELEMENTS.map(({ key, label, abbr, color }) => {
-            const value = elementalDefenses[key];
+        <ul className="flex items-center gap-3" aria-label="Elemental resistances">
+          {ELEMENTS.map((element) => {
+            const value = elementalDefenses[element.key];
             return (
-              <div key={key} className="flex flex-col items-center leading-none">
-                <Typography
-                  as="span"
-                  className="text-xs uppercase tracking-[0.08em]"
-                  style={{ color }}
-                  title={`${label} resistance`}
-                >
-                  {abbr}
-                </Typography>
+              <li
+                key={element.key}
+                className="flex items-center gap-1"
+                title={`${element.label} resistance`}
+              >
+                <ElementIcon element={element} label={element.label} className="size-5" />
                 <Typography
                   as="span"
                   className={cn(
@@ -58,29 +54,21 @@ export const DefenseStats = ({ defense, elementalDefenses, freeSlots }: DefenseS
                 >
                   {formatResistance(value)}
                 </Typography>
-              </div>
+              </li>
             );
           })}
-        </div>
+        </ul>
 
         {freeSlots.length > 0 && (
-          <div className="flex items-center gap-1.5">
-            <Typography
-              as="span"
-              className="text-xs uppercase tracking-[0.1em] text-muted-foreground"
-            >
-              Free
+          <div className="flex items-center gap-2">
+            <Typography as="span" className="text-xs text-muted-foreground">
+              Free slots
             </Typography>
-            <div className="flex gap-1">
+            <div className="flex flex-wrap gap-0.5">
               {freeSlots.map((size, i) => (
-                <Typography
-                  as="span"
-                  key={`${size}:${i}`}
-                  className="flex size-4 items-center justify-center rounded-[3px] bg-secondary text-xs font-bold tabular-nums text-primary"
-                  title={`Open size-${size} decoration slot`}
-                >
-                  {size}
-                </Typography>
+                <span key={`${size}:${i}`} title={`Open level ${size} decoration slot`}>
+                  <DecorationSlotIcon level={size} size={20} />
+                </span>
               ))}
             </div>
           </div>
