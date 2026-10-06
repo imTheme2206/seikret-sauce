@@ -123,3 +123,88 @@ describe("calculateBuild", () => {
     }]);
   });
 });
+
+describe("calculateBuild weapon contribution", () => {
+  const weaponSnapshot = (weapon: BuildSnapshot["positions"]["weapon"]): BuildSnapshot => ({
+    schemaVersion: 1,
+    positions: {
+      ...emptyPositions,
+      head: {
+        armorId: "head-1",
+        name: "Helm",
+        type: "head",
+        rank: "high",
+        rarity: 6,
+        defense: 10,
+        resistances: { fire: 0, water: 0, thunder: 0, ice: 0, dragon: 0 },
+        slots: [],
+        skills: [{ skillId: "atk", name: "Attack Boost", level: 2 }],
+        bonuses: [],
+        decorations: [],
+      },
+      weapon,
+    },
+    skillDefinitions: { "Attack Boost": 5, "Critical Eye": 3 },
+    bonusDefinitions: {},
+  });
+
+  test("weapon skills and weapon decoration skills add to raw skill levels", () => {
+    const totals = calculateBuild(
+      weaponSnapshot({
+        weaponId: "gs-1",
+        name: "Buster Sword",
+        kind: "great-sword",
+        rarity: 5,
+        damage: { raw: 100, display: 300 },
+        affinity: 0,
+        specials: [],
+        sharpness: null,
+        slots: [3, 1],
+        skills: [{ skillId: "atk", name: "Attack Boost", level: 1 }],
+        decorations: [
+          {
+            slotIndex: 0,
+            decorationId: "crit-jewel",
+            name: "Critical Jewel",
+            slotSize: 1,
+            skills: [{ skillId: "crit", name: "Critical Eye", level: 2 }],
+          },
+          {
+            slotIndex: 1,
+            decorationId: "atk-jewel",
+            name: "Attack Jewel",
+            slotSize: 1,
+            skills: [{ skillId: "atk", name: "Attack Boost", level: 1 }],
+          },
+        ],
+        setBonus: null,
+        groupBonus: null,
+      }),
+    );
+    // armor 2 + weapon 1 + weapon jewel 1
+    expect(totals.rawSkills["Attack Boost"]).toBe(4);
+    expect(totals.rawSkills["Critical Eye"]).toBe(2);
+    expect(totals.skills["Attack Boost"]).toBe(4);
+  });
+
+  test("raw skill levels past the maximum are capped in effective skills", () => {
+    const totals = calculateBuild(
+      weaponSnapshot({
+        weaponId: "gs-1",
+        skills: [{ skillId: "atk", name: "Attack Boost", level: 5 }],
+        decorations: [],
+        setBonus: null,
+        groupBonus: null,
+      }),
+    );
+    expect(totals.rawSkills["Attack Boost"]).toBe(7);
+    expect(totals.skills["Attack Boost"]).toBe(5);
+  });
+
+  test("a legacy bonus-only weapon snapshot contributes no skills and does not throw", () => {
+    const totals = calculateBuild(
+      weaponSnapshot({ setBonus: null, groupBonus: null }),
+    );
+    expect(totals.rawSkills).toEqual({ "Attack Boost": 2 });
+  });
+});

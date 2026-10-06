@@ -8,7 +8,7 @@ import {
   weaponOption,
   weaponSummary,
 } from "./weapon-rows";
-import type { BuildDraft, Weapon } from "./types";
+import type { BuildDraft, Decoration, Weapon } from "./types";
 
 const weapon = (overrides: Partial<Weapon>): Weapon => ({
   id: "rey-1",
@@ -115,6 +115,7 @@ test("no kind chosen means no options and no weapon", () => {
     value: "",
     groups: [],
     weapon: null,
+    slots: [],
   });
 });
 
@@ -141,4 +142,35 @@ test("a weapon id missing from the catalog resolves to nothing", () => {
   const row = buildWeaponRow(draftWith("retired"), catalog, null);
   expect(row.weapon).toBeNull();
   expect(row.value).toBe("");
+});
+
+test("an equipped weapon exposes weapon-typed slots with their seated jewels", () => {
+  const withSlots = [weapon({ id: "slotted", slots: [3, 1] })];
+  const decorations = [
+    { id: "tenderizer", name: "Tenderizer Jewel", type: "weapon", slotSize: 1, skills: [] },
+    { id: "guard", name: "Guard Jewel", type: "armor", slotSize: 1, skills: [] },
+    { id: "big", name: "Big Weapon Jewel", type: "weapon", slotSize: 3, skills: [] },
+  ] as Decoration[];
+  const draft: BuildDraft = {
+    ...EMPTY_DRAFT,
+    composition: {
+      ...EMPTY_DRAFT.composition,
+      weapon: {
+        ...EMPTY_DRAFT.composition.weapon,
+        weaponId: "slotted",
+        decorations: [{ slotIndex: 1, decorationId: "tenderizer" }],
+      },
+    },
+  };
+
+  const { slots } = buildWeaponRow(draft, withSlots, null, decorations);
+  expect(slots.map((slot) => [slot.type, slot.size, slot.selectedId])).toEqual([
+    ["weapon", 3, ""],
+    ["weapon", 1, "tenderizer"],
+  ]);
+  const optionIds = (index: number) =>
+    slots[index]!.groups.flatMap((group) => group.options).map((o) => o.id);
+  // Armor jewels never fit; a size-3 jewel fits only the size-3 slot.
+  expect(optionIds(0).sort()).toEqual(["big", "tenderizer"]);
+  expect(optionIds(1)).toEqual(["tenderizer"]);
 });

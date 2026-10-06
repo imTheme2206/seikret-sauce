@@ -110,7 +110,7 @@ const decorationGroups = (
   );
 };
 
-const toEditorSlots = (
+export const toEditorSlots = (
   slots: GearSlot[],
   assignments: DecorationAssignment[],
   decorations: Decoration[],

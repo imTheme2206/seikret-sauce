@@ -36,6 +36,11 @@ export const toGearSlots = (sizes: readonly number[]): GearSlot[] => {
   return sizes.map((size) => ({ size, type: "armor" }));
 };
 
+/** A weapon's slot sizes as weapon-typed slots, which only weapon decorations fit. */
+export const toWeaponSlots = (sizes: readonly number[]): GearSlot[] => {
+  return sizes.map((size) => ({ size, type: "weapon" }));
+};
+
 /** Slots as stored on a snapshot piece, which may be sizes or already-shaped slots. */
 export const slotSizes = (
   slots: readonly (number | { size: number })[],
@@ -44,17 +49,16 @@ export const slotSizes = (
 };
 
 /**
- * True once any armor piece, talisman, or weapon bonus is set. `weapon` is
- * excluded from the naive truthiness check below — it's always a present
+ * True once any armor piece, talisman, weapon, or weapon bonus is set. `weapon`
+ * is excluded from the naive truthiness check below — it's always a present
  * object (its ids are independently nullable), unlike the other positions
- * where `null` means "empty". `weaponId` is not counted yet: it is not part of
- * a saved Build until weapon saving ships.
+ * where `null` means "empty".
  */
 export const hasAnyPiece = (draft: BuildDraft): boolean => {
   const { weapon, ...positions } = draft.composition;
   return (
     Object.values(positions).some(Boolean) ||
-    Boolean(weapon.setBonusId || weapon.groupBonusId)
+    Boolean(weapon.weaponId || weapon.setBonusId || weapon.groupBonusId)
   );
 };
 
@@ -64,10 +68,14 @@ export const toCreateBody = (draft: BuildDraft): CreateBuildBody => {
     name: draft.name.trim(),
     description: draft.description.trim() || null,
     isShared: draft.isShared,
-    // `weaponId` is a Working Build-only field until weapon saving ships.
     composition: {
       ...draft.composition,
       weapon: {
+        weaponId: draft.composition.weapon.weaponId,
+        // Decorations only make sense on a chosen weapon; drop strays defensively.
+        decorations: draft.composition.weapon.weaponId
+          ? draft.composition.weapon.decorations
+          : [],
         setBonusId: draft.composition.weapon.setBonusId,
         groupBonusId: draft.composition.weapon.groupBonusId,
       },

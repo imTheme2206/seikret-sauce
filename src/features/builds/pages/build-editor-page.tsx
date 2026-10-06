@@ -122,6 +122,7 @@ export const BuildEditorPage = ({ buildId }: { buildId?: string }) => {
                   row={controller.weaponRow}
                   onKindChange={controller.setWeaponKind}
                   onSelect={controller.setWeapon}
+                  onDecoration={controller.assignWeaponDecoration}
                 />
                 <WeaponBonusRow
                   value={controller.draft.composition.weapon}

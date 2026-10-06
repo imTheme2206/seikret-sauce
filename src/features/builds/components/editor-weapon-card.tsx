@@ -10,13 +10,19 @@ import { Typography } from "@/components/ui/typography";
 import { cn } from "@/lib/utils";
 import { Search, Swords } from "lucide-react";
 import { WEAPON_KINDS, weaponKindConfig } from "../config";
-import type { EditorWeaponRow, Weapon, WeaponKind } from "../types";
+import type {
+  DecorationAssignment,
+  EditorWeaponRow,
+  Weapon,
+  WeaponKind,
+} from "../types";
 import {
   formatAffinity,
   formatDamage,
   formatSpecial,
   titleCase,
 } from "../weapon-rows";
+import { DecorationSlotGrid } from "./decoration-slot-grid";
 import { GearPicker } from "./gear-picker";
 import { GearSkillLine } from "./gear-skill-line";
 import { HunterPanel } from "./hunter-panel";
@@ -28,6 +34,7 @@ type EditorWeaponCardProps = {
   row: EditorWeaponRow;
   onKindChange: (kind: WeaponKind) => void;
   onSelect: (weaponId: string) => void;
+  onDecoration: (assignment: DecorationAssignment) => void;
 };
 
 const WeaponImage = ({
@@ -64,7 +71,13 @@ const Stat = ({ label, children }: StatProps) => (
   </div>
 );
 
-const WeaponStats = ({ weapon }: { weapon: Weapon }) => (
+type WeaponStatsProps = {
+  weapon: Weapon;
+  slots: EditorWeaponRow["slots"];
+  onDecoration: (assignment: DecorationAssignment) => void;
+};
+
+const WeaponStats = ({ weapon, slots, onDecoration }: WeaponStatsProps) => (
   <div className="min-w-0 space-y-4 p-4 sm:p-5">
     <section aria-label="Weapon stats">
       <dl className="grid grid-cols-2 gap-x-4 gap-y-3 sm:grid-cols-3">
@@ -95,13 +108,24 @@ const WeaponStats = ({ weapon }: { weapon: Weapon }) => (
     )}
 
     <section
-      aria-label="Weapon slots"
-      className="flex flex-wrap items-center gap-3 border-t border-border pt-4"
+      aria-label="Weapon decoration slots"
+      className="border-t border-border pt-4"
     >
-      <Typography as="h3" className="text-sm font-semibold text-foreground">
+      <Typography
+        as="h3"
+        className="mb-3 text-sm font-semibold text-foreground"
+      >
         Decoration slots
       </Typography>
-      <SlotPips slots={weapon.slots} />
+      {slots.length > 0 ? (
+        <DecorationSlotGrid
+          slots={slots}
+          label="Weapon"
+          onDecoration={onDecoration}
+        />
+      ) : (
+        <SlotPips slots={weapon.slots} />
+      )}
     </section>
 
     <section aria-label="Weapon skills" className="border-t border-border pt-4">
@@ -120,9 +144,6 @@ const WeaponStats = ({ weapon }: { weapon: Weapon }) => (
           No skills on this weapon.
         </Typography>
       )}
-      <Typography className="mt-2 text-xs text-muted-foreground">
-        Shown for reference; weapon skills are not counted in the totals yet.
-      </Typography>
     </section>
   </div>
 );
@@ -132,6 +153,7 @@ export const EditorWeaponCard = ({
   row,
   onKindChange,
   onSelect,
+  onDecoration,
 }: EditorWeaponCardProps) => {
   const { weapon } = row;
   const kindLabel = row.kind ? weaponKindConfig(row.kind).label : "weapon";
@@ -231,7 +253,13 @@ export const EditorWeaponCard = ({
         )}
       </div>
 
-      {weapon && <WeaponStats weapon={weapon} />}
+      {weapon && (
+        <WeaponStats
+          weapon={weapon}
+          slots={row.slots}
+          onDecoration={onDecoration}
+        />
+      )}
     </HunterPanel>
   );
 };

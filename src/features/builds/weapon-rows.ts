@@ -4,9 +4,11 @@
  * equipped weapon. Pure and catalog-driven, like `gear-rows.ts`.
  */
 
-import { gearKeywords, groupBy } from "./gear-rows";
+import { gearKeywords, groupBy, toEditorSlots } from "./gear-rows";
+import { toWeaponSlots } from "./utils";
 import type {
   BuildDraft,
+  Decoration,
   EditorWeaponRow,
   GearOption,
   GearOptionGroup,
@@ -76,6 +78,7 @@ export const buildWeaponRow = (
   draft: BuildDraft,
   weapons: Weapon[],
   chosenKind: WeaponKind | null,
+  decorations: Decoration[] = [],
 ): EditorWeaponRow => {
   const weapon =
     weapons.find((item) => item.id === draft.composition.weapon.weaponId) ??
@@ -86,5 +89,12 @@ export const buildWeaponRow = (
     value: weapon?.id ?? "",
     groups: kind ? weaponGroups(weapons, kind) : [],
     weapon,
+    slots: weapon
+      ? toEditorSlots(
+          toWeaponSlots(weapon.slots),
+          draft.composition.weapon.decorations,
+          decorations,
+        )
+      : [],
   };
 };

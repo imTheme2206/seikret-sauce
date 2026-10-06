@@ -52,7 +52,12 @@ export type ArmorPosition = Exclude<PositionKey, "talisman">;
 export type SnapshotPiece = NonNullable<SnapshotPositions[PositionKey]>;
 export type SnapshotArmor = NonNullable<SnapshotPositions[ArmorPosition]>;
 export type SnapshotTalisman = NonNullable<SnapshotPositions["talisman"]>;
-/** A weapon's Set + Group Bonus contribution, resolved to full bonus records. */
+/**
+ * A weapon position: the Set + Group Bonus contribution plus, when a catalog
+ * weapon was chosen, its trusted item snapshot (stats, skills, decorations).
+ * Saved Builds from before the weapon catalog (backend ADR-0013) hold only the
+ * bonus pair, so every item field is optional and `weaponId` may be absent.
+ */
 export type SnapshotWeapon = NonNullable<SnapshotPositions["weapon"]>;
 
 export type CreateBuildBody =
@@ -100,11 +105,12 @@ export type TalismanSource = "custom" | "scraped";
  * Always present on the draft, never `null`: each field independently means
  * "nothing chosen" when `null`.
  *
- * `weaponId` lives only in the local Working Build for now; saving a Build
- * does not send it yet (`toCreateBody` strips it).
+ * `decorations` are assigned to the chosen weapon's weapon-type slots; they are
+ * cleared whenever the weapon changes, since slot layouts differ per weapon.
  */
 export type EditorWeaponSelection = {
   weaponId: string | null;
+  decorations: DecorationAssignment[];
   setBonusId: string | null;
   groupBonusId: string | null;
 };
@@ -215,4 +221,6 @@ export type EditorWeaponRow = {
   groups: GearOptionGroup[];
   /** The equipped weapon, when the draft's id resolves in the catalog. */
   weapon: Weapon | null;
+  /** The weapon's decoration slots (weapon-typed), empty when no weapon is equipped. */
+  slots: EditorSlot[];
 };

@@ -1,4 +1,3 @@
-import { DecorationSlotIcon } from "@/components/gear/decoration-slot-icon";
 import { SlotIcon } from "@/components/gear/slot-icon";
 import { Typography } from "@/components/ui/typography";
 import { POSITION_LABELS, rarityColor } from "@/lib/mh-wilds";
@@ -6,6 +5,7 @@ import { cn } from "@/lib/utils";
 import { Search } from "lucide-react";
 import type { DecorationAssignment, EditorGearRow } from "../types";
 import { slotSizes } from "../utils";
+import { DecorationSlotGrid } from "./decoration-slot-grid";
 import { GearPicker } from "./gear-picker";
 import { GearSkillLine } from "./gear-skill-line";
 import { HunterPanel } from "./hunter-panel";
@@ -122,45 +122,11 @@ export const EditorGearRowCard = ({
               >
                 Decoration slots
               </Typography>
-              <div className="grid gap-3 sm:grid-cols-3">
-                {row.slots.map((slot) => {
-                  const seated = slot.groups
-                    .flatMap((group) => group.options)
-                    .find((option) => option.id === slot.selectedId);
-                  return (
-                  <div key={slot.slotIndex} className="min-w-0 space-y-2">
-                    <Typography
-                      as="div"
-                      className="flex items-center gap-2 text-base font-medium text-foreground"
-                    >
-                      <DecorationSlotIcon level={slot.size} jewel={seated?.jewel} size={25} decorative />
-                      <span>
-                        {slot.type === "armor" ? "Armor" : "Weapon"} · Lv {slot.size}
-                      </span>
-                    </Typography>
-                    <GearPicker
-                      value={slot.selectedId}
-                      groups={slot.groups}
-                      placeholder="Empty"
-                      emptyLabel="Remove jewel"
-                      searchPlaceholder="Search jewel or skill…"
-                      ariaLabel={`${label} jewel slot ${slot.slotIndex + 1}`}
-                      renderIcon={(option) => (
-                        <DecorationSlotIcon
-                          level={slot.size}
-                          jewel={option?.jewel}
-                          size={22}
-                          decorative
-                        />
-                      )}
-                      onChange={(decorationId) =>
-                        onDecoration({ slotIndex: slot.slotIndex, decorationId })
-                      }
-                    />
-                  </div>
-                  );
-                })}
-              </div>
+              <DecorationSlotGrid
+                slots={row.slots}
+                label={label}
+                onDecoration={onDecoration}
+              />
             </section>
           )}
         </div>

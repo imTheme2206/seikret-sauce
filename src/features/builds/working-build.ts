@@ -70,6 +70,7 @@ export const parseWorkingBuild = (raw: unknown): BuildDraft => {
     talisman: parseTalisman(composition.talisman),
     weapon: {
       weaponId: parseId(weapon.weaponId),
+      decorations: parseAssignments(weapon.decorations),
       setBonusId: parseId(weapon.setBonusId),
       groupBonusId: parseId(weapon.groupBonusId),
     },

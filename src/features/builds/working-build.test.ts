@@ -13,7 +13,12 @@ test("a persisted weapon selection survives the JSON round trip", () => {
         armorId: "helm",
         decorations: [{ slotIndex: 0, decorationId: "jewel" }],
       },
-      weapon: { weaponId: "rey-2", setBonusId: "set", groupBonusId: null },
+      weapon: {
+        weaponId: "rey-2",
+        decorations: [{ slotIndex: 0, decorationId: "tenderizer" }],
+        setBonusId: "set",
+        groupBonusId: null,
+      },
     },
   };
   expect(parseWorkingBuild(JSON.parse(JSON.stringify(draft)))).toEqual(draft);
@@ -46,22 +51,47 @@ test("malformed fields are dropped one by one, not all at once", () => {
   expect(parsed.composition.talisman).toBeNull();
   expect(parsed.composition.weapon).toEqual({
     weaponId: null,
+    decorations: [],
     setBonusId: "set",
     groupBonusId: null,
   });
 });
 
-test("the save body never carries the Working Build-only weaponId", () => {
+test("the save body carries the weapon, its decorations and bonuses", () => {
   const body = toCreateBody({
     ...EMPTY_DRAFT,
     name: "x",
     composition: {
       ...EMPTY_DRAFT.composition,
-      weapon: { weaponId: "rey-2", setBonusId: "set", groupBonusId: null },
+      weapon: {
+        weaponId: "rey-2",
+        decorations: [{ slotIndex: 1, decorationId: "tenderizer" }],
+        setBonusId: "set",
+        groupBonusId: null,
+      },
     },
   });
   expect(body.composition.weapon).toEqual({
+    weaponId: "rey-2",
+    decorations: [{ slotIndex: 1, decorationId: "tenderizer" }],
     setBonusId: "set",
     groupBonusId: null,
   });
+});
+
+test("stray weapon decorations are dropped when no weapon is chosen", () => {
+  const body = toCreateBody({
+    ...EMPTY_DRAFT,
+    name: "x",
+    composition: {
+      ...EMPTY_DRAFT.composition,
+      weapon: {
+        weaponId: null,
+        decorations: [{ slotIndex: 0, decorationId: "tenderizer" }],
+        setBonusId: "set",
+        groupBonusId: null,
+      },
+    },
+  });
+  expect(body.composition.weapon?.decorations).toEqual([]);
 });

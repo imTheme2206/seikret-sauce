@@ -46,8 +46,9 @@ type-specific data. Distinct from the **weapon bonus** pair below (backend ADR-0
 
 **Working Build**:
 The unsaved Build Editor draft. A new build's draft is persisted to localStorage (`working-build.ts`) so picks
-such as the **Weapon** survive a reload; it is sent to the API only when the hunter saves. In this slice the
-chosen **Weapon** stays in the Working Build and is not part of the saved Build or the calculated totals yet.
+such as the **Weapon** survive a reload; it is sent to the API only when the hunter saves. The
+chosen **Weapon** and the jewels seated in its slots are part of the saved Build and count toward the calculated
+totals; a Saved Build from before weapons were catalog items carries only the bonus pair and still renders.
 
 **Skill Catalog**:
 The shared reference data returned by `/api/mh-wilds/skills`, containing Regular Skill definitions

@@ -160,15 +160,40 @@ export const useBuildEditor = (buildId?: string) => {
     if (equipped && equipped.kind !== kind) setWeapon("");
   };
 
-  /** Empty `weaponId` unequips the weapon. */
+  /** Empty `weaponId` unequips the weapon. Slot layouts differ per weapon, so its decorations are dropped. */
   const setWeapon = (weaponId: string) =>
     setDraft((current) => ({
       ...current,
       composition: {
         ...current.composition,
-        weapon: { ...current.composition.weapon, weaponId: weaponId || null },
+        weapon: {
+          ...current.composition.weapon,
+          weaponId: weaponId || null,
+          decorations:
+            weaponId === current.composition.weapon.weaponId
+              ? current.composition.weapon.decorations
+              : [],
+        },
       },
     }));
+
+  /** Empty `decorationId` clears the weapon slot. */
+  const assignWeaponDecoration = (assignment: DecorationAssignment) =>
+    setDraft((current) => {
+      const { weapon } = current.composition;
+      if (!weapon.weaponId) return current;
+      const decorations = weapon.decorations.filter(
+        (item) => item.slotIndex !== assignment.slotIndex,
+      );
+      if (assignment.decorationId) decorations.push(assignment);
+      return {
+        ...current,
+        composition: {
+          ...current.composition,
+          weapon: { ...weapon, decorations },
+        },
+      };
+    });
 
   // A weapon can carry any Set or Group Skill; the shared catalog owns grouping.
   const bonusOptions = catalog.skillCatalog?.bonuses ?? { set: [], group: [] };
@@ -182,6 +207,7 @@ export const useBuildEditor = (buildId?: string) => {
         catalog.decorations,
         catalog.skillCatalog?.response,
         talismans.talismans,
+        catalog.weapons,
       ),
     [
       draft,
@@ -189,6 +215,7 @@ export const useBuildEditor = (buildId?: string) => {
       catalog.decorations,
       catalog.skillCatalog,
       talismans.talismans,
+      catalog.weapons,
     ],
   );
 
@@ -211,8 +238,14 @@ export const useBuildEditor = (buildId?: string) => {
   );
 
   const weaponRow = useMemo(
-    () => buildWeaponRow(draft, catalog.weapons, chosenWeaponKind),
-    [draft, catalog.weapons, chosenWeaponKind],
+    () =>
+      buildWeaponRow(
+        draft,
+        catalog.weapons,
+        chosenWeaponKind,
+        catalog.decorations,
+      ),
+    [draft, catalog.weapons, chosenWeaponKind, catalog.decorations],
   );
 
   const hunterStatus = useMemo(
@@ -326,6 +359,7 @@ export const useBuildEditor = (buildId?: string) => {
     setWeaponBonus,
     setWeaponKind,
     setWeapon,
+    assignWeaponDecoration,
     setHasRevisionConflict,
     reloadNewest,
     save,

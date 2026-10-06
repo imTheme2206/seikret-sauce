@@ -17,9 +17,10 @@ export const calculateBuild = (snapshot: BuildSnapshot): BuildTotals => {
   const resistances = { fire: 0, water: 0, thunder: 0, ice: 0, dragon: 0 };
   let defense = 0;
 
-  // The weapon carries no armor/decorations/defense — only a Set and/or Group
-  // Bonus contribution (ADR-0012) — so it's handled separately from the
-  // uniform armor+talisman loop below rather than forced into that shape.
+  // The weapon has no defense or resistances and carries a bonus pair alongside
+  // its skills, so it's handled separately from the uniform armor+talisman loop
+  // below rather than forced into that shape. Legacy bonus-only weapons have
+  // no `skills`/`decorations`, hence the fallbacks.
   const { weapon, ...gearPositions } = snapshot.positions;
 
   for (const piece of Object.values(gearPositions)) {
@@ -37,6 +38,12 @@ export const calculateBuild = (snapshot: BuildSnapshot): BuildTotals => {
       for (const element of ELEMENTS)
         resistances[element] += piece.resistances[element];
     }
+  }
+
+  for (const skill of weapon?.skills ?? []) add(rawSkills, skill.name, skill.level);
+  for (const decoration of weapon?.decorations ?? []) {
+    for (const skill of decoration.skills)
+      add(rawSkills, skill.name, skill.level);
   }
 
   if (weapon?.setBonus) add(bonusCounts, weapon.setBonus.name, 1);

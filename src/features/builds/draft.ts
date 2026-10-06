@@ -21,10 +21,13 @@ import type {
   SnapshotPiece,
   SnapshotTalisman,
   SnapshotWeapon,
+  Weapon,
 } from "./types";
 
-const toAssignments = (piece: SnapshotPiece): DecorationAssignment[] => {
-  return piece.decorations.map(({ slotIndex, decorationId }) => ({
+const toAssignments = (
+  piece: Pick<SnapshotPiece, "decorations"> | SnapshotWeapon,
+): DecorationAssignment[] => {
+  return (piece.decorations ?? []).map(({ slotIndex, decorationId }) => ({
     slotIndex,
     decorationId,
   }));
@@ -53,8 +56,10 @@ export const draftFromBuild = (build: SavedBuild): BuildDraft => {
     };
   }
 
+  // A legacy bonus-only weapon has no `weaponId`; it hydrates as bonuses alone.
   composition.weapon = {
-    weaponId: null,
+    weaponId: positions.weapon?.weaponId ?? null,
+    decorations: positions.weapon ? toAssignments(positions.weapon) : [],
     setBonusId: positions.weapon?.setBonus?.bonusId ?? null,
     groupBonusId: positions.weapon?.groupBonus?.bonusId ?? null,
   };
@@ -73,6 +78,7 @@ export const snapshotFromDraft = (
   decorations: Decoration[],
   catalog: SkillCatalog | undefined,
   customTalismans: CustomTalisman[],
+  weapons: Weapon[] = [],
 ): BuildSnapshot => {
   const armorById = new Map(armors.map((armor) => [armor.id, armor]));
   const decorationById = new Map(
@@ -164,9 +170,31 @@ export const snapshotFromDraft = (
   };
 
   const toWeapon = (): SnapshotWeapon | null => {
-    const setBonus = toWeaponBonus(draft.composition.weapon.setBonusId);
-    const groupBonus = toWeaponBonus(draft.composition.weapon.groupBonusId);
-    return setBonus || groupBonus ? { setBonus, groupBonus } : null;
+    const selection = draft.composition.weapon;
+    const setBonus = toWeaponBonus(selection.setBonusId);
+    const groupBonus = toWeaponBonus(selection.groupBonusId);
+    const item = weapons.find((weapon) => weapon.id === selection.weaponId);
+
+    if (!item) {
+      return setBonus || groupBonus
+        ? { weaponId: null, setBonus, groupBonus }
+        : null;
+    }
+    return {
+      weaponId: item.id,
+      name: item.name,
+      kind: item.kind,
+      rarity: item.rarity,
+      damage: item.damage,
+      affinity: item.affinity,
+      specials: item.specials,
+      sharpness: item.sharpness,
+      slots: item.slots,
+      skills: item.skills,
+      decorations: decorate(selection.decorations),
+      setBonus,
+      groupBonus,
+    };
   };
 
   return {
