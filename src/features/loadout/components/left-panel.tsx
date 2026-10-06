@@ -39,12 +39,7 @@ export const LeftPanel = ({ controller, className }: LeftPanelProps) => {
           disabled={c.isSearching}
         />
 
-        <WeaponSelector
-          value={c.weapon}
-          onChange={c.setWeaponSkill}
-          options={c.weaponOptions}
-          disabled={c.isSearching}
-        />
+        <WeaponSelector controller={c} compact disabled={c.isSearching} />
       </div>
 
       <div className="flex min-h-0 flex-1 flex-col px-5 pt-4">
@@ -69,7 +64,7 @@ export const LeftPanel = ({ controller, className }: LeftPanelProps) => {
         <Button
           type="button"
           onClick={c.runSearch}
-          disabled={c.selectedCount === 0 || c.isSearching}
+          disabled={!c.canSearch}
           aria-describedby={c.selectedCount === 0 ? "drawer-search-hint" : undefined}
           className="h-11 w-full rounded-sm text-sm font-semibold shadow-none disabled:bg-secondary disabled:text-muted-foreground disabled:opacity-100"
         >

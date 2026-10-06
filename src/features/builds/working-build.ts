@@ -21,6 +21,7 @@ import type {
   DecorationAssignment,
   EditorArmorSelection,
   EditorTalismanSelection,
+  EditorWeaponSelection,
 } from "./types";
 
 /** Bump the suffix when the persisted shape changes incompatibly. */
@@ -122,22 +123,27 @@ export const parseWorkingTarget = (raw: unknown): HuntTarget | null => {
     : null;
 };
 
+/** Coerce an arbitrary stored weapon entry into a selection; anything unrecognisable is "no weapon". */
+export const parseWeaponSelection = (raw: unknown): EditorWeaponSelection => {
+  const weapon = isRecord(raw) ? raw : {};
+  return {
+    weaponId: parseId(weapon.weaponId),
+    decorations: parseAssignments(weapon.decorations),
+    setBonusId: parseId(weapon.setBonusId),
+    groupBonusId: parseId(weapon.groupBonusId),
+    customization: parseCustomization(weapon.customization),
+  };
+};
+
 /** Coerce arbitrary stored JSON into a usable draft. */
 export const parseWorkingBuild = (raw: unknown): BuildDraft => {
   if (!isRecord(raw)) return EMPTY_DRAFT;
   const composition = isRecord(raw.composition) ? raw.composition : {};
-  const weapon = isRecord(composition.weapon) ? composition.weapon : {};
 
   const parsed: BuildDraft["composition"] = {
     ...EMPTY_DRAFT.composition,
     talisman: parseTalisman(composition.talisman),
-    weapon: {
-      weaponId: parseId(weapon.weaponId),
-      decorations: parseAssignments(weapon.decorations),
-      setBonusId: parseId(weapon.setBonusId),
-      groupBonusId: parseId(weapon.groupBonusId),
-      customization: parseCustomization(weapon.customization),
-    },
+    weapon: parseWeaponSelection(composition.weapon),
   };
   for (const position of ARMOR_POSITIONS) {
     parsed[position] = parseArmor(composition[position]);

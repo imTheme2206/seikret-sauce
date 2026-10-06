@@ -12,6 +12,7 @@ import type {
   BuildDraft,
   Decoration,
   EditorWeaponRow,
+  EditorWeaponSelection,
   GearOption,
   GearOptionGroup,
   Weapon,
@@ -74,24 +75,19 @@ export const weaponGroups = (
 /**
  * `chosenKind` is the type the hunter picked in the UI; it only matters while
  * no weapon is equipped — an equipped weapon always dictates its own type, so
- * a restored draft shows the right list after a reload.
+ * a restored selection shows the right list after a reload.
  */
-export const buildWeaponRow = (
-  draft: BuildDraft,
+export const buildWeaponRowFor = (
+  selection: EditorWeaponSelection,
   weapons: Weapon[],
   chosenKind: WeaponKind | null,
   decorations: Decoration[] = [],
   artianRules?: ArtianRules,
 ): EditorWeaponRow => {
   const catalogWeapon =
-    weapons.find((item) => item.id === draft.composition.weapon.weaponId) ??
-    null;
+    weapons.find((item) => item.id === selection.weaponId) ?? null;
   const weapon = catalogWeapon
-    ? effectiveWeapon(
-        catalogWeapon,
-        draft.composition.weapon.customization,
-        artianRules,
-      )
+    ? effectiveWeapon(catalogWeapon, selection.customization, artianRules)
     : null;
   const kind = weapon?.kind ?? chosenKind;
   return {
@@ -100,18 +96,30 @@ export const buildWeaponRow = (
     groups: kind ? weaponGroups(weapons, kind) : [],
     weapon,
     artian: catalogWeapon
-      ? buildArtianPanel(
-          catalogWeapon,
-          draft.composition.weapon.customization,
-          artianRules,
-        )
+      ? buildArtianPanel(catalogWeapon, selection.customization, artianRules)
       : null,
     slots: weapon
       ? toEditorSlots(
           toWeaponSlots(weapon.slots),
-          draft.composition.weapon.decorations,
+          selection.decorations,
           decorations,
         )
       : [],
   };
 };
+
+/** The Build Editor's weapon row, resolved from the draft's weapon selection. */
+export const buildWeaponRow = (
+  draft: BuildDraft,
+  weapons: Weapon[],
+  chosenKind: WeaponKind | null,
+  decorations: Decoration[] = [],
+  artianRules?: ArtianRules,
+): EditorWeaponRow =>
+  buildWeaponRowFor(
+    draft.composition.weapon,
+    weapons,
+    chosenKind,
+    decorations,
+    artianRules,
+  );

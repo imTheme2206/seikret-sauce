@@ -12,11 +12,6 @@ export const OptimizerSettings = ({
     className="frame-corners mb-6 grid gap-5 rounded-sm border border-border bg-card px-6 py-4 lg:grid-cols-[auto_minmax(0,1fr)] lg:items-center lg:gap-8"
   >
     <RankSelector value={c.rank} onChange={c.setRank} disabled={c.isSearching} />
-    <WeaponSelector
-      value={c.weapon}
-      onChange={c.setWeaponSkill}
-      options={c.weaponOptions}
-      disabled={c.isSearching}
-    />
+    <WeaponSelector controller={c} disabled={c.isSearching} />
   </section>
 );

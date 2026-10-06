@@ -99,7 +99,7 @@ export const SelectedSkillsPanel = ({
         size="lg"
         className="h-11 w-full font-semibold"
         onClick={c.runSearch}
-        disabled={c.selectedCount === 0 || c.isSearching}
+        disabled={!c.canSearch}
         aria-describedby={c.selectedCount === 0 ? SEARCH_HINT_ID : undefined}
       >
         {c.isSearching ? (

@@ -5,6 +5,7 @@ import {
   DrawerHeader,
   DrawerTitle,
 } from "@/components/ui/drawer";
+import { useWeaponCatalog } from "@/features/builds/hooks/use-catalog";
 import { useSkillCatalog } from "@/features/skills/skill-catalog";
 import { SlidersHorizontal } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
@@ -19,13 +20,17 @@ import { useSaveOptimizerResult } from "./hooks/use-save-optimizer-result";
 export const LoadoutOptimizer = () => {
   const { catalog, isLoading } = useSkillCatalog();
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
+  const weaponCatalog = useWeaponCatalog();
   const controller = useLoadoutOptimizer({
     skills: catalog?.grouped,
     isLoadingSkills: isLoading,
+    weaponCatalog,
   });
   const saveResult = useSaveOptimizerResult(
     controller.selectedList,
     controller.weapon,
+    controller.weaponSkills,
+    controller.weaponProblem,
   );
   const resultsRef = useRef<HTMLDivElement>(null);
   const previousStatus = useRef(controller.status);

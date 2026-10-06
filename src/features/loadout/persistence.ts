@@ -1,6 +1,6 @@
 /**
  * Persists the optimizer's *search parameters* (selected skills, rank, equipped
- * weapon skills) to localStorage so a returning user does not have to re-pick
+ * weapon) to localStorage so a returning user does not have to re-pick
  * them every visit.
  *
  * Deliberately excludes transient UI state (search query, active tab, expanded
@@ -12,15 +12,16 @@
  * to "empty selection" instead of breaking the page.
  */
 
+import { EMPTY_WEAPON_SELECTION } from "@/features/builds/weapon-selection";
+import { parseWeaponSelection } from "@/features/builds/working-build";
+import type { EditorWeaponSelection } from "@/features/builds/types";
 import { CATEGORY_CONFIG } from "./config";
 import type {
   Rank,
   SelectedSkill,
   SelectedSkillMap,
   SkillCategory,
-  WeaponSkills,
 } from "./types";
-import { EMPTY_WEAPON_SKILLS } from "./types";
 
 /** Bump the suffix when the persisted shape changes incompatibly. */
 export const OPTIMIZER_PARAMS_KEY = "mh-wilds-optimizer-params-v1";
@@ -30,13 +31,13 @@ const RANKS: Rank[] = ["low", "high", "master"];
 export type OptimizerParams = {
   selected: SelectedSkillMap;
   rank: Rank;
-  weapon: WeaponSkills;
+  weapon: EditorWeaponSelection;
 };
 
 export const DEFAULT_OPTIMIZER_PARAMS: OptimizerParams = {
   selected: {},
   rank: "high",
-  weapon: EMPTY_WEAPON_SKILLS,
+  weapon: EMPTY_WEAPON_SELECTION,
 };
 
 const isRecord = (value: unknown): value is Record<string, unknown> => {
@@ -77,12 +78,15 @@ const parseSelected = (raw: unknown): SelectedSkillMap => {
   return selected;
 };
 
-const parseWeapon = (raw: unknown): WeaponSkills => {
-  if (!isRecord(raw)) return EMPTY_WEAPON_SKILLS;
-  return {
-    set: typeof raw.set === "string" ? raw.set : null,
-    group: typeof raw.group === "string" ? raw.group : null,
-  };
+/**
+ * Entries written before the optimizer equipped real weapons stored bare bonus names
+ * (`{ set, group }`). Those cannot be mapped to a weapon, so they parse to "no weapon";
+ * the skills and rank stored beside them are kept. A bonus or configuration without a
+ * weapon is meaningless (only a Gogma Artian carries bonuses) and is dropped too.
+ */
+const parseWeapon = (raw: unknown): EditorWeaponSelection => {
+  const weapon = parseWeaponSelection(raw);
+  return weapon.weaponId ? { ...weapon, decorations: [] } : EMPTY_WEAPON_SELECTION;
 };
 
 /** Coerce arbitrary stored JSON into a usable params object. */

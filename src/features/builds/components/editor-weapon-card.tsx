@@ -42,7 +42,10 @@ type EditorWeaponCardProps = {
   groupBonusOptions: BonusOption[];
   onKindChange: (kind: WeaponKind) => void;
   onSelect: (weaponId: string) => void;
-  onDecoration: (assignment: DecorationAssignment) => void;
+  /** Omit to show the weapon's slots read-only (the optimizer does not seat jewels in the weapon). */
+  onDecoration?: (assignment: DecorationAssignment) => void;
+  /** Stack the weapon picker above its stats at any width, for narrow containers. */
+  compact?: boolean;
   onCustomize: (config: ArtianCustomization) => void;
   onBonus: (kind: "setBonusId" | "groupBonusId", bonusId: string | null) => void;
 };
@@ -85,7 +88,7 @@ type WeaponStatsProps = {
   weapon: Weapon;
   slots: EditorWeaponRow["slots"];
   customization: React.ReactNode;
-  onDecoration: (assignment: DecorationAssignment) => void;
+  onDecoration?: (assignment: DecorationAssignment) => void;
 };
 
 const WeaponStats = ({
@@ -135,7 +138,7 @@ const WeaponStats = ({
       >
         Decoration slots
       </Typography>
-      {slots.length > 0 ? (
+      {slots.length > 0 && onDecoration ? (
         <DecorationSlotGrid
           slots={slots}
           label="Weapon"
@@ -175,6 +178,7 @@ export const EditorWeaponCard = ({
   onKindChange,
   onSelect,
   onDecoration,
+  compact = false,
   onCustomize,
   onBonus,
 }: EditorWeaponCardProps) => {
@@ -216,11 +220,17 @@ export const EditorWeaponCard = ({
   );
 
   return (
-    <HunterPanel className="grid md:grid-cols-[minmax(150px,.5fr)_minmax(300px,1.2fr)]">
+    <HunterPanel
+      className={cn(
+        "grid",
+        !compact && "md:grid-cols-[minmax(150px,.5fr)_minmax(300px,1.2fr)]",
+      )}
+    >
       <div
         className={cn(
-          "min-w-0 space-y-3 border-b border-border p-4 md:border-b-0 md:border-r",
-          !weapon && "md:col-span-2 md:border-r-0",
+          "min-w-0 space-y-3 border-b border-border p-4",
+          !compact && "md:border-b-0 md:border-r",
+          !compact && !weapon && "md:col-span-2 md:border-r-0",
         )}
       >
         <div>

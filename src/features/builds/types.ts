@@ -69,9 +69,10 @@ export type CreateBuildBody =
 
 /**
  * Body for `POST /api/mh-wilds/builds/import` — the raw optimizer result plus
- * the weapon's Set/Group Bonus *names* (the optimizer's `WeaponSkills`
- * currency). The backend resolves names to ids and packs decorations itself;
- * the client sends `result` untouched, per ADR-0001.
+ * the equipped weapon: its catalog id, Artian configuration and a Gogma Artian's
+ * Set/Group Bonus *names* (the optimizer's `WeaponSkills` currency). The backend
+ * resolves names to ids and packs decorations itself; the client sends `result`
+ * untouched, per ADR-0001.
  */
 export type ImportBuildBody =
   paths["/api/mh-wilds/builds/import"]["post"]["requestBody"]["content"]["application/json"];

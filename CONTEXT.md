@@ -75,9 +75,21 @@ from one catalog rather than fetching or reclassifying the same definitions inde
   Set/Group Skill thresholds.
 - A **Set Skill**'s **Activation Level** is reached by combining armor pieces with any
   **Pre-owned Piece Count** the player brings in (e.g. an equipped weapon).
-- **Pre-owned Piece Count** originates from the optimizer's weapon-bonus picker (a Set and/or Group Skill the
-  equipped weapon carries). The Build Editor now also picks a catalog **Weapon**, but the optimizer does not
-  read it yet, so `initialSetCounts`/`initialGroupCounts` still come from the bonus picker alone.
+- **Pre-owned Piece Count** is derived from the optimizer's equipped **Weapon** (the same weapon card and
+  Artian customization panel as the Build Editor; the selection is persisted in localStorage). Only a
+  **Gogma Artian** carries bonuses, so its rolled Set Bonus and Group Bonus each send `{<bonus name>: 1}` in
+  `initialSetCounts`/`initialGroupCounts`; no weapon, or any other weapon, sends neither key. Saving an
+  optimizer result sends the weapon id, the bonuses by name and the Artian configuration to
+  `POST /api/mh-wilds/builds/import`, so the Build holds the weapon.
+- **Limitation (decision, #04):** the weapon's own *skills* (e.g. a weapon granting Attack Boost) do **not**
+  count toward the search's `skills` targets. The search request stays `skills`/`setSkills`/`groupSkills`/
+  `initialSetCounts`/`initialGroupCounts`/`rank`; the engine only knows armor, talisman and decoration
+  skills, so a hunter whose weapon already gives a skill should lower that target by hand. Counting weapon
+  skills needs a backend `set-search` change (a pre-owned skill-level map) and is not done yet. The optimizer
+  does not seat jewels in the weapon either (its slots are shown read-only).
+- Optimizer state saved before #04 stored bare bonus names (`weapon: {set, group}`); those cannot be mapped
+  to a weapon, so on load the weapon resets to "none" while the saved skills and rank are kept
+  (`loadout/persistence.ts`).
 - In the Build Editor the **Weapon** (type, then item) and the weapon Set/Group Bonus pair are separate rows;
   picking a **Weapon** does not change the bonus pair.
 
@@ -86,12 +98,13 @@ from one catalog rather than fetching or reclassifying the same definitions inde
 > **Dev:** "If I want Gore Magala's Tyranny at activation 1 and my weapon already gives one piece,
 > do I send `setSkills` *and* `initialSetCounts`?"
 > **Domain expert:** "Yes — `setSkills` is the activation you want; `initialSetCounts` is the head
-> start your weapon gives. They're different axes. Until there's a weapon picker, send only
-> `setSkills` and leave the engine to find all the pieces in armor."
+> start your weapon gives. They're different axes. Equip a Gogma Artian with that Set Bonus and the
+> optimizer sends `initialSetCounts` for you; with no weapon it sends only `setSkills` and the engine
+> finds all the pieces in armor."
 
 ## Flagged ambiguities
 
 - `initialSetCounts` was originally populated by copying the desired `setSkills` levels — conflating
   **Activation Level** with **Pre-owned Piece Count**. Resolved: these are distinct; initial counts
-  come from an equipped weapon and are omitted until weapon selection exists.
+  come from an equipped weapon and are omitted when it has no bonuses.
 - "set" was used for both **Set Skill** and a search result — prefer **Build** for the result.

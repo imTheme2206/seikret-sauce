@@ -37,12 +37,13 @@ type SearchRequestBody =
  * Split the selection map into the category buckets the endpoint expects, and
  * fold the equipped weapon's contribution into the Pre-owned Piece Counts.
  *
- * A `weapon` carries up to one Set Skill and one Group Skill, each contributing a
- * single piece, sent as `initialSetCounts`/`initialGroupCounts`. This is a
- * different axis from the desired Activation Level in `setSkills`/`groupSkills` —
- * see CONTEXT.md. Skills the weapon doesn't carry leave the count maps empty.
+ * A `weapon` carries up to one Set Skill and one Group Skill (derived from the
+ * equipped Gogma Artian, see `../weapon.ts`), each contributing a single piece, sent
+ * as `initialSetCounts`/`initialGroupCounts`. This is a different axis from the
+ * desired Activation Level in `setSkills`/`groupSkills` — see CONTEXT.md. With no
+ * weapon skills neither key is sent.
  */
-const toRequestBody = (
+export const toRequestBody = (
   selected: SelectedSkillMap,
   rank: Rank,
   weapon: WeaponSkills,
@@ -50,8 +51,6 @@ const toRequestBody = (
   const skills: Record<string, number> = {};
   const setSkills: Record<string, number> = {};
   const groupSkills: Record<string, number> = {};
-  const initialSetCounts: Record<string, number> = {};
-  const initialGroupCounts: Record<string, number> = {};
 
   for (const [name, sel] of Object.entries(selected)) {
     if (sel.category === "set") setSkills[name] = sel.level;
@@ -59,15 +58,12 @@ const toRequestBody = (
     else skills[name] = sel.level;
   }
 
-  if (weapon.set) initialSetCounts[weapon.set] = 1;
-  if (weapon.group) initialGroupCounts[weapon.group] = 1;
-
   return {
     skills,
     setSkills,
     groupSkills,
-    initialSetCounts,
-    initialGroupCounts,
+    ...(weapon.set && { initialSetCounts: { [weapon.set]: 1 } }),
+    ...(weapon.group && { initialGroupCounts: { [weapon.group]: 1 } }),
     rank,
   };
 };
