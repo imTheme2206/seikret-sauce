@@ -25,10 +25,10 @@ import type {
   SkillCatalog,
 } from "./types";
 
-const byName = (a: GearOption, b: GearOption) => a.name.localeCompare(b.name);
+export const byName = (a: GearOption, b: GearOption) => a.name.localeCompare(b.name);
 
 /** Skills and bonuses a piece grants, so searching a skill finds the gear. */
-const gearKeywords = (piece: {
+export const gearKeywords = (piece: {
   skills: { name: string }[];
   bonuses?: { name: string }[];
 }): string[] => {
@@ -42,7 +42,7 @@ const gearKeywords = (piece: {
  * Buckets options under a heading and orders both the headings and their
  * contents. `rank` sorts headings descending, which puts the best gear first.
  */
-const groupBy = <T>(
+export const groupBy = <T>(
   items: T[],
   key: (item: T) => { rank: number; label: string },
   toOption: (item: T) => GearOption,

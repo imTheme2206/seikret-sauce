@@ -38,6 +38,17 @@ _Avoid_: set (ambiguous with Set Skill)
 The sixth and final armor slot. Always has rarity `0` and is excluded from `defense`/`elementalDefenses`,
 which cover the five body pieces only.
 
+**Weapon**:
+A catalog item of one of 14 weapon types, served by `/api/mh-wilds/weapons` and picked in the Build Editor
+by type first, then by item (grouped by rarity). Carries base raw (and in-game display) damage, affinity,
+element/status specials, sharpness (melee only), weapon-type decoration slots, ordinary weapon skills, and
+type-specific data. Distinct from the **weapon bonus** pair below (backend ADR-0013).
+
+**Working Build**:
+The unsaved Build Editor draft. A new build's draft is persisted to localStorage (`working-build.ts`) so picks
+such as the **Weapon** survive a reload; it is sent to the API only when the hunter saves. In this slice the
+chosen **Weapon** stays in the Working Build and is not part of the saved Build or the calculated totals yet.
+
 **Skill Catalog**:
 The shared reference data returned by `/api/mh-wilds/skills`, containing Regular Skill definitions
 and Set/Group Skill definitions. Frontend features consume derived category groups and lookup indexes
@@ -50,8 +61,11 @@ from one catalog rather than fetching or reclassifying the same definitions inde
   Set/Group Skill thresholds.
 - A **Set Skill**'s **Activation Level** is reached by combining armor pieces with any
   **Pre-owned Piece Count** the player brings in (e.g. an equipped weapon).
-- **Pre-owned Piece Count** originates from a weapon picker that does **not exist yet** — weapon
-  selection is deferred, so `initialSetCounts`/`initialGroupCounts` are currently omitted.
+- **Pre-owned Piece Count** originates from the optimizer's weapon-bonus picker (a Set and/or Group Skill the
+  equipped weapon carries). The Build Editor now also picks a catalog **Weapon**, but the optimizer does not
+  read it yet, so `initialSetCounts`/`initialGroupCounts` still come from the bonus picker alone.
+- In the Build Editor the **Weapon** (type, then item) and the weapon Set/Group Bonus pair are separate rows;
+  picking a **Weapon** does not change the bonus pair.
 
 ## Example dialogue
 

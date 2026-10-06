@@ -6,11 +6,12 @@ import {
 import { useApi } from "@/hooks/use-api";
 import { toBuildApiError } from "../errors";
 import { buildKeys } from "./keys";
-import type { Armor, Decoration } from "../types";
+import type { Armor, Decoration, Weapon } from "../types";
 
 export type BuildCatalog = {
   armors: Armor[];
   decorations: Decoration[];
+  weapons: Weapon[];
   skillCatalog: SharedSkillCatalog | undefined;
   isLoading: boolean;
   error: Error | null;
@@ -20,7 +21,7 @@ export type BuildCatalog = {
 const CATALOG_OPTIONS = { revalidateOnFocus: false } as const;
 
 /**
- * The armour / decoration catalogs the editor resolves draft ids against,
+ * The armour / weapon / decoration catalogs the editor resolves draft ids against,
  * composed with the shared Skill Catalog module.
  */
 export const useCatalog = (): BuildCatalog => {
@@ -56,11 +57,29 @@ export const useCatalog = (): BuildCatalog => {
     CATALOG_OPTIONS,
   );
 
+  const weapons = useSWR<Weapon[]>(
+    buildKeys.catalog("weapons"),
+    async () => {
+      try {
+        return (await api("/api/mh-wilds/weapons").method("get").create()({}))
+          .data;
+      } catch (error) {
+        throw toBuildApiError(error);
+      }
+    },
+    CATALOG_OPTIONS,
+  );
+
   return {
     armors: armors.data ?? [],
     decorations: decorations.data ?? [],
+    weapons: weapons.data ?? [],
     skillCatalog,
-    isLoading: armors.isLoading || decorations.isLoading || isLoadingSkills,
-    error: armors.error ?? decorations.error ?? skillsError,
+    isLoading:
+      armors.isLoading ||
+      decorations.isLoading ||
+      weapons.isLoading ||
+      isLoadingSkills,
+    error: armors.error ?? decorations.error ?? weapons.error ?? skillsError,
   };
 };

@@ -26,6 +26,8 @@ export type Decoration = JsonResponse<
   "/api/mh-wilds/decorations",
   "get"
 >[number];
+export type Weapon = JsonResponse<"/api/mh-wilds/weapons", "get">[number];
+export type WeaponKind = Weapon["kind"];
 export type SkillCatalog = SkillCatalogResponse;
 export type BuildSummary = JsonResponse<"/api/mh-wilds/builds", "get">[number];
 export type SharedBuildPage = JsonResponse<
@@ -40,10 +42,10 @@ export type SnapshotPositions = BuildSnapshot["positions"];
  * The six *renderable gear-row* position keys the API stores — the five body
  * pieces plus the talisman. Pinned to `@/lib/mh-wilds` in `config.ts`.
  *
- * `weapon` is deliberately excluded: per ADR-0012 in the backend, a weapon
- * contributes only a Set/Group Bonus (no armor piece, no decorations), so it
- * doesn't fit the `EditorGearRow`/`EquippedGearRow` shape the other six do.
- * It is modelled separately below (`SnapshotWeapon`, `EditorWeaponSelection`).
+ * `weapon` is deliberately excluded: a weapon is picked by kind then item and
+ * carries its own stats panel, so it doesn't fit the `EditorGearRow` /
+ * `EquippedGearRow` shape the other six do (backend ADR-0013). It is modelled
+ * separately below (`SnapshotWeapon`, `EditorWeaponSelection`, `EditorWeaponRow`).
  */
 export type PositionKey = Exclude<keyof SnapshotPositions, "weapon">;
 export type ArmorPosition = Exclude<PositionKey, "talisman">;
@@ -92,13 +94,17 @@ export type EditorTalismanSelection = {
 export type TalismanSource = "custom" | "scraped";
 
 /**
- * A weapon's Set/Group Bonus contribution, selected by id (unlike the
- * optimizer's `WeaponSkills`, which selects by name — see
- * `src/features/loadout/types.ts`). Always present on the draft, never `null`:
- * each field independently means "no bonus of that kind" when `null`, mirroring
- * `WeaponSkills`'s per-kind independence.
+ * The weapon part of a draft: the catalog weapon (`weaponId`) plus its
+ * Set/Group Bonus contribution, selected by id (unlike the optimizer's
+ * `WeaponSkills`, which selects by name — see `src/features/loadout/types.ts`).
+ * Always present on the draft, never `null`: each field independently means
+ * "nothing chosen" when `null`.
+ *
+ * `weaponId` lives only in the local Working Build for now; saving a Build
+ * does not send it yet (`toCreateBody` strips it).
  */
 export type EditorWeaponSelection = {
+  weaponId: string | null;
   setBonusId: string | null;
   groupBonusId: string | null;
 };
@@ -156,6 +162,8 @@ export type GearOption = {
   bonuses?: { name: string }[];
   /** Decoration slot levels. Undefined for choices that are not gear. */
   slots?: number[];
+  /** One-line stat summary shown under the name (weapons). */
+  summary?: string;
   /** Extra terms the search should match, e.g. the skills a piece grants. */
   keywords?: string[];
   /** For decorations: the jewel's size and in-game colour, to draw it in its socket. */
@@ -195,4 +203,16 @@ export type EditorGearRow = {
   skills: { name: string; level: number }[];
   bonuses: { name: string }[];
   slots: EditorSlot[];
+};
+
+/** The editable weapon row: weapon type, weapon picker, and the chosen weapon's stats. */
+export type EditorWeaponRow = {
+  /** Selected weapon type, or `null` until the hunter picks one. */
+  kind: WeaponKind | null;
+  /** Packed picker value: the weapon id, or "" when none is equipped. */
+  value: string;
+  /** Weapons of `kind` bucketed by rarity; empty until a type is chosen. */
+  groups: GearOptionGroup[];
+  /** The equipped weapon, when the draft's id resolves in the catalog. */
+  weapon: Weapon | null;
 };

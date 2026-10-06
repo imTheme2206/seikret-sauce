@@ -65,10 +65,10 @@ const BonusSelect = ({
 };
 
 /**
- * Editable weapon row: per ADR-0012 (backend), a weapon contributes exactly
- * one optional Set Bonus + one optional Group Bonus — no armor piece, no
- * decoration slots — so it gets its own row rather than reusing
- * `EditorGearRowCard`. Mirrors the optimizer's `WeaponSelector` UX, but
+ * Editable weapon-bonus row: the weapon's customization contributes exactly
+ * one optional Set Bonus + one optional Group Bonus (backend ADR-0013 keeps
+ * the pair from ADR-0012), separate from the catalog weapon picked in
+ * `EditorWeaponCard`. Mirrors the optimizer's `WeaponSelector` UX, but
  * selects catalog bonuses by id (the composition's currency) instead of by
  * name (the optimizer's `WeaponSkills` currency).
  */
@@ -92,7 +92,7 @@ export const WeaponBonusRow = ({
             Equip
           </Typography>
           <Typography as="div" className="font-semibold">
-            Weapon
+            Weapon bonuses
           </Typography>
         </div>
       </div>

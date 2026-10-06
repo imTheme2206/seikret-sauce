@@ -1,0 +1,144 @@
+import { expect, test } from "bun:test";
+import { EMPTY_DRAFT } from "./config";
+import {
+  buildWeaponRow,
+  formatAffinity,
+  titleCase,
+  weaponGroups,
+  weaponOption,
+  weaponSummary,
+} from "./weapon-rows";
+import type { BuildDraft, Weapon } from "./types";
+
+const weapon = (overrides: Partial<Weapon>): Weapon => ({
+  id: "rey-1",
+  name: "Rey Tonitrus I",
+  kind: "long-sword",
+  rarity: 3,
+  damage: { raw: 140, display: 462 },
+  affinity: 0,
+  specials: [
+    {
+      kind: "element",
+      name: "thunder",
+      damage: { raw: 15, display: 150 },
+      hidden: false,
+    },
+  ],
+  sharpness: {
+    red: 10,
+    orange: 10,
+    yellow: 150,
+    green: 80,
+    blue: 0,
+    white: 0,
+    purple: 0,
+  },
+  handicraft: [5],
+  slots: [],
+  skills: [{ skillId: "focus", name: "Focus", level: 1 }],
+  elderseal: null,
+  defenseBonus: 0,
+  series: "Rey Dau Tree",
+  kindSpecific: {},
+  ...overrides,
+});
+
+const catalog: Weapon[] = [
+  weapon({}),
+  weapon({ id: "rey-2", name: "Rey Tonitrus II", rarity: 4 }),
+  weapon({ id: "alpha", name: "Alpha Blade", rarity: 4, affinity: 15 }),
+  weapon({ id: "gs", name: "Buster Sword", kind: "great-sword", rarity: 3 }),
+];
+
+const draftWith = (weaponId: string | null): BuildDraft => ({
+  ...EMPTY_DRAFT,
+  composition: {
+    ...EMPTY_DRAFT.composition,
+    weapon: { ...EMPTY_DRAFT.composition.weapon, weaponId },
+  },
+});
+
+test("summary shows raw (display), signed affinity, and specials", () => {
+  expect(weaponSummary(catalog[0]!)).toBe(
+    "Raw 140 (462) · Affinity 0% · Thunder 150",
+  );
+  expect(
+    weaponSummary(
+      weapon({
+        affinity: -10,
+        specials: [
+          {
+            kind: "status",
+            name: "paralysis",
+            damage: { raw: 10, display: 100 },
+            hidden: true,
+          },
+        ],
+      }),
+    ),
+  ).toBe("Raw 140 (462) · Affinity -10% · Paralysis 100 (hidden)");
+});
+
+test("formatting helpers", () => {
+  expect(formatAffinity(15)).toBe("+15%");
+  expect(formatAffinity(0)).toBe("0%");
+  expect(titleCase("sleep-gas")).toBe("Sleep Gas");
+});
+
+test("option carries skills, slots, and search keywords for skills, series, element", () => {
+  const option = weaponOption(weapon({ slots: [3, 1] }));
+  expect(option).toMatchObject({
+    id: "rey-1",
+    rarity: 3,
+    slots: [3, 1],
+    skills: [{ skillId: "focus", name: "Focus", level: 1 }],
+  });
+  expect(option.keywords).toEqual(["Focus", "Rey Dau Tree", "thunder"]);
+});
+
+test("groups only the chosen kind, by rarity descending, sorted by name", () => {
+  const groups = weaponGroups(catalog, "long-sword");
+  expect(groups.map((group) => group.label)).toEqual(["Rarity 4", "Rarity 3"]);
+  expect(groups[0]!.options.map((option) => option.name)).toEqual([
+    "Alpha Blade",
+    "Rey Tonitrus II",
+  ]);
+  expect(groups.flatMap((group) => group.options).map((o) => o.id)).not.toContain(
+    "gs",
+  );
+});
+
+test("no kind chosen means no options and no weapon", () => {
+  expect(buildWeaponRow(EMPTY_DRAFT, catalog, null)).toEqual({
+    kind: null,
+    value: "",
+    groups: [],
+    weapon: null,
+  });
+});
+
+test("a chosen kind lists its weapons before anything is equipped", () => {
+  const row = buildWeaponRow(EMPTY_DRAFT, catalog, "great-sword");
+  expect(row.kind).toBe("great-sword");
+  expect(row.groups[0]!.options.map((option) => option.id)).toEqual(["gs"]);
+  expect(row.weapon).toBeNull();
+});
+
+test("an equipped weapon dictates the kind, even after a reload without UI state", () => {
+  const row = buildWeaponRow(draftWith("rey-2"), catalog, null);
+  expect(row.kind).toBe("long-sword");
+  expect(row.value).toBe("rey-2");
+  expect(row.weapon?.name).toBe("Rey Tonitrus II");
+
+  // It wins over a stale UI choice too.
+  expect(buildWeaponRow(draftWith("rey-2"), catalog, "bow").kind).toBe(
+    "long-sword",
+  );
+});
+
+test("a weapon id missing from the catalog resolves to nothing", () => {
+  const row = buildWeaponRow(draftWith("retired"), catalog, null);
+  expect(row.weapon).toBeNull();
+  expect(row.value).toBe("");
+});

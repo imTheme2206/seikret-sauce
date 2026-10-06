@@ -7,11 +7,18 @@ import { draftFromBuild, snapshotFromDraft } from "../draft";
 import { buildErrorMessage, isRevisionConflict } from "../errors";
 import { buildGearRows } from "../gear-rows";
 import { createHunterStatus } from "../hunter-status";
+import { buildWeaponRow } from "../weapon-rows";
+import {
+  clearWorkingBuild,
+  loadWorkingBuild,
+  saveWorkingBuild,
+} from "../working-build";
 import type {
   ArmorPosition,
   BuildDraft,
   DecorationAssignment,
   PositionKey,
+  WeaponKind,
 } from "../types";
 import { decodeTalismanValue, hasAnyPiece, toCreateBody } from "../utils";
 import { useBuildApi } from "./use-build-api";
@@ -36,7 +43,14 @@ export const useBuildEditor = (buildId?: string) => {
   const existing = useSavedBuild(buildId);
   const { createBuild, replaceBuild } = useBuildApi();
 
-  const [draft, setDraft] = useState<BuildDraft>(EMPTY_DRAFT);
+  // A new build resumes the locally persisted Working Build; an existing one is hydrated from the server.
+  const [draft, setDraft] = useState<BuildDraft>(() =>
+    buildId ? EMPTY_DRAFT : loadWorkingBuild(),
+  );
+  // Weapon type picked in the UI. Only matters while no weapon is equipped (see `buildWeaponRow`).
+  const [chosenWeaponKind, setChosenWeaponKind] = useState<WeaponKind | null>(
+    null,
+  );
   // The last saved (or freshly opened) draft; edits are "unsaved" until they match it again.
   const [baseline, setBaseline] = useState<BuildDraft>(EMPTY_DRAFT);
   // Errors stay hidden until the first save attempt, then track the draft live so they clear when fixed.
@@ -47,6 +61,10 @@ export const useBuildEditor = (buildId?: string) => {
   const [hasRevisionConflict, setHasRevisionConflict] = useState(false);
   // Kept across retries of this logical create action; replaced only after success.
   const idempotencyKey = useRef(crypto.randomUUID());
+
+  useEffect(() => {
+    if (!buildId) saveWorkingBuild(draft);
+  }, [buildId, draft]);
 
   useEffect(() => {
     if (existing.build && hydratedId !== existing.build.id) {
@@ -133,6 +151,25 @@ export const useBuildEditor = (buildId?: string) => {
       },
     }));
 
+  /** Switching weapon type drops an equipped weapon of another type. */
+  const setWeaponKind = (kind: WeaponKind) => {
+    setChosenWeaponKind(kind);
+    const equipped = catalog.weapons.find(
+      (weapon) => weapon.id === draft.composition.weapon.weaponId,
+    );
+    if (equipped && equipped.kind !== kind) setWeapon("");
+  };
+
+  /** Empty `weaponId` unequips the weapon. */
+  const setWeapon = (weaponId: string) =>
+    setDraft((current) => ({
+      ...current,
+      composition: {
+        ...current.composition,
+        weapon: { ...current.composition.weapon, weaponId: weaponId || null },
+      },
+    }));
+
   // A weapon can carry any Set or Group Skill; the shared catalog owns grouping.
   const bonusOptions = catalog.skillCatalog?.bonuses ?? { set: [], group: [] };
 
@@ -171,6 +208,11 @@ export const useBuildEditor = (buildId?: string) => {
       catalog.skillCatalog,
       talismans.talismans,
     ],
+  );
+
+  const weaponRow = useMemo(
+    () => buildWeaponRow(draft, catalog.weapons, chosenWeaponKind),
+    [draft, catalog.weapons, chosenWeaponKind],
   );
 
   const hunterStatus = useMemo(
@@ -220,6 +262,7 @@ export const useBuildEditor = (buildId?: string) => {
       idempotencyKey.current = crypto.randomUUID();
       isLeavingAfterSave.current = true;
       setBaseline(draft);
+      if (!buildId) clearWorkingBuild();
       toast({
         variant: "success",
         title: buildId ? "Loadout updated" : "Loadout forged",
@@ -265,6 +308,7 @@ export const useBuildEditor = (buildId?: string) => {
     isEditing: Boolean(buildId),
     draft,
     rows,
+    weaponRow,
     hunterStatus,
     message,
     errors,
@@ -280,6 +324,8 @@ export const useBuildEditor = (buildId?: string) => {
     selectGear,
     assignDecoration,
     setWeaponBonus,
+    setWeaponKind,
+    setWeapon,
     setHasRevisionConflict,
     reloadNewest,
     save,

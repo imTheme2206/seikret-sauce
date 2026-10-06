@@ -46,8 +46,9 @@ export const slotSizes = (
 /**
  * True once any armor piece, talisman, or weapon bonus is set. `weapon` is
  * excluded from the naive truthiness check below — it's always a present
- * object (its two ids are independently nullable), unlike the other
- * positions where `null` means "empty".
+ * object (its ids are independently nullable), unlike the other positions
+ * where `null` means "empty". `weaponId` is not counted yet: it is not part of
+ * a saved Build until weapon saving ships.
  */
 export const hasAnyPiece = (draft: BuildDraft): boolean => {
   const { weapon, ...positions } = draft.composition;
@@ -63,7 +64,14 @@ export const toCreateBody = (draft: BuildDraft): CreateBuildBody => {
     name: draft.name.trim(),
     description: draft.description.trim() || null,
     isShared: draft.isShared,
-    composition: draft.composition,
+    // `weaponId` is a Working Build-only field until weapon saving ships.
+    composition: {
+      ...draft.composition,
+      weapon: {
+        setBonusId: draft.composition.weapon.setBonusId,
+        groupBonusId: draft.composition.weapon.groupBonusId,
+      },
+    },
   };
 };
 

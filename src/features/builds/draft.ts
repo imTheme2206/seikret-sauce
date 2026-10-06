@@ -54,6 +54,7 @@ export const draftFromBuild = (build: SavedBuild): BuildDraft => {
   }
 
   composition.weapon = {
+    weaponId: null,
     setBonusId: positions.weapon?.setBonus?.bonusId ?? null,
     groupBonusId: positions.weapon?.groupBonus?.bonusId ?? null,
   };

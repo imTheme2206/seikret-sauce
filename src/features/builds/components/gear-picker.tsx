@@ -233,6 +233,11 @@ export const GearPicker = ({
                       <span className="block text-sm font-medium text-foreground sm:text-base">
                         {option.name}
                       </span>
+                      {option.summary && (
+                        <span className="mt-0.5 block text-xs tabular-nums text-muted-foreground">
+                          {option.summary}
+                        </span>
+                      )}
                       <div className="mt-1.5">
                         <GearSkillLine
                           skills={option.skills ?? []}

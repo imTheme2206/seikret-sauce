@@ -32,6 +32,7 @@ import {
 import { useEffect, useRef } from "react";
 import { ScreenError, ScreenLoader } from "../components/builds-states";
 import { EditorGearRowCard } from "../components/editor-gear-row";
+import { EditorWeaponCard } from "../components/editor-weapon-card";
 import { HunterPanel } from "../components/hunter-panel";
 import { HunterStatusPanel } from "../components/hunter-status-panel";
 import { PanelHeading } from "../components/panel-heading";
@@ -117,6 +118,11 @@ export const BuildEditorPage = ({ buildId }: { buildId?: string }) => {
                     }
                   />
                 ))}
+                <EditorWeaponCard
+                  row={controller.weaponRow}
+                  onKindChange={controller.setWeaponKind}
+                  onSelect={controller.setWeapon}
+                />
                 <WeaponBonusRow
                   value={controller.draft.composition.weapon}
                   setBonusOptions={controller.bonusOptions.set}
