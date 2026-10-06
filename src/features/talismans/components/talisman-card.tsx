@@ -1,5 +1,6 @@
+import { DecorationSlotIcon } from "@/components/gear/decoration-slot-icon";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -9,13 +10,13 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Typography } from "@/components/ui/typography";
-import { SkillGlyph } from "@/features/skills/skill-glyph";
-import TalismanSVG from "@/svg/TalismanSvg";
-import { Loader2, Shield, Trash2 } from "lucide-react";
-import { useState } from "react";
+import { CATEGORY_CONFIG } from "@/features/loadout/config";
 import type { CatalogSkill } from "@/features/skills/skill-catalog";
-import type { CustomTalisman } from "../types";
-import { SlotSizeIcon, SlotTypeIcon } from "./talisman-icons";
+import { SkillGlyph } from "@/features/skills/skill-glyph";
+import { SlotIcon } from "@/components/gear/slot-icon";
+import { Loader2, Trash2 } from "lucide-react";
+import { useState } from "react";
+import type { CustomTalisman, TalismanSlot } from "../types";
 
 type TalismanCardProps = {
   talisman: CustomTalisman;
@@ -24,7 +25,7 @@ type TalismanCardProps = {
   isDeleting: boolean;
 };
 
-/** One saved custom talisman: name, its skills, and its decoration slots. */
+/** One saved custom talisman: name, its skills with level gauges, and its decoration slots. */
 export const TalismanCard = ({
   talisman,
   skillMetaById,
@@ -34,14 +35,14 @@ export const TalismanCard = ({
   const [isConfirmingDelete, setIsConfirmingDelete] = useState(false);
 
   return (
-    <Card className="gap-0 rounded-md border-border bg-card/40 py-0 shadow-none transition-colors hover:border-primary/40">
-      <CardHeader className="flex-row items-center gap-3 border-b border-border bg-secondary/20 p-4">
-        <span className="size-7 shrink-0 text-primary">
-          <TalismanSVG color="currentColor" />
+    <Card className="min-w-0 gap-0 rounded-sm border-border bg-card py-0 shadow-none transition-colors hover:border-gold/60">
+      <CardHeader className="flex-row items-center gap-3 border-b border-border px-4 py-3">
+        <span className="grid size-8 shrink-0 place-items-center rounded-sm border border-primary/25 bg-primary/[.06]" aria-hidden="true">
+          <SlotIcon position="talisman" color="var(--primary)" size={18} />
         </span>
-        <CardTitle className="min-w-0 flex-1 truncate text-sm">
+        <Typography as="h3" className="min-w-0 flex-1 truncate text-sm font-semibold" title={talisman.name}>
           {talisman.name}
-        </CardTitle>
+        </Typography>
         <Button
           variant="ghost"
           size="icon-sm"
@@ -52,71 +53,42 @@ export const TalismanCard = ({
           onClick={() => setIsConfirmingDelete(true)}
           className="shrink-0 text-muted-foreground hover:text-destructive"
         >
-          <Trash2 />
+          {isDeleting ? <Loader2 className="animate-spin" /> : <Trash2 />}
         </Button>
       </CardHeader>
-      <CardContent className="flex min-h-40 flex-col gap-4 p-4">
-        <div className="flex flex-col gap-2">
-          {talisman.skills.map((s) => {
-            const meta = skillMetaById?.get(s.skillId);
+
+      <CardContent className="flex min-h-36 flex-col gap-3 p-4">
+        <ul className="flex flex-col gap-2.5" aria-label="Skills">
+          {talisman.skills.map((skill) => {
+            const meta = skillMetaById?.get(skill.skillId);
+            const maxLevel = meta?.maxLevel ?? skill.level;
             return (
-              <div key={s.skillId} className="flex items-center gap-2">
+              <li key={skill.skillId} className="flex items-center gap-2">
                 <SkillGlyph
                   icon={meta?.icon ?? null}
                   category={meta?.category ?? "armor"}
-                  label={meta?.name ?? s.skillId}
-                  className="size-4"
+                  label=""
+                  className="size-5"
                 />
-                <Typography
-                  as="span"
-                  className="min-w-0 flex-1 truncate text-sm"
-                >
-                  {meta?.name ?? s.skillId}
+                <Typography as="span" className="min-w-0 flex-1 truncate text-sm">
+                  {meta?.name ?? "Unknown skill"}
                 </Typography>
-                <Typography
-                  as="span"
-                  className="shrink-0 text-xs text-muted-foreground"
-                >
-                  Lv.{s.level}
+                <LevelGauge
+                  level={skill.level}
+                  maxLevel={maxLevel}
+                  color={CATEGORY_CONFIG[meta?.category ?? "armor"].color}
+                />
+                <Typography as="span" className="w-9 shrink-0 text-right text-xs tabular-nums text-muted-foreground">
+                  Lv {skill.level}
                 </Typography>
-              </div>
+              </li>
             );
           })}
-        </div>
-        <div className="mt-auto border-t border-border pt-3">
-          {talisman.slots.length > 0 ? (
-            <div className="flex flex-wrap items-center gap-x-3 gap-y-2 text-xs text-muted-foreground">
-              {(["weapon", "armor"] as const)
-                .map((type) => ({
-                  type,
-                  slots: talisman.slots.filter((s) => s.type === type),
-                }))
-                .filter((group) => group.slots.length > 0)
-                .map((group, gi) => (
-                  <div key={group.type} className="flex items-center gap-1.5">
-                    {gi > 0 && <span className="mr-1 text-border">|</span>}
-                    <SlotTypeIcon type={group.type} className="size-4" />
-                    <span className="sr-only capitalize">
-                      {group.type} slots
-                    </span>
-                    {group.slots.map((slot, i) => (
-                      <SlotSizeIcon
-                        key={i}
-                        size={slot.size}
-                        className="size-4"
-                      />
-                    ))}
-                  </div>
-                ))}
-            </div>
-          ) : (
-            <Typography className="flex items-center gap-2 text-xs text-muted-foreground">
-              <Shield className="size-3.5" />
-              No decoration slots
-            </Typography>
-          )}
-        </div>
+        </ul>
 
+        <div className="mt-auto border-t border-border pt-3">
+          <SlotSummary slots={talisman.slots} />
+        </div>
       </CardContent>
 
       <Dialog
@@ -129,8 +101,9 @@ export const TalismanCard = ({
           <DialogHeader>
             <DialogTitle>Delete “{talisman.name}”?</DialogTitle>
             <DialogDescription>
-              This removes the talisman from your equipment box. Loadouts that
-              reference it may no longer resolve correctly.
+              This permanently removes the talisman from your equipment box and
+              can&apos;t be undone. Saved loadouts that use it will show it as
+              missing.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
@@ -148,16 +121,53 @@ export const TalismanCard = ({
               disabled={isDeleting}
               onClick={() => onDelete(talisman.id)}
             >
-              {isDeleting ? (
-                <Loader2 className="size-4 animate-spin" />
-              ) : (
-                <Trash2 className="size-4" />
-              )}
-              {isDeleting ? "Deleting…" : "Delete talisman"}
+              {isDeleting ? <Loader2 className="size-4 animate-spin" /> : <Trash2 className="size-4" />}
+              {isDeleting ? "Deleting…" : "Delete"}
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
     </Card>
+  );
+};
+
+/** Read-only version of the optimizer's level gauge. */
+const LevelGauge = ({ level, maxLevel, color }: { level: number; maxLevel: number; color: string }) => (
+  <span className="flex shrink-0 items-center gap-[3px]" aria-hidden="true">
+    {Array.from({ length: maxLevel }, (_, i) => (
+      <span
+        key={i}
+        className={i < level ? "h-1.5 w-2 rounded-[1px]" : "h-1.5 w-2 rounded-[1px] bg-level-empty"}
+        style={i < level ? { background: color } : undefined}
+      />
+    ))}
+  </span>
+);
+
+/** Decoration slots as in-game sockets, weapon slots first and labelled by type. */
+const SlotSummary = ({ slots }: { slots: TalismanSlot[] }) => {
+  if (slots.length === 0) {
+    return <Typography className="text-xs text-muted-foreground">No decoration slots</Typography>;
+  }
+
+  const groups = (["weapon", "armor"] as const)
+    .map((type) => ({ type, slots: slots.filter((slot) => slot.type === type) }))
+    .filter((group) => group.slots.length > 0);
+
+  return (
+    <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+      {groups.map((group) => (
+        <div key={group.type} className="flex items-center gap-1.5">
+          <Typography as="span" className="text-xs text-muted-foreground">
+            {group.type === "weapon" ? "Weapon" : "Armor"}
+          </Typography>
+          {group.slots.map((slot, i) => (
+            <span key={i} title={`Level ${slot.size} ${group.type} slot`}>
+              <DecorationSlotIcon level={slot.size} size={20} />
+            </span>
+          ))}
+        </div>
+      ))}
+    </div>
   );
 };

@@ -7,8 +7,8 @@ import { Typography } from "@/components/ui/typography";
 import { useSkillCatalog } from "@/features/skills/skill-catalog";
 import { useAuth } from "@/hooks/use-auth";
 import { toast } from "@/hooks/use-toast";
-import { AlertCircle, Boxes, LockKeyhole, Sparkles } from "lucide-react";
-import { useEffect, useState } from "react";
+import { Boxes, LockKeyhole, Sparkles, TriangleAlert } from "lucide-react";
+import { useState } from "react";
 import { useTalismans } from "../hooks/use-talismans";
 import { MAX_TALISMANS_PER_USER, type CreateTalismanInput } from "../types";
 import { TalismanCard } from "./talisman-card";
@@ -31,24 +31,14 @@ const TalismansFrame = ({ children }: React.PropsWithChildren) => (
 export const TalismansTab = () => {
   const { session, isLoading: isAuthLoading, signInWithDiscord } = useAuth();
   const { catalog, isLoading: isLoadingSkills } = useSkillCatalog();
-  const { talismans, isLoading, error, create, remove } = useTalismans();
+  const { talismans, isLoading, error, create, remove, retry } = useTalismans();
   const [deletingId, setDeletingId] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (error) {
-      toast({
-        variant: "destructive",
-        title: "Could not load talismans",
-        description: error.message,
-      });
-    }
-  }, [error]);
 
   if (isAuthLoading) {
     return (
       <TalismansFrame>
         <div className="py-5 md:py-8">
-          <Skeleton className="h-48 rounded-sm" />
+          <Skeleton className="h-96 rounded-sm" />
         </div>
       </TalismansFrame>
     );
@@ -77,26 +67,14 @@ export const TalismansTab = () => {
     );
   }
 
+  // Failures propagate to the form, which shows them inline and keeps the input.
   const handleCreate = async (input: CreateTalismanInput) => {
-    try {
-      await create(input);
-      toast({
-        variant: "success",
-        title: "Talisman forged",
-        description: `${input.name} is ready for your loadouts.`,
-      });
-    } catch (createError) {
-      const message =
-        createError instanceof Error
-          ? createError.message
-          : "Failed to create talisman.";
-      toast({
-        variant: "destructive",
-        title: "Could not forge talisman",
-        description: message,
-      });
-      throw createError;
-    }
+    await create(input);
+    toast({
+      variant: "success",
+      title: "Talisman forged",
+      description: `${input.name} is ready for your loadouts.`,
+    });
   };
 
   const handleDelete = async (id: string) => {
@@ -128,28 +106,29 @@ export const TalismansTab = () => {
   return (
     <TalismansFrame>
       <main className="grid items-start gap-6 py-5 md:py-8 lg:grid-cols-[minmax(360px,420px)_minmax(0,1fr)]">
-        <aside className="lg:sticky lg:top-6">
+        <aside className="min-w-0 lg:sticky lg:top-6">
           <TalismanForm
             catalog={catalog}
             isLoadingSkills={isLoadingSkills}
+            isAtLimit={talismans.length >= MAX_TALISMANS_PER_USER}
             onCreate={handleCreate}
           />
         </aside>
 
-        <section aria-labelledby="saved-talismans-heading">
+        <section aria-labelledby="saved-talismans-heading" className="min-w-0">
           <div className="mb-4 flex items-end justify-between gap-4 border-b border-border pb-4">
             <div>
               <Typography
                 as="div"
-                className="mb-1 flex items-center gap-2 text-xs font-medium text-muted-foreground"
+                className="mb-1 flex items-center gap-2 text-xs font-medium text-primary"
               >
-                <Boxes className="size-3.5 text-primary" />
+                <Boxes className="size-3.5" aria-hidden="true" />
                 Equipment box
               </Typography>
               <Typography
                 id="saved-talismans-heading"
                 as="h2"
-                className="text-xl font-semibold"
+                className="font-display text-xl font-semibold tracking-wide"
               >
                 Saved talismans
               </Typography>
@@ -158,33 +137,36 @@ export const TalismansTab = () => {
               as="span"
               className="shrink-0 text-xs tabular-nums text-muted-foreground"
             >
-              {talismans.length} / {MAX_TALISMANS_PER_USER}
+              {talismans.length} of {MAX_TALISMANS_PER_USER} used
             </Typography>
           </div>
 
           {isLoading && (
             <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
               {Array.from({ length: 6 }, (_, index) => (
-                <Skeleton key={index} className="h-48 rounded-sm" />
+                <Skeleton key={index} className="h-44 rounded-sm" />
               ))}
             </div>
           )}
           {error && (
-            <div
-              role="alert"
-              className="flex items-start gap-3 border border-destructive/35 bg-destructive/10 p-4 text-sm text-destructive"
-            >
-              <AlertCircle className="mt-0.5 size-4 shrink-0" />
-              <Typography>
-                {error.message ?? "Failed to load talismans."}
-              </Typography>
-            </div>
+            <EmptyState
+              icon={TriangleAlert}
+              tone="error"
+              title="Could not load your talismans"
+              description={error.message || "Failed to load talismans."}
+              compact
+              action={
+                <Button variant="outline" onClick={retry}>
+                  Try again
+                </Button>
+              }
+            />
           )}
           {!isLoading && !error && talismans.length === 0 && (
             <EmptyState
               icon={Sparkles}
               title="No custom talismans yet"
-              description="Use the forge to add skills and decoration slots. Your talismans will then be available in the loadout editor."
+              description="Use the forge to copy a talisman you own. It will then be available in the set builder."
               compact
             />
           )}

@@ -20,14 +20,17 @@ export const AppHeader = () => {
         <span className="hidden font-display text-base font-bold tracking-[0.12em] sm:inline">SEIKRET SAUCE</span>
       </Link>
 
-      <nav aria-label="Primary navigation" className="flex h-full min-w-0 items-stretch gap-1 overflow-x-auto sm:ml-5">
+      {/* Equal-width tabs: fixed columns from `sm`, equal fractions of the free space below it. */}
+      <nav aria-label="Primary navigation" className="grid h-full min-w-0 flex-1 grid-cols-3 items-stretch sm:ml-5 sm:flex-none sm:grid-cols-[repeat(3,10rem)]">
         {NAV_LINKS.map((link) => (
           <Link
             key={link.to}
             to={link.to}
             activeOptions={{ exact: true }}
-            className="flex h-full shrink-0 items-center border-b-2 border-transparent px-2 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground sm:px-3 sm:text-sm"
-            activeProps={{ className: "border-primary text-foreground" }}
+            // Active styling keys off the `data-status` TanStack sets: `activeProps`
+            // classes are appended without tailwind-merge, so `border-transparent`
+            // and `text-muted-foreground` would win over them.
+            className="flex h-full min-w-0 items-center justify-center border-b-2 border-transparent px-2 text-center text-xs font-medium text-muted-foreground transition-colors hover:text-foreground data-[status=active]:border-primary data-[status=active]:text-foreground sm:px-3 sm:text-sm"
           >
             <span className="hidden sm:inline">{link.label}</span>
             <span className="sm:hidden">{link.shortLabel}</span>
@@ -35,7 +38,7 @@ export const AppHeader = () => {
         ))}
         <DropdownMenu>
           <DropdownMenuTrigger className={cn(
-            "flex h-full shrink-0 items-center gap-1 border-b-2 border-transparent px-2 text-xs font-medium text-muted-foreground outline-none transition-colors hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring sm:px-3 sm:text-sm",
+            "flex h-full min-w-0 items-center justify-center gap-1 border-b-2 border-transparent px-2 text-xs font-medium text-muted-foreground outline-none transition-colors hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring sm:px-3 sm:text-sm",
             isLoadoutsRoute && "border-primary text-foreground",
           )}>
             Loadouts <ChevronDown className="size-3.5" aria-hidden="true" />

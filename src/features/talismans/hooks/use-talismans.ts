@@ -10,6 +10,8 @@ export type UseTalismans = {
   error: Error | null;
   create: (input: CreateTalismanInput) => Promise<void>;
   remove: (id: string) => Promise<void>;
+  /** Re-fetches the list after a failed load. */
+  retry: () => void;
 };
 
 /**
@@ -75,5 +77,6 @@ export const useTalismans = (): UseTalismans => {
     error: error ?? null,
     create,
     remove,
+    retry: () => void mutate(),
   };
 };
