@@ -2,6 +2,7 @@ import { useTalismans } from "@/features/talismans/hooks/use-talismans";
 import { toast } from "@/hooks/use-toast";
 import { useBlocker, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { normalizeCustomization } from "../artian";
 import { EMPTY_DRAFT } from "../config";
 import { draftFromBuild, snapshotFromDraft } from "../draft";
 import { buildErrorMessage, isRevisionConflict } from "../errors";
@@ -15,6 +16,7 @@ import {
 } from "../working-build";
 import type {
   ArmorPosition,
+  ArtianCustomization,
   BuildDraft,
   DecorationAssignment,
   PositionKey,
@@ -74,6 +76,26 @@ export const useBuildEditor = (buildId?: string) => {
       setHydratedId(existing.build.id);
     }
   }, [existing.build, hydratedId]);
+
+  // Only a Gogma Artian carries a Set/Group Bonus (backend ADR-0014). Drafts and saved builds from
+  // before that rule may pair bonuses with another weapon; drop them once the catalog can say so.
+  useEffect(() => {
+    const { weaponId, setBonusId, groupBonusId } = draft.composition.weapon;
+    if (!weaponId || (!setBonusId && !groupBonusId)) return;
+    const item = catalog.weapons.find((weapon) => weapon.id === weaponId);
+    if (!item || item.artian?.family === "gogma") return;
+    setDraft((current) => ({
+      ...current,
+      composition: {
+        ...current.composition,
+        weapon: {
+          ...current.composition.weapon,
+          setBonusId: null,
+          groupBonusId: null,
+        },
+      },
+    }));
+  }, [draft.composition.weapon, catalog.weapons]);
 
   useEffect(() => {
     if (buildId && existing.error) {
@@ -160,22 +182,56 @@ export const useBuildEditor = (buildId?: string) => {
     if (equipped && equipped.kind !== kind) setWeapon("");
   };
 
-  /** Empty `weaponId` unequips the weapon. Slot layouts differ per weapon, so its decorations are dropped. */
+  /**
+   * Empty `weaponId` unequips the weapon. Slot layouts differ per weapon, so its decorations are dropped.
+   * Artian configuration and Gogma bonuses only make sense on the same family of weapon (backend ADR-0014),
+   * so they carry over to another Artian-family row of the same family and are cleared otherwise.
+   */
   const setWeapon = (weaponId: string) =>
-    setDraft((current) => ({
-      ...current,
-      composition: {
-        ...current.composition,
-        weapon: {
-          ...current.composition.weapon,
-          weaponId: weaponId || null,
-          decorations:
-            weaponId === current.composition.weapon.weaponId
-              ? current.composition.weapon.decorations
-              : [],
+    setDraft((current) => {
+      const previous = current.composition.weapon;
+      const from = catalog.weapons.find((item) => item.id === previous.weaponId);
+      const to = catalog.weapons.find((item) => item.id === weaponId);
+      const sameFamily = Boolean(
+        from?.artian && to?.artian && from.artian.family === to.artian.family,
+      );
+      const keepsBonuses = sameFamily && to?.artian?.family === "gogma";
+      return {
+        ...current,
+        composition: {
+          ...current.composition,
+          weapon: {
+            weaponId: weaponId || null,
+            decorations:
+              weaponId === previous.weaponId ? previous.decorations : [],
+            setBonusId: keepsBonuses ? previous.setBonusId : null,
+            groupBonusId: keepsBonuses ? previous.groupBonusId : null,
+            customization:
+              to?.artian && catalog.artianRules && previous.customization && sameFamily
+                ? normalizeCustomization(
+                    to,
+                    to.artian,
+                    previous.customization,
+                    catalog.artianRules,
+                  )
+                : null,
+          },
         },
-      },
-    }));
+      };
+    });
+
+  /** Replace the Artian / Gogma Artian configuration of the equipped weapon. */
+  const setWeaponCustomization = (customization: ArtianCustomization) =>
+    setDraft((current) => {
+      if (!current.composition.weapon.weaponId) return current;
+      return {
+        ...current,
+        composition: {
+          ...current.composition,
+          weapon: { ...current.composition.weapon, customization },
+        },
+      };
+    });
 
   /** Empty `decorationId` clears the weapon slot. */
   const assignWeaponDecoration = (assignment: DecorationAssignment) =>
@@ -208,6 +264,7 @@ export const useBuildEditor = (buildId?: string) => {
         catalog.skillCatalog?.response,
         talismans.talismans,
         catalog.weapons,
+        catalog.artianRules,
       ),
     [
       draft,
@@ -216,6 +273,7 @@ export const useBuildEditor = (buildId?: string) => {
       catalog.skillCatalog,
       talismans.talismans,
       catalog.weapons,
+      catalog.artianRules,
     ],
   );
 
@@ -244,8 +302,15 @@ export const useBuildEditor = (buildId?: string) => {
         catalog.weapons,
         chosenWeaponKind,
         catalog.decorations,
+        catalog.artianRules,
       ),
-    [draft, catalog.weapons, chosenWeaponKind, catalog.decorations],
+    [
+      draft,
+      catalog.weapons,
+      chosenWeaponKind,
+      catalog.decorations,
+      catalog.artianRules,
+    ],
   );
 
   const hunterStatus = useMemo(
@@ -271,6 +336,16 @@ export const useBuildEditor = (buildId?: string) => {
   });
 
   // ── Save ──────────────────────────────────────────────────────────────────
+  /** Weapon rules the API would reject anyway, caught here with a readable sentence. */
+  const findWeaponProblem = (): string | null => {
+    if (weaponRow.artian?.issue) return weaponRow.artian.issue;
+    const { setBonusId, groupBonusId } = draft.composition.weapon;
+    if (weaponRow.artian?.family === "gogma" && (!setBonusId || !groupBonusId)) {
+      return "A Gogma Artian weapon always has both a Set Bonus and a Group Bonus.";
+    }
+    return null;
+  };
+
   /** Resolves to the first invalid field, if any, so the page can move focus to it. */
   const save = async (): Promise<keyof DraftErrors | null> => {
     if (isSaving) return null;
@@ -279,6 +354,17 @@ export const useBuildEditor = (buildId?: string) => {
       setShowErrors(true);
       setMessage(null);
       return validation.name ? "name" : "equipment";
+    }
+
+    const weaponProblem = findWeaponProblem();
+    if (weaponProblem) {
+      setMessage(weaponProblem);
+      toast({
+        variant: "destructive",
+        title: "Check the weapon",
+        description: weaponProblem,
+      });
+      return null;
     }
 
     setIsSaving(true);
@@ -359,6 +445,7 @@ export const useBuildEditor = (buildId?: string) => {
     setWeaponBonus,
     setWeaponKind,
     setWeapon,
+    setWeaponCustomization,
     assignWeaponDecoration,
     setHasRevisionConflict,
     reloadNewest,

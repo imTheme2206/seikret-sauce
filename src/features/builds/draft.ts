@@ -6,10 +6,12 @@
  */
 
 import type { CustomTalisman } from "@/features/talismans/types";
+import { deriveArtianStats, EMPTY_CUSTOMIZATION } from "./artian";
 import { ARMOR_POSITIONS, EMPTY_DRAFT } from "./config";
 import { toGearSlots } from "./utils";
 import type {
   Armor,
+  ArtianRules,
   BuildDraft,
   BuildSnapshot,
   Decoration,
@@ -62,6 +64,8 @@ export const draftFromBuild = (build: SavedBuild): BuildDraft => {
     decorations: positions.weapon ? toAssignments(positions.weapon) : [],
     setBonusId: positions.weapon?.setBonus?.bonusId ?? null,
     groupBonusId: positions.weapon?.groupBonus?.bonusId ?? null,
+    // Snapshots saved before ADR-0014 (or for plain weapons) carry no configuration.
+    customization: positions.weapon?.customization?.config ?? null,
   };
 
   return {
@@ -79,6 +83,7 @@ export const snapshotFromDraft = (
   catalog: SkillCatalog | undefined,
   customTalismans: CustomTalisman[],
   weapons: Weapon[] = [],
+  artianRules?: ArtianRules,
 ): BuildSnapshot => {
   const armorById = new Map(armors.map((armor) => [armor.id, armor]));
   const decorationById = new Map(
@@ -180,18 +185,39 @@ export const snapshotFromDraft = (
         ? { weaponId: null, setBonus, groupBonus }
         : null;
     }
+
+    // An Artian-family weapon shows (and counts) its derived effective stats,
+    // exactly as the backend snapshots them on save.
+    let effective: Pick<Weapon, "damage" | "affinity" | "specials"> = item;
+    let customization: SnapshotWeapon["customization"] = null;
+    if (item.artian && artianRules) {
+      const config = selection.customization ?? EMPTY_CUSTOMIZATION;
+      const derived = deriveArtianStats(item, item.artian, config, artianRules);
+      effective = derived;
+      customization = {
+        family: item.artian.family,
+        tier: item.artian.tier,
+        focus: item.artian.focus,
+        config,
+        base: { damage: item.damage, affinity: item.affinity },
+        sharpnessBonus: derived.sharpnessBonus,
+        ammoBonus: derived.ammoBonus,
+        gameVersion: artianRules.gameVersion,
+      };
+    }
     return {
       weaponId: item.id,
       name: item.name,
       kind: item.kind,
       rarity: item.rarity,
-      damage: item.damage,
-      affinity: item.affinity,
-      specials: item.specials,
+      damage: effective.damage,
+      affinity: effective.affinity,
+      specials: effective.specials,
       sharpness: item.sharpness,
       slots: item.slots,
       skills: item.skills,
       decorations: decorate(selection.decorations),
+      customization,
       setBonus,
       groupBonus,
     };

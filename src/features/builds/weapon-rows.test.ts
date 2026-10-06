@@ -1,4 +1,5 @@
 import { expect, test } from "bun:test";
+import rulesJson from "./__fixtures__/artian-rules.json";
 import { EMPTY_DRAFT } from "./config";
 import {
   buildWeaponRow,
@@ -8,7 +9,7 @@ import {
   weaponOption,
   weaponSummary,
 } from "./weapon-rows";
-import type { BuildDraft, Decoration, Weapon } from "./types";
+import type { ArtianRules, BuildDraft, Decoration, Weapon } from "./types";
 
 const weapon = (overrides: Partial<Weapon>): Weapon => ({
   id: "rey-1",
@@ -40,6 +41,7 @@ const weapon = (overrides: Partial<Weapon>): Weapon => ({
   elderseal: null,
   defenseBonus: 0,
   series: "Rey Dau Tree",
+  artian: null,
   kindSpecific: {},
   ...overrides,
 });
@@ -115,6 +117,7 @@ test("no kind chosen means no options and no weapon", () => {
     value: "",
     groups: [],
     weapon: null,
+    artian: null,
     slots: [],
   });
 });
@@ -173,4 +176,50 @@ test("an equipped weapon exposes weapon-typed slots with their seated jewels", (
   // Armor jewels never fit; a size-3 jewel fits only the size-3 slot.
   expect(optionIds(0).sort()).toEqual(["big", "tenderizer"]);
   expect(optionIds(1)).toEqual(["tenderizer"]);
+});
+
+test("an equipped Artian shows its derived stats and an editable panel", () => {
+  const rules = rulesJson as unknown as ArtianRules;
+  const artian: Weapon = weapon({
+    id: "var",
+    name: "Varianza",
+    kind: "great-sword",
+    rarity: 8,
+    damage: { raw: 190, display: 912 },
+    affinity: 5,
+    specials: [],
+    slots: [3, 3, 3],
+    skills: [],
+    series: null,
+    artian: { family: "artian", tier: 8, focus: null },
+  });
+  const draft: BuildDraft = {
+    ...EMPTY_DRAFT,
+    composition: {
+      ...EMPTY_DRAFT.composition,
+      weapon: {
+        ...EMPTY_DRAFT.composition.weapon,
+        weaponId: "var",
+        customization: {
+          element: "fire",
+          attackParts: 3,
+          affinityParts: 0,
+          elementInfusion: true,
+          reinforcements: [{ type: "sharpness", level: "I" }],
+        },
+      },
+    },
+  };
+
+  const row = buildWeaponRow(draft, [artian], null, [], rules);
+  expect(row.weapon?.damage).toEqual({ raw: 205, display: 984 });
+  expect(row.weapon?.specials[0]?.damage.display).toBe(480);
+  expect(row.artian).toMatchObject({ family: "artian", sharpnessBonus: 30, issue: null });
+  expect(row.artian?.elements).toContain("fire");
+
+  // A plain weapon has no panel; without rules the catalog row shows through.
+  expect(buildWeaponRow(draftWith("rey-1"), catalog, null, [], rules).artian).toBeNull();
+  const loading = buildWeaponRow(draft, [artian], null, [], undefined);
+  expect(loading.artian).toBeNull();
+  expect(loading.weapon?.damage).toEqual({ raw: 190, display: 912 });
 });

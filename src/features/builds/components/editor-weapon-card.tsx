@@ -11,8 +11,10 @@ import { cn } from "@/lib/utils";
 import { Search, Swords } from "lucide-react";
 import { WEAPON_KINDS, weaponKindConfig } from "../config";
 import type {
+  ArtianCustomization,
   DecorationAssignment,
   EditorWeaponRow,
+  EditorWeaponSelection,
   Weapon,
   WeaponKind,
 } from "../types";
@@ -22,6 +24,7 @@ import {
   formatSpecial,
   titleCase,
 } from "../weapon-rows";
+import { ArtianCustomizationPanel } from "./artian-customization-panel";
 import { DecorationSlotGrid } from "./decoration-slot-grid";
 import { GearPicker } from "./gear-picker";
 import { GearSkillLine } from "./gear-skill-line";
@@ -29,12 +32,19 @@ import { HunterPanel } from "./hunter-panel";
 import { RarityPips } from "./rarity-pips";
 import { SharpnessBar } from "./sharpness-bar";
 import { SlotPips } from "./slot-pips";
+import type { BonusOption } from "./weapon-bonus-row";
 
 type EditorWeaponCardProps = {
   row: EditorWeaponRow;
+  /** The draft's weapon selection, for a Gogma Artian's rolled bonuses. */
+  selection: EditorWeaponSelection;
+  setBonusOptions: BonusOption[];
+  groupBonusOptions: BonusOption[];
   onKindChange: (kind: WeaponKind) => void;
   onSelect: (weaponId: string) => void;
   onDecoration: (assignment: DecorationAssignment) => void;
+  onCustomize: (config: ArtianCustomization) => void;
+  onBonus: (kind: "setBonusId" | "groupBonusId", bonusId: string | null) => void;
 };
 
 const WeaponImage = ({
@@ -74,10 +84,16 @@ const Stat = ({ label, children }: StatProps) => (
 type WeaponStatsProps = {
   weapon: Weapon;
   slots: EditorWeaponRow["slots"];
+  customization: React.ReactNode;
   onDecoration: (assignment: DecorationAssignment) => void;
 };
 
-const WeaponStats = ({ weapon, slots, onDecoration }: WeaponStatsProps) => (
+const WeaponStats = ({
+  weapon,
+  slots,
+  customization,
+  onDecoration,
+}: WeaponStatsProps) => (
   <div className="min-w-0 space-y-4 p-4 sm:p-5">
     <section aria-label="Weapon stats">
       <dl className="grid grid-cols-2 gap-x-4 gap-y-3 sm:grid-cols-3">
@@ -106,6 +122,8 @@ const WeaponStats = ({ weapon, slots, onDecoration }: WeaponStatsProps) => (
         <SharpnessBar sharpness={weapon.sharpness} />
       </section>
     )}
+
+    {customization}
 
     <section
       aria-label="Weapon decoration slots"
@@ -148,12 +166,17 @@ const WeaponStats = ({ weapon, slots, onDecoration }: WeaponStatsProps) => (
   </div>
 );
 
-/** The weapon row: pick a weapon type, then a weapon of that type, and see its base stats. */
+/** The weapon row: pick a weapon type, then a weapon of that type, and see its stats (customizable for Artian weapons). */
 export const EditorWeaponCard = ({
   row,
+  selection,
+  setBonusOptions,
+  groupBonusOptions,
   onKindChange,
   onSelect,
   onDecoration,
+  onCustomize,
+  onBonus,
 }: EditorWeaponCardProps) => {
   const { weapon } = row;
   const kindLabel = row.kind ? weaponKindConfig(row.kind).label : "weapon";
@@ -257,6 +280,19 @@ export const EditorWeaponCard = ({
         <WeaponStats
           weapon={weapon}
           slots={row.slots}
+          customization={
+            row.artian && (
+              <ArtianCustomizationPanel
+                panel={row.artian}
+                setBonusId={selection.setBonusId}
+                groupBonusId={selection.groupBonusId}
+                setBonusOptions={setBonusOptions}
+                groupBonusOptions={groupBonusOptions}
+                onChange={onCustomize}
+                onBonus={onBonus}
+              />
+            )
+          }
           onDecoration={onDecoration}
         />
       )}

@@ -6,12 +6,14 @@ import {
 import { useApi } from "@/hooks/use-api";
 import { toBuildApiError } from "../errors";
 import { buildKeys } from "./keys";
-import type { Armor, Decoration, Weapon } from "../types";
+import type { Armor, ArtianRules, Decoration, Weapon } from "../types";
 
 export type BuildCatalog = {
   armors: Armor[];
   decorations: Decoration[];
   weapons: Weapon[];
+  /** Artian / Gogma Artian rules table; undefined until loaded. */
+  artianRules: ArtianRules | undefined;
   skillCatalog: SharedSkillCatalog | undefined;
   isLoading: boolean;
   error: Error | null;
@@ -70,16 +72,37 @@ export const useCatalog = (): BuildCatalog => {
     CATALOG_OPTIONS,
   );
 
+  const artianRules = useSWR<ArtianRules>(
+    buildKeys.catalog("artian-rules"),
+    async () => {
+      try {
+        return (
+          await api("/api/mh-wilds/artian-rules").method("get").create()({})
+        ).data;
+      } catch (error) {
+        throw toBuildApiError(error);
+      }
+    },
+    CATALOG_OPTIONS,
+  );
+
   return {
     armors: armors.data ?? [],
     decorations: decorations.data ?? [],
     weapons: weapons.data ?? [],
+    artianRules: artianRules.data,
     skillCatalog,
     isLoading:
       armors.isLoading ||
       decorations.isLoading ||
       weapons.isLoading ||
+      artianRules.isLoading ||
       isLoadingSkills,
-    error: armors.error ?? decorations.error ?? weapons.error ?? skillsError,
+    error:
+      armors.error ??
+      decorations.error ??
+      weapons.error ??
+      artianRules.error ??
+      skillsError,
   };
 };

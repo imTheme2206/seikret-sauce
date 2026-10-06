@@ -13,7 +13,7 @@ import type { EditorWeaponSelection, SkillCatalog } from "../types";
 /** Sentinel for "none" — Radix Select forbids an empty-string item value. */
 const NONE = "__none__";
 
-type BonusOption = SkillCatalog["bonuses"][number];
+export type BonusOption = SkillCatalog["bonuses"][number];
 
 type WeaponBonusRowProps = {
   value: EditorWeaponSelection;
@@ -23,7 +23,7 @@ type WeaponBonusRowProps = {
 };
 
 /** One labelled Select for a single kind of weapon bonus contribution, by id. */
-const BonusSelect = ({
+export const BonusSelect = ({
   label,
   placeholder,
   value,
@@ -65,12 +65,12 @@ const BonusSelect = ({
 };
 
 /**
- * Editable weapon-bonus row: the weapon's customization contributes exactly
- * one optional Set Bonus + one optional Group Bonus (backend ADR-0013 keeps
- * the pair from ADR-0012), separate from the catalog weapon picked in
- * `EditorWeaponCard`. Mirrors the optimizer's `WeaponSelector` UX, but
- * selects catalog bonuses by id (the composition's currency) instead of by
- * name (the optimizer's `WeaponSkills` currency).
+ * Editable bonus-only weapon row. A Gogma Artian's rolled bonuses now live in
+ * its customization panel (backend ADR-0014); this row only remains for a
+ * bonus-only selection with no catalog weapon (a legacy saved build or an
+ * optimizer import), so it can still be read and cleared. It selects catalog
+ * bonuses by id (the composition's currency) instead of by name (the
+ * optimizer's `WeaponSkills` currency).
  */
 export const WeaponBonusRow = ({
   value,

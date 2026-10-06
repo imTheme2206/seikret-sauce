@@ -1,8 +1,10 @@
 import { describe, expect, test } from "bun:test";
+import rulesJson from "./__fixtures__/artian-rules.json";
+import { calculateBuild } from "./calculator";
 import { draftFromBuild, snapshotFromDraft } from "./draft";
 import { EMPTY_DRAFT } from "./config";
 import { toCreateBody } from "./utils";
-import type { BuildDraft, Decoration, SavedBuild, Weapon } from "./types";
+import type { ArtianRules, BuildDraft, Decoration, SavedBuild, Weapon } from "./types";
 
 const weapon: Weapon = {
   id: "gs-1",
@@ -19,6 +21,7 @@ const weapon: Weapon = {
   elderseal: null,
   defenseBonus: 0,
   series: null,
+  artian: null,
   kindSpecific: {},
 };
 
@@ -67,6 +70,7 @@ describe("weapon in the draft <-> snapshot translation", () => {
         decorations: [{ slotIndex: 0, decorationId: "crit-jewel" }],
         setBonusId: null,
         groupBonusId: null,
+        customization: null,
       },
     },
   };
@@ -104,11 +108,110 @@ describe("weapon in the draft <-> snapshot translation", () => {
       decorations: [],
       setBonusId: "set-1",
       groupBonusId: null,
+      customization: null,
     });
   });
 
   test("a weapon id missing from the catalog falls back to its bonuses only", () => {
     const snapshot = snapshotFromDraft(draft, [], [jewel], undefined, [], []);
     expect(snapshot.positions.weapon).toBeNull();
+  });
+});
+
+describe("Gogma Artian in the draft <-> snapshot translation", () => {
+  const gogma: Weapon = {
+    ...weapon,
+    id: "ostrak",
+    name: "Ostrak Oblivion (+15% affinity)",
+    rarity: 8,
+    damage: { raw: 180, display: 864 },
+    affinity: 15,
+    sharpness: { red: 140, orange: 40, yellow: 40, green: 50, blue: 70, white: 10, purple: 0 },
+    slots: [3, 3, 3],
+    skills: [],
+    artian: { family: "gogma", tier: 8, focus: "affinity" },
+  };
+  const rules = rulesJson as unknown as ArtianRules;
+  const customization = {
+    element: "water" as const,
+    attackParts: 1,
+    affinityParts: 2,
+    elementInfusion: false,
+    reinforcements: [
+      { type: "attack" as const, level: "EX" as const },
+      { type: "attack" as const, level: "EX" as const },
+      { type: "affinity" as const, level: "III" as const },
+      { type: "element" as const, level: "EX" as const },
+      { type: "sharpness" as const, level: "EX" as const },
+    ],
+  };
+  const draft: BuildDraft = {
+    ...EMPTY_DRAFT,
+    name: "Gogma",
+    composition: {
+      ...EMPTY_DRAFT.composition,
+      weapon: {
+        weaponId: "ostrak",
+        decorations: [],
+        setBonusId: "set-1",
+        groupBonusId: "group-1",
+        customization,
+      },
+    },
+  };
+  const catalog = {
+    skills: [],
+    bonuses: [
+      { id: "set-1", name: "Set One", kind: "set" as const, icon: null, thresholds: [{ piecesRequired: 1, effectName: "Set Effect", level: 1 }] },
+      { id: "group-1", name: "Group One", kind: "group" as const, icon: null, thresholds: [{ piecesRequired: 1, effectName: "Group Effect", level: 1 }] },
+    ],
+  };
+
+  test("the editor snapshot stores effective stats, the config and both bonuses", () => {
+    const snapshot = snapshotFromDraft(draft, [], [], catalog, [], [gogma], rules);
+    const saved = snapshot.positions.weapon!;
+    // Same numbers the backend asserts for this configuration.
+    expect(saved.damage).toEqual({ raw: 209, display: 1003 });
+    expect(saved.affinity).toBe(33);
+    expect(saved.specials).toEqual([
+      { kind: "element", name: "water", damage: { raw: 55, display: 550 }, hidden: false },
+    ]);
+    expect(saved.customization).toEqual({
+      family: "gogma",
+      tier: 8,
+      focus: "affinity",
+      config: customization,
+      base: { damage: { raw: 180, display: 864 }, affinity: 15 },
+      sharpnessBonus: 50,
+      ammoBonus: 0,
+      gameVersion: "1.041",
+    });
+    expect(saved.setBonus?.name).toBe("Set One");
+    expect(saved.groupBonus?.name).toBe("Group One");
+  });
+
+  test("the Gogma set and group bonus count toward the editor's totals", () => {
+    const snapshot = snapshotFromDraft(draft, [], [], catalog, [], [gogma], rules);
+    const totals = calculateBuild(snapshot);
+    expect(totals.bonusCounts).toEqual({ "Set One": 1, "Group One": 1 });
+    expect(totals.activeBonuses.map((bonus) => bonus.effectName).sort()).toEqual([
+      "Group Effect",
+      "Set Effect",
+    ]);
+  });
+
+  test("a saved Gogma weapon hydrates back to the same draft and save body", () => {
+    const snapshot = snapshotFromDraft(draft, [], [], catalog, [], [gogma], rules);
+    const hydrated = draftFromBuild(buildWith(snapshot.positions.weapon));
+    expect(hydrated.composition.weapon).toEqual(draft.composition.weapon);
+    expect(toCreateBody(hydrated).composition.weapon).toEqual(
+      toCreateBody(draft).composition.weapon,
+    );
+  });
+
+  test("without the rules the weapon shows its catalog stats and no configuration", () => {
+    const snapshot = snapshotFromDraft(draft, [], [], catalog, [], [gogma]);
+    expect(snapshot.positions.weapon?.damage).toEqual(gogma.damage);
+    expect(snapshot.positions.weapon?.customization).toBeNull();
   });
 });

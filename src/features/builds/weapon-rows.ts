@@ -4,9 +4,11 @@
  * equipped weapon. Pure and catalog-driven, like `gear-rows.ts`.
  */
 
+import { buildArtianPanel, effectiveWeapon } from "./artian";
 import { gearKeywords, groupBy, toEditorSlots } from "./gear-rows";
 import { toWeaponSlots } from "./utils";
 import type {
+  ArtianRules,
   BuildDraft,
   Decoration,
   EditorWeaponRow,
@@ -79,16 +81,31 @@ export const buildWeaponRow = (
   weapons: Weapon[],
   chosenKind: WeaponKind | null,
   decorations: Decoration[] = [],
+  artianRules?: ArtianRules,
 ): EditorWeaponRow => {
-  const weapon =
+  const catalogWeapon =
     weapons.find((item) => item.id === draft.composition.weapon.weaponId) ??
     null;
+  const weapon = catalogWeapon
+    ? effectiveWeapon(
+        catalogWeapon,
+        draft.composition.weapon.customization,
+        artianRules,
+      )
+    : null;
   const kind = weapon?.kind ?? chosenKind;
   return {
     kind,
     value: weapon?.id ?? "",
     groups: kind ? weaponGroups(weapons, kind) : [],
     weapon,
+    artian: catalogWeapon
+      ? buildArtianPanel(
+          catalogWeapon,
+          draft.composition.weapon.customization,
+          artianRules,
+        )
+      : null,
     slots: weapon
       ? toEditorSlots(
           toWeaponSlots(weapon.slots),

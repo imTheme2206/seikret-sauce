@@ -1,0 +1,749 @@
+{
+  "gameVersion": "1.041",
+  "retrievedAt": "2026-10-06",
+  "production": {
+    "parts": 3,
+    "attackPerPart": 5,
+    "affinityPerPart": 5
+  },
+  "baseStats": {
+    "raw": {
+      "6": 170,
+      "7": 180,
+      "8": 190
+    },
+    "affinity": 5
+  },
+  "gogmaFocus": {
+    "attack": {
+      "raw": 10,
+      "affinity": -15
+    },
+    "affinity": {
+      "raw": -10,
+      "affinity": 10
+    },
+    "element": {
+      "raw": 0,
+      "affinity": -5
+    }
+  },
+  "reinforcement": {
+    "maxCount": 5,
+    "attack": {
+      "I": 5,
+      "II": 6,
+      "III": 9,
+      "EX": 12
+    },
+    "affinity": {
+      "I": 5,
+      "II": 6,
+      "III": 8,
+      "EX": 10
+    },
+    "sharpness": {
+      "I": 30,
+      "EX": 50
+    },
+    "sharpnessInsectGlaiveI": 20,
+    "ammo": {
+      "I": 1,
+      "EX": 2
+    },
+    "maxExPerType": 2,
+    "artianMaxPerType": {
+      "attack": 5,
+      "affinity": 3,
+      "element": 4,
+      "sharpness": 2,
+      "ammo": 2
+    }
+  },
+  "kinds": {
+    "great-sword": {
+      "artianNames": {
+        "6": "Artian Blade I",
+        "7": "Artian Blade II",
+        "8": "Varianza"
+      },
+      "gogmaName": "Ostrak Oblivion",
+      "elements": {
+        "fire": {
+          "r67": 300,
+          "r8": 450
+        },
+        "water": {
+          "r67": 300,
+          "r8": 450
+        },
+        "thunder": {
+          "r67": 300,
+          "r8": 450
+        },
+        "ice": {
+          "r67": 300,
+          "r8": 450
+        },
+        "dragon": {
+          "r67": 300,
+          "r8": 450
+        },
+        "poison": {
+          "r67": 150,
+          "r8": 300
+        },
+        "blast": {
+          "r67": 150,
+          "r8": 300
+        },
+        "paralysis": {
+          "r67": 100,
+          "r8": 250
+        },
+        "sleep": {
+          "r67": 100,
+          "r8": 250
+        }
+      },
+      "elementInfusion": 30,
+      "gogmaFocusElementDelta": {
+        "affinity": -10,
+        "element": 50
+      },
+      "elementBoost": {
+        "I": 80,
+        "II": 90,
+        "EX": 110
+      }
+    },
+    "long-sword": {
+      "artianNames": {
+        "6": "Artian Saber I",
+        "7": "Artian Saber II",
+        "8": "Dimensius"
+      },
+      "gogmaName": "Headsman's Hamus",
+      "elements": {
+        "fire": {
+          "r67": 230,
+          "r8": 270
+        },
+        "water": {
+          "r67": 230,
+          "r8": 270
+        },
+        "thunder": {
+          "r67": 230,
+          "r8": 270
+        },
+        "ice": {
+          "r67": 230,
+          "r8": 270
+        },
+        "dragon": {
+          "r67": 230,
+          "r8": 270
+        },
+        "poison": {
+          "r67": 80,
+          "r8": 120
+        },
+        "blast": {
+          "r67": 80,
+          "r8": 120
+        },
+        "paralysis": {
+          "r67": 30,
+          "r8": 70
+        },
+        "sleep": {
+          "r67": 30,
+          "r8": 70
+        }
+      },
+      "elementInfusion": 30,
+      "gogmaFocusElementDelta": {
+        "affinity": -20,
+        "element": 50
+      },
+      "elementBoost": {
+        "I": 50,
+        "II": 60,
+        "EX": 90
+      }
+    },
+    "sword-shield": {
+      "artianNames": {
+        "6": "Artian Sword I",
+        "7": "Artian Sword II",
+        "8": "Verdoloto"
+      },
+      "gogmaName": "Kyrie Verd",
+      "elements": {
+        "fire": {
+          "r67": 230,
+          "r8": 260
+        },
+        "water": {
+          "r67": 230,
+          "r8": 260
+        },
+        "thunder": {
+          "r67": 230,
+          "r8": 260
+        },
+        "ice": {
+          "r67": 230,
+          "r8": 260
+        },
+        "dragon": {
+          "r67": 230,
+          "r8": 260
+        },
+        "poison": {
+          "r67": 80,
+          "r8": 110
+        },
+        "blast": {
+          "r67": 80,
+          "r8": 110
+        },
+        "paralysis": {
+          "r67": 30,
+          "r8": 60
+        },
+        "sleep": {
+          "r67": 30,
+          "r8": 60
+        }
+      },
+      "elementInfusion": 20,
+      "gogmaFocusElementDelta": {
+        "affinity": -20,
+        "element": 40
+      },
+      "elementBoost": {
+        "I": 30,
+        "II": 50,
+        "EX": 80
+      }
+    },
+    "dual-blades": {
+      "artianNames": {
+        "6": "Artian Edges I",
+        "7": "Artian Edges II",
+        "8": "Tiltkreise"
+      },
+      "gogmaName": "Eternal Cusp",
+      "elements": {
+        "fire": {
+          "r67": 220,
+          "r8": 250
+        },
+        "water": {
+          "r67": 220,
+          "r8": 250
+        },
+        "thunder": {
+          "r67": 220,
+          "r8": 250
+        },
+        "ice": {
+          "r67": 220,
+          "r8": 250
+        },
+        "dragon": {
+          "r67": 220,
+          "r8": 250
+        },
+        "poison": {
+          "r67": 70,
+          "r8": 100
+        },
+        "blast": {
+          "r67": 70,
+          "r8": 100
+        },
+        "paralysis": {
+          "r67": 20,
+          "r8": 50
+        },
+        "sleep": {
+          "r67": 20,
+          "r8": 50
+        }
+      },
+      "elementInfusion": 20,
+      "gogmaFocusElementDelta": {
+        "affinity": -20,
+        "element": 30
+      },
+      "elementBoost": {
+        "I": 20,
+        "II": 30,
+        "EX": 50
+      }
+    },
+    "hammer": {
+      "artianNames": {
+        "6": "Artian Hammer I",
+        "7": "Artian Hammer II",
+        "8": "Moteurvankel"
+      },
+      "gogmaName": "Bound Admonition",
+      "elements": {
+        "fire": {
+          "r67": 270,
+          "r8": 320
+        },
+        "water": {
+          "r67": 270,
+          "r8": 320
+        },
+        "thunder": {
+          "r67": 270,
+          "r8": 320
+        },
+        "ice": {
+          "r67": 270,
+          "r8": 320
+        },
+        "dragon": {
+          "r67": 270,
+          "r8": 320
+        },
+        "poison": {
+          "r67": 120,
+          "r8": 170
+        },
+        "blast": {
+          "r67": 120,
+          "r8": 170
+        },
+        "paralysis": {
+          "r67": 70,
+          "r8": 120
+        },
+        "sleep": {
+          "r67": 70,
+          "r8": 120
+        }
+      },
+      "elementInfusion": 30,
+      "gogmaFocusElementDelta": {
+        "affinity": -10,
+        "element": 40
+      },
+      "elementBoost": {
+        "I": 50,
+        "II": 60,
+        "EX": 90
+      }
+    },
+    "hunting-horn": {
+      "artianNames": {
+        "6": "Artian Sounder I",
+        "7": "Artian Sounder II",
+        "8": "Omiltika"
+      },
+      "gogmaName": "Onyx Choros",
+      "elements": {
+        "fire": {
+          "r67": 270,
+          "r8": 320
+        },
+        "water": {
+          "r67": 270,
+          "r8": 320
+        },
+        "thunder": {
+          "r67": 270,
+          "r8": 320
+        },
+        "ice": {
+          "r67": 270,
+          "r8": 320
+        },
+        "dragon": {
+          "r67": 270,
+          "r8": 320
+        },
+        "poison": {
+          "r67": 120,
+          "r8": 170
+        },
+        "blast": {
+          "r67": 120,
+          "r8": 170
+        },
+        "paralysis": {
+          "r67": 70,
+          "r8": 120
+        },
+        "sleep": {
+          "r67": 70,
+          "r8": 120
+        }
+      },
+      "elementInfusion": 30,
+      "gogmaFocusElementDelta": {
+        "affinity": 20,
+        "element": 80
+      },
+      "elementBoost": {
+        "I": 50,
+        "II": 60,
+        "EX": 90
+      }
+    },
+    "lance": {
+      "artianNames": {
+        "6": "Artian Lance I",
+        "7": "Artian Lance II",
+        "8": "Skyscraper"
+      },
+      "gogmaName": "Aether Pike",
+      "elements": {
+        "fire": {
+          "r67": 230,
+          "r8": 270
+        },
+        "water": {
+          "r67": 230,
+          "r8": 270
+        },
+        "thunder": {
+          "r67": 230,
+          "r8": 270
+        },
+        "ice": {
+          "r67": 230,
+          "r8": 270
+        },
+        "dragon": {
+          "r67": 230,
+          "r8": 270
+        },
+        "poison": {
+          "r67": 80,
+          "r8": 120
+        },
+        "blast": {
+          "r67": 80,
+          "r8": 120
+        },
+        "paralysis": {
+          "r67": 30,
+          "r8": 70
+        },
+        "sleep": {
+          "r67": 30,
+          "r8": 70
+        }
+      },
+      "elementInfusion": 30,
+      "gogmaFocusElementDelta": {
+        "affinity": -20,
+        "element": 50
+      },
+      "elementBoost": {
+        "I": 50,
+        "II": 60,
+        "EX": 90
+      }
+    },
+    "gunlance": {
+      "artianNames": {
+        "6": "Artian Cannon I",
+        "7": "Artian Cannon II",
+        "8": "Argenesis"
+      },
+      "gogmaName": "Auguring Omen",
+      "elements": {
+        "fire": {
+          "r67": 270,
+          "r8": 320
+        },
+        "water": {
+          "r67": 270,
+          "r8": 320
+        },
+        "thunder": {
+          "r67": 270,
+          "r8": 320
+        },
+        "ice": {
+          "r67": 270,
+          "r8": 320
+        },
+        "dragon": {
+          "r67": 270,
+          "r8": 320
+        },
+        "poison": {
+          "r67": 120,
+          "r8": 170
+        },
+        "blast": {
+          "r67": 120,
+          "r8": 170
+        },
+        "paralysis": {
+          "r67": 70,
+          "r8": 120
+        },
+        "sleep": {
+          "r67": 70,
+          "r8": 120
+        }
+      },
+      "elementInfusion": 30,
+      "gogmaFocusElementDelta": {
+        "affinity": 30,
+        "element": 80
+      },
+      "elementBoost": {
+        "I": 50,
+        "II": 60,
+        "EX": 90
+      }
+    },
+    "switch-axe": {
+      "artianNames": {
+        "6": "Artian Saw I",
+        "7": "Artian Saw II",
+        "8": "Mundus Altus"
+      },
+      "gogmaName": "Wicked Regnum",
+      "elements": {
+        "fire": {
+          "r67": 220,
+          "r8": 260
+        },
+        "water": {
+          "r67": 220,
+          "r8": 260
+        },
+        "thunder": {
+          "r67": 220,
+          "r8": 260
+        },
+        "ice": {
+          "r67": 220,
+          "r8": 260
+        },
+        "dragon": {
+          "r67": 220,
+          "r8": 260
+        },
+        "poison": {
+          "r67": 70,
+          "r8": 110
+        },
+        "blast": {
+          "r67": 70,
+          "r8": 110
+        },
+        "paralysis": {
+          "r67": 20,
+          "r8": 60
+        },
+        "sleep": {
+          "r67": 20,
+          "r8": 60
+        }
+      },
+      "elementInfusion": 20,
+      "gogmaFocusElementDelta": {
+        "affinity": -20,
+        "element": 40
+      },
+      "elementBoost": {
+        "I": 30,
+        "II": 50,
+        "EX": 80
+      }
+    },
+    "charge-blade": {
+      "artianNames": {
+        "6": "Artian Defender I",
+        "7": "Artian Defender II",
+        "8": "Chrono Gear"
+      },
+      "gogmaName": "Promised Abyss",
+      "elements": {
+        "fire": {
+          "r67": 230,
+          "r8": 270
+        },
+        "water": {
+          "r67": 230,
+          "r8": 270
+        },
+        "thunder": {
+          "r67": 230,
+          "r8": 270
+        },
+        "ice": {
+          "r67": 230,
+          "r8": 270
+        },
+        "dragon": {
+          "r67": 230,
+          "r8": 270
+        },
+        "poison": {
+          "r67": 80,
+          "r8": 120
+        },
+        "blast": {
+          "r67": 80,
+          "r8": 120
+        },
+        "paralysis": {
+          "r67": 30,
+          "r8": 70
+        },
+        "sleep": {
+          "r67": 30,
+          "r8": 70
+        }
+      },
+      "elementInfusion": 30,
+      "gogmaFocusElementDelta": {
+        "affinity": -20,
+        "element": 50
+      },
+      "elementBoost": {
+        "I": 50,
+        "II": 60,
+        "EX": 80
+      }
+    },
+    "insect-glaive": {
+      "artianNames": {
+        "6": "Artian Glaive I",
+        "7": "Artian Glaive II",
+        "8": "Diprielcha"
+      },
+      "gogmaName": "Limbo Llor",
+      "elements": {
+        "fire": {
+          "r67": 220,
+          "r8": 260
+        },
+        "water": {
+          "r67": 220,
+          "r8": 260
+        },
+        "thunder": {
+          "r67": 220,
+          "r8": 260
+        },
+        "ice": {
+          "r67": 220,
+          "r8": 260
+        },
+        "dragon": {
+          "r67": 220,
+          "r8": 260
+        },
+        "poison": {
+          "r67": 70,
+          "r8": 110
+        },
+        "blast": {
+          "r67": 70,
+          "r8": 110
+        },
+        "paralysis": {
+          "r67": 20,
+          "r8": 60
+        },
+        "sleep": {
+          "r67": 20,
+          "r8": 60
+        }
+      },
+      "elementInfusion": 20,
+      "gogmaFocusElementDelta": {
+        "affinity": -20,
+        "element": 40
+      },
+      "elementBoost": {
+        "I": 30,
+        "II": 50,
+        "EX": 80
+      }
+    },
+    "bow": {
+      "artianNames": {
+        "6": "Artian Sight I",
+        "7": "Artian Sight II",
+        "8": "Angelbein"
+      },
+      "gogmaName": "Calamitous Angel",
+      "elements": {
+        "fire": {
+          "r67": 180,
+          "r8": 210
+        },
+        "water": {
+          "r67": 180,
+          "r8": 210
+        },
+        "thunder": {
+          "r67": 180,
+          "r8": 210
+        },
+        "ice": {
+          "r67": 180,
+          "r8": 210
+        },
+        "dragon": {
+          "r67": 180,
+          "r8": 210
+        },
+        "blast": {
+          "r67": 30,
+          "r8": 60
+        }
+      },
+      "elementInfusion": 20,
+      "gogmaFocusElementDelta": {
+        "affinity": -20,
+        "element": 30
+      },
+      "elementBoost": {
+        "I": 30,
+        "II": 40,
+        "EX": 60
+      }
+    },
+    "light-bowgun": {
+      "artianNames": {
+        "6": "Artian Blaster I",
+        "7": "Artian Blaster II",
+        "8": "Animilater"
+      },
+      "gogmaName": "Bethorned Agony",
+      "elements": {},
+      "elementInfusion": null,
+      "gogmaFocusElementDelta": null,
+      "elementBoost": null
+    },
+    "heavy-bowgun": {
+      "artianNames": {
+        "6": "Artian Sheller I",
+        "7": "Artian Sheller II",
+        "8": "Greifen"
+      },
+      "gogmaName": "Trembling Hels",
+      "elements": {},
+      "elementInfusion": null,
+      "gogmaFocusElementDelta": null,
+      "elementBoost": null
+    }
+  }
+}

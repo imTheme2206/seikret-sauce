@@ -10,7 +10,13 @@
  */
 
 import { ARMOR_POSITIONS, EMPTY_DRAFT } from "./config";
+import { ARTIAN_ELEMENTS, ARTIAN_REINFORCEMENT_TYPES } from "./artian";
 import type {
+  ArtianCustomization,
+  ArtianElement,
+  ArtianReinforcement,
+  ArtianReinforcementLevel,
+  ArtianReinforcementType,
   BuildDraft,
   DecorationAssignment,
   EditorArmorSelection,
@@ -37,6 +43,43 @@ const parseAssignments = (raw: unknown): DecorationAssignment[] =>
           : [],
       )
     : [];
+
+const REINFORCEMENT_LEVELS: ArtianReinforcementLevel[] = ["I", "II", "III", "EX"];
+
+const parseCount = (value: unknown): number =>
+  typeof value === "number" && Number.isInteger(value)
+    ? Math.min(3, Math.max(0, value))
+    : 0;
+
+const parseReinforcements = (raw: unknown): ArtianReinforcement[] =>
+  Array.isArray(raw)
+    ? raw.flatMap((item) =>
+        isRecord(item) &&
+        ARTIAN_REINFORCEMENT_TYPES.includes(item.type as ArtianReinforcementType) &&
+        REINFORCEMENT_LEVELS.includes(item.level as ArtianReinforcementLevel)
+          ? [
+              {
+                type: item.type as ArtianReinforcementType,
+                level: item.level as ArtianReinforcementLevel,
+              },
+            ]
+          : [],
+      )
+    : [];
+
+/** Stored customization is untrusted; anything unrecognisable collapses to "no configuration". */
+const parseCustomization = (raw: unknown): ArtianCustomization | null => {
+  if (!isRecord(raw)) return null;
+  return {
+    element: ARTIAN_ELEMENTS.includes(raw.element as ArtianElement)
+      ? (raw.element as ArtianElement)
+      : null,
+    attackParts: parseCount(raw.attackParts),
+    affinityParts: parseCount(raw.affinityParts),
+    elementInfusion: raw.elementInfusion === true,
+    reinforcements: parseReinforcements(raw.reinforcements),
+  };
+};
 
 const parseArmor = (raw: unknown): EditorArmorSelection | null => {
   if (!isRecord(raw)) return null;
@@ -93,6 +136,7 @@ export const parseWorkingBuild = (raw: unknown): BuildDraft => {
       decorations: parseAssignments(weapon.decorations),
       setBonusId: parseId(weapon.setBonusId),
       groupBonusId: parseId(weapon.groupBonusId),
+      customization: parseCustomization(weapon.customization),
     },
   };
   for (const position of ARMOR_POSITIONS) {

@@ -120,16 +120,26 @@ export const BuildEditorPage = ({ buildId }: { buildId?: string }) => {
                 ))}
                 <EditorWeaponCard
                   row={controller.weaponRow}
+                  selection={controller.draft.composition.weapon}
+                  setBonusOptions={controller.bonusOptions.set}
+                  groupBonusOptions={controller.bonusOptions.group}
                   onKindChange={controller.setWeaponKind}
                   onSelect={controller.setWeapon}
                   onDecoration={controller.assignWeaponDecoration}
+                  onCustomize={controller.setWeaponCustomization}
+                  onBonus={controller.setWeaponBonus}
                 />
-                <WeaponBonusRow
-                  value={controller.draft.composition.weapon}
-                  setBonusOptions={controller.bonusOptions.set}
-                  groupBonusOptions={controller.bonusOptions.group}
-                  onChange={controller.setWeaponBonus}
-                />
+                {/* Bonuses now belong to a Gogma Artian's panel; the row only serves a bonus-only selection. */}
+                {!controller.draft.composition.weapon.weaponId &&
+                  (controller.draft.composition.weapon.setBonusId ||
+                    controller.draft.composition.weapon.groupBonusId) && (
+                    <WeaponBonusRow
+                      value={controller.draft.composition.weapon}
+                      setBonusOptions={controller.bonusOptions.set}
+                      groupBonusOptions={controller.bonusOptions.group}
+                      onChange={controller.setWeaponBonus}
+                    />
+                  )}
               </div>
             </section>
           </div>

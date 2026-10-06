@@ -48,6 +48,7 @@ export const EMPTY_DRAFT: BuildDraft = {
       decorations: [],
       setBonusId: null,
       groupBonusId: null,
+      customization: null,
     },
   },
 };

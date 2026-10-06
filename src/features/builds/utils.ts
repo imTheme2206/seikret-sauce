@@ -78,6 +78,10 @@ export const toCreateBody = (draft: BuildDraft): CreateBuildBody => {
           : [],
         setBonusId: draft.composition.weapon.setBonusId,
         groupBonusId: draft.composition.weapon.groupBonusId,
+        // Only an equipped weapon can carry a configuration (the API rejects it otherwise).
+        customization: draft.composition.weapon.weaponId
+          ? draft.composition.weapon.customization
+          : null,
       },
     },
   };

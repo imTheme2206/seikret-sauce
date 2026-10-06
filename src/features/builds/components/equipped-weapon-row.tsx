@@ -1,5 +1,6 @@
 import { CircleSlash, Swords } from "lucide-react";
 import { DecorationSlotIcon } from "@/components/gear/decoration-slot-icon";
+import { Badge } from "@/components/ui/badge";
 import { Typography } from "@/components/ui/typography";
 import { decorationColor } from "@/lib/decoration-sprite";
 import { weaponKindConfig } from "../config";
@@ -9,7 +10,7 @@ import { HunterPanel } from "./hunter-panel";
 import { RarityPips } from "./rarity-pips";
 import { SharpnessBar } from "./sharpness-bar";
 import { SlotPips } from "./slot-pips";
-import type { SnapshotWeapon } from "../types";
+import type { ArtianReinforcement, SnapshotWeapon } from "../types";
 
 type EquippedWeaponRowProps = {
   weapon: SnapshotWeapon | null;
@@ -72,6 +73,53 @@ const WeaponDecorations = ({ weapon }: { weapon: SnapshotWeapon }) => {
   );
 };
 
+/** "Attack EX", "Affinity III", "Ammo capacity I" - one saved reinforcement. */
+const reinforcementText = (
+  reinforcement: ArtianReinforcement,
+): string =>
+  `${reinforcement.type === "ammo" ? "Ammo capacity" : titleCase(reinforcement.type)} ${reinforcement.level}`;
+
+/** The saved Artian / Gogma Artian configuration, as badges under the weapon's stats. */
+const CustomizationSummary = ({
+  customization,
+}: {
+  customization: NonNullable<SnapshotWeapon["customization"]>;
+}) => {
+  const { config } = customization;
+  return (
+    <div className="mt-3 flex flex-wrap items-center gap-1.5">
+      <Badge variant="secondary">
+        {customization.family === "gogma"
+          ? `Gogma Artian · ${titleCase(customization.focus ?? "")} Focus`
+          : `Artian · Rarity ${customization.tier}`}
+      </Badge>
+      {config.element && (
+        <Badge variant="outline">
+          {titleCase(config.element)}
+          {config.elementInfusion ? " (infused)" : ""}
+        </Badge>
+      )}
+      {config.attackParts > 0 && (
+        <Badge variant="outline">Attack parts {config.attackParts}</Badge>
+      )}
+      {config.affinityParts > 0 && (
+        <Badge variant="outline">Affinity parts {config.affinityParts}</Badge>
+      )}
+      {config.reinforcements.map((reinforcement, index) => (
+        <Badge key={`${reinforcement.type}-${index}`} variant="outline">
+          {reinforcementText(reinforcement)}
+        </Badge>
+      ))}
+      {customization.sharpnessBonus > 0 && (
+        <Badge variant="outline">Sharpness +{customization.sharpnessBonus}</Badge>
+      )}
+      {customization.ammoBonus > 0 && (
+        <Badge variant="outline">Ammo +{customization.ammoBonus}</Badge>
+      )}
+    </div>
+  );
+};
+
 /** Full saved-weapon detail: stats, sharpness, skills, bonuses and seated jewels. */
 const WeaponDetail = ({ weapon }: { weapon: SnapshotWeapon }) => {
   const specials = weapon.specials ?? [];
@@ -101,6 +149,9 @@ const WeaponDetail = ({ weapon }: { weapon: SnapshotWeapon }) => {
           <div className="mt-2 max-w-xs">
             <SharpnessBar sharpness={weapon.sharpness} />
           </div>
+        )}
+        {weapon.customization && (
+          <CustomizationSummary customization={weapon.customization} />
         )}
         <GearSkillLine
           skills={weapon.skills ?? []}

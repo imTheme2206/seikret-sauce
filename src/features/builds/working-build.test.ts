@@ -10,6 +10,7 @@ import {
   saveWorkingTarget,
   WORKING_BUILD_KEY,
 } from "./working-build";
+import type { BuildDraft } from "./types";
 import { toCreateBody } from "./utils";
 
 test("a persisted weapon selection survives the JSON round trip", () => {
@@ -27,6 +28,7 @@ test("a persisted weapon selection survives the JSON round trip", () => {
         decorations: [{ slotIndex: 0, decorationId: "tenderizer" }],
         setBonusId: "set",
         groupBonusId: null,
+        customization: null,
       },
     },
   };
@@ -63,6 +65,7 @@ test("malformed fields are dropped one by one, not all at once", () => {
     decorations: [],
     setBonusId: "set",
     groupBonusId: null,
+    customization: null,
   });
 });
 
@@ -77,6 +80,7 @@ test("the save body carries the weapon, its decorations and bonuses", () => {
         decorations: [{ slotIndex: 1, decorationId: "tenderizer" }],
         setBonusId: "set",
         groupBonusId: null,
+        customization: null,
       },
     },
   });
@@ -85,6 +89,7 @@ test("the save body carries the weapon, its decorations and bonuses", () => {
     decorations: [{ slotIndex: 1, decorationId: "tenderizer" }],
     setBonusId: "set",
     groupBonusId: null,
+    customization: null,
   });
 });
 
@@ -99,10 +104,78 @@ test("stray weapon decorations are dropped when no weapon is chosen", () => {
         decorations: [{ slotIndex: 0, decorationId: "tenderizer" }],
         setBonusId: "set",
         groupBonusId: null,
+        customization: null,
       },
     },
   });
   expect(body.composition.weapon?.decorations).toEqual([]);
+});
+
+test("an Artian configuration survives the stored draft and rides the save body", () => {
+  const customization = {
+    element: "water" as const,
+    attackParts: 1,
+    affinityParts: 2,
+    elementInfusion: true,
+    reinforcements: [
+      { type: "attack" as const, level: "EX" as const },
+      { type: "sharpness" as const, level: "I" as const },
+    ],
+  };
+  const draft: BuildDraft = {
+    ...EMPTY_DRAFT,
+    name: "x",
+    composition: {
+      ...EMPTY_DRAFT.composition,
+      weapon: {
+        weaponId: "gogma-1",
+        decorations: [],
+        setBonusId: "set",
+        groupBonusId: "group",
+        customization,
+      },
+    },
+  };
+  expect(parseWorkingBuild(JSON.parse(JSON.stringify(draft)))).toEqual(draft);
+  expect(toCreateBody(draft).composition.weapon?.customization).toEqual(customization);
+  // No weapon, no configuration: the API rejects one on a bonus-only weapon.
+  const noWeapon = toCreateBody({
+    ...draft,
+    composition: {
+      ...draft.composition,
+      weapon: { ...draft.composition.weapon, weaponId: null },
+    },
+  });
+  expect(noWeapon.composition.weapon?.customization).toBeNull();
+});
+
+test("a malformed stored customization is repaired field by field", () => {
+  const parsed = parseWorkingBuild({
+    composition: {
+      weapon: {
+        weaponId: "gogma-1",
+        customization: {
+          element: "plasma",
+          attackParts: 9,
+          affinityParts: "2",
+          elementInfusion: "yes",
+          reinforcements: [
+            { type: "attack", level: "EX" },
+            { type: "luck", level: "I" },
+            { type: "attack", level: "MAX" },
+          ],
+        },
+      },
+    },
+  });
+  expect(parsed.composition.weapon.customization).toEqual({
+    element: null,
+    attackParts: 3,
+    affinityParts: 0,
+    elementInfusion: false,
+    reinforcements: [{ type: "attack", level: "EX" }],
+  });
+  expect(parseWorkingBuild({ composition: { weapon: { weaponId: "w", customization: "x" } } }).composition.weapon.customization).toBeNull();
 });
 
 // ── Hunt target stored beside the draft ─────────────────────────────────────

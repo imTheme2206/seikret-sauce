@@ -44,6 +44,16 @@ by type first, then by item (grouped by rarity). Carries base raw (and in-game d
 element/status specials, sharpness (melee only), weapon-type decoration slots, ordinary weapon skills, and
 type-specific data. Distinct from the **weapon bonus** pair below (backend ADR-0013).
 
+**Artian customization**:
+The in-game configuration of an Artian or Gogma Artian **Weapon** (catalog rows whose `artian` field is set, backend
+ADR-0014): element, the Artian bonus of each forged part, element infusion and up to five reinforcements (levels
+I/II/III/EX on a Gogma Artian), edited in the panel under the weapon row (`artian-customization-panel.tsx`). The
+weapon's effective damage, affinity and element are derived by `artian.ts` from the catalog row, that configuration and
+the rules table served by `/api/mh-wilds/artian-rules` (the numbers are never restated in the frontend), and are what
+the calculator, the snapshot and the saved Build carry. A Gogma Artian's rolled Set and Group Bonus are chosen in
+the same panel and count +1 toward their bonuses; no other weapon carries a bonus, so the standalone bonus row only
+remains for a bonus-only (legacy or optimizer-imported) selection.
+
 **Target**:
 The monster (and optionally one of its parts) the hunter is preparing for, chosen on `/monsters` from the catalog served by `/api/mh-wilds/monsters` (backend ADR-0015). It is persisted beside the **Working Build** draft in `working-build.ts` but is never part of a Saved Build; `useSelectedTarget()` resolves it to live catalog data. A hitzone multiplier of 0.45 or more for the selected damage type is a **weak point**.
 

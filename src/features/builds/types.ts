@@ -28,6 +28,10 @@ export type Decoration = JsonResponse<
 >[number];
 export type Weapon = JsonResponse<"/api/mh-wilds/weapons", "get">[number];
 export type WeaponKind = Weapon["kind"];
+/** Non-null on Artian / Gogma Artian catalog rows (backend ADR-0014). */
+export type WeaponArtian = NonNullable<Weapon["artian"]>;
+/** The version-tagged Artian rules table every derived stat is computed from. */
+export type ArtianRules = JsonResponse<"/api/mh-wilds/artian-rules", "get">;
 export type SkillCatalog = SkillCatalogResponse;
 export type BuildSummary = JsonResponse<"/api/mh-wilds/builds", "get">[number];
 export type SharedBuildPage = JsonResponse<
@@ -111,8 +115,67 @@ export type TalismanSource = "custom" | "scraped";
 export type EditorWeaponSelection = {
   weaponId: string | null;
   decorations: DecorationAssignment[];
+  /** A Gogma Artian's rolled bonuses; `null` everywhere else (backend ADR-0014). */
   setBonusId: string | null;
   groupBonusId: string | null;
+  /** Artian / Gogma Artian configuration; `null` until the hunter sets something. */
+  customization: ArtianCustomization | null;
+};
+
+export type ArtianElement =
+  | "fire"
+  | "water"
+  | "thunder"
+  | "ice"
+  | "dragon"
+  | "poison"
+  | "paralysis"
+  | "sleep"
+  | "blast";
+export type ArtianReinforcementType =
+  | "attack"
+  | "affinity"
+  | "element"
+  | "sharpness"
+  | "ammo";
+export type ArtianReinforcementLevel = "I" | "II" | "III" | "EX";
+export type ArtianReinforcement = {
+  type: ArtianReinforcementType;
+  level: ArtianReinforcementLevel;
+};
+
+/**
+ * What the hunter configures on an Artian / Gogma Artian weapon. `attackParts`
+ * and `affinityParts` count the forged parts carrying each Artian bonus (three
+ * parts in total at most); `elementInfusion` is the bonus for three matching parts.
+ */
+export type ArtianCustomization = {
+  element: ArtianElement | null;
+  attackParts: number;
+  affinityParts: number;
+  elementInfusion: boolean;
+  reinforcements: ArtianReinforcement[];
+};
+
+/** What the editor's Artian panel renders for the equipped weapon. */
+export type EditorArtianPanel = {
+  family: WeaponArtian["family"];
+  tier: WeaponArtian["tier"];
+  focus: WeaponArtian["focus"];
+  config: ArtianCustomization;
+  /** Elements the weapon kind can take. */
+  elements: ArtianElement[];
+  /** Reinforcement types this weapon can currently roll. */
+  reinforcementTypes: ArtianReinforcementType[];
+  /** Levels available per reinforcement type. */
+  levels: Record<ArtianReinforcementType, ArtianReinforcementLevel[]>;
+  maxReinforcements: number;
+  /** Whether an element infusion exists for the chosen kind and element. */
+  canInfuse: boolean;
+  sharpnessBonus: number;
+  ammoBonus: number;
+  /** First rule the configuration breaks, as a sentence; `null` when valid. */
+  issue: string | null;
 };
 
 /** In-progress editor state; becomes a `CreateBuildBody` on save. */
@@ -219,8 +282,13 @@ export type EditorWeaponRow = {
   value: string;
   /** Weapons of `kind` bucketed by rarity; empty until a type is chosen. */
   groups: GearOptionGroup[];
-  /** The equipped weapon, when the draft's id resolves in the catalog. */
+  /**
+   * The equipped weapon with its *effective* stats: the catalog row, or for a
+   * configured Artian / Gogma Artian the values derived from its configuration.
+   */
   weapon: Weapon | null;
+  /** Artian customization state; `null` unless the equipped weapon is Artian-family. */
+  artian: EditorArtianPanel | null;
   /** The weapon's decoration slots (weapon-typed), empty when no weapon is equipped. */
   slots: EditorSlot[];
 };
