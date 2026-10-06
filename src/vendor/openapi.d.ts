@@ -305,6 +305,28 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/custom-weapons": {
+        parameters: { query?: never; header?: never; path?: never; cookie?: never; };
+        get: operations["getApiCustomWeapons"];
+        put?: never;
+        post: operations["postApiCustomWeapons"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/custom-weapons/{id}": {
+        parameters: { query?: never; header?: never; path: { id: string; }; cookie?: never; };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete: operations["deleteApiCustomWeaponsById"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -3556,6 +3578,21 @@ export interface operations {
             };
             cookie?: never;
         };
+        requestBody?: never;
+        responses: never;
+    };
+    getApiCustomWeapons: {
+        parameters: { query?: never; header?: never; path?: never; cookie?: never; };
+        requestBody?: never;
+        responses: { 200: { content: { "application/json": import("@/features/custom-weapons/types").CustomWeapon[] } } };
+    };
+    postApiCustomWeapons: {
+        parameters: { query?: never; header?: never; path?: never; cookie?: never; };
+        requestBody: { content: { "application/json": import("@/features/custom-weapons/types").CreateCustomWeaponInput } };
+        responses: { 200: { content: { "application/json": import("@/features/custom-weapons/types").CustomWeapon } } };
+    };
+    deleteApiCustomWeaponsById: {
+        parameters: { query?: never; header?: never; path: { id: string; }; cookie?: never; };
         requestBody?: never;
         responses: never;
     };

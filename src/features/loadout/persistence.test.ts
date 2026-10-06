@@ -1,5 +1,4 @@
 import { describe, expect, test } from "bun:test";
-import { EMPTY_WEAPON_SELECTION } from "@/features/builds/weapon-selection";
 import type { OptimizerParams } from "./persistence";
 import { DEFAULT_OPTIMIZER_PARAMS, parseOptimizerParams } from "./persistence";
 
@@ -16,19 +15,7 @@ describe("parseOptimizerParams", () => {
         },
       },
       rank: "low",
-      weapon: {
-        weaponId: "gogma-gs",
-        decorations: [],
-        setBonusId: "bn-set",
-        groupBonusId: "bn-group",
-        customization: {
-          element: "water",
-          attackParts: 1,
-          affinityParts: 2,
-          elementInfusion: false,
-          reinforcements: [{ type: "attack", level: "EX" }],
-        },
-      },
+      weaponSkills: { set: "Rey Dau's Voltage", group: "The Wind's Embrace" },
     };
 
     expect(parseOptimizerParams(JSON.parse(JSON.stringify(params)))).toEqual(params);
@@ -63,68 +50,31 @@ describe("parseOptimizerParams", () => {
     expect(parsed.selected.Guard?.level).toBe(1);
   });
 
-  test("rejects an unknown rank and a malformed weapon", () => {
-    const parsed = parseOptimizerParams({ rank: "godlike", weapon: { weaponId: 7 } });
+  test("keeps Set/Group selections and drops malformed weapon objects", () => {
+    const parsed = parseOptimizerParams({
+      rank: "godlike",
+      weapon: { weaponId: "old-catalog-weapon" },
+      weaponSkills: { set: "Rey Dau's Voltage", group: 42 },
+    });
 
     expect(parsed.rank).toBe(DEFAULT_OPTIMIZER_PARAMS.rank);
-    expect(parsed.weapon).toEqual(EMPTY_WEAPON_SELECTION);
+    expect(parsed.weaponSkills).toEqual({ set: "Rey Dau's Voltage", group: null });
   });
 
-  test("migrates the legacy bonus-name weapon to no weapon, keeping skills and rank", () => {
+  test("migrates legacy bonus names to starting pieces", () => {
     const parsed = parseOptimizerParams({
       selected: {
         Attack: { name: "Attack", level: 2, maxLevel: 5, category: "armor", icon: null },
       },
       rank: "low",
-      weapon: { set: "Rey Dau", group: "Alpha" },
+      weapon: { set: "Rey Dau's Voltage", group: "The Wind's Embrace" },
     });
 
-    expect(parsed.weapon).toEqual(EMPTY_WEAPON_SELECTION);
+    expect(parsed.weaponSkills).toEqual({
+      set: "Rey Dau's Voltage",
+      group: "The Wind's Embrace",
+    });
     expect(parsed.rank).toBe("low");
     expect(parsed.selected.Attack?.level).toBe(2);
-  });
-
-  test("drops bonuses and customization that have no weapon, and weapon jewels", () => {
-    expect(
-      parseOptimizerParams({
-        weapon: {
-          weaponId: null,
-          setBonusId: "bn-set",
-          customization: { element: "fire", attackParts: 1 },
-        },
-      }).weapon,
-    ).toEqual(EMPTY_WEAPON_SELECTION);
-
-    const parsed = parseOptimizerParams({
-      weapon: {
-        weaponId: "gs-1",
-        decorations: [{ slotIndex: 0, decorationId: "deco" }],
-      },
-    });
-    expect(parsed.weapon.weaponId).toBe("gs-1");
-    expect(parsed.weapon.decorations).toEqual([]);
-  });
-
-  test("sanitises a corrupt stored customization", () => {
-    const parsed = parseOptimizerParams({
-      weapon: {
-        weaponId: "artian-gs",
-        customization: {
-          element: "plasma",
-          attackParts: 99,
-          affinityParts: "x",
-          elementInfusion: "yes",
-          reinforcements: [{ type: "attack", level: "EX" }, { type: "luck", level: "I" }],
-        },
-      },
-    });
-
-    expect(parsed.weapon.customization).toEqual({
-      element: null,
-      attackParts: 3,
-      affinityParts: 0,
-      elementInfusion: false,
-      reinforcements: [{ type: "attack", level: "EX" }],
-    });
   });
 });

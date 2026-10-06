@@ -1,5 +1,4 @@
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
@@ -28,8 +27,8 @@ import {
   type SkillRow,
 } from "@/features/damage";
 import { useSelectedTarget } from "@/features/monsters";
+import { MonsterTargetDialog } from "@/features/monsters/components/monster-target-dialog";
 import { partLabels } from "@/features/monsters/hitzone";
-import { Link } from "@tanstack/react-router";
 import { Crosshair } from "lucide-react";
 import { useMemo, useState } from "react";
 import type { HunterStatusSkill } from "../hunter-status";
@@ -68,14 +67,6 @@ const EmptyState = ({ weapon }: { weapon: boolean }) => (
         ? "Pick a target monster part to see effective damage against it."
         : "Equip a weapon to see its effective damage."}
     </Typography>
-    {weapon && (
-      <Button asChild variant="outline" size="sm">
-        <Link to="/monsters">
-          <Crosshair className="size-4" />
-          Choose a target on the Monsters page
-        </Link>
-      </Button>
-    )}
   </div>
 );
 
@@ -205,9 +196,12 @@ export const EfrPanelView = ({
             {target ? `${target.monsterName} - ${target.partLabel}` : "No target selected"}
           </Typography>
         </div>
-        <Badge variant="outline" title={`Retrieved ${RETRIEVED_AT}`}>
-          Game {GAME_VERSION}
-        </Badge>
+        <div className="flex items-center gap-2">
+          <MonsterTargetDialog />
+          <Badge variant="outline" title={`Retrieved ${RETRIEVED_AT}`}>
+            Game {GAME_VERSION}
+          </Badge>
+        </div>
       </div>
 
       {!weapon || !target ? (

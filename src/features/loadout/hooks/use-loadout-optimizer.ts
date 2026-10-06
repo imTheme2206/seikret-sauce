@@ -6,19 +6,6 @@
  */
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import type { WeaponCatalog } from "@/features/builds/hooks/use-catalog";
-import type {
-  ArtianCustomization,
-  WeaponKind,
-} from "@/features/builds/types";
-import { buildWeaponRowFor } from "@/features/builds/weapon-rows";
-import {
-  dropStrayBonuses,
-  equipWeapon,
-  weaponProblem as findWeaponProblem,
-  withWeaponBonus,
-  withWeaponCustomization,
-} from "@/features/builds/weapon-selection";
 import { CATEGORY_CONFIG, CATEGORY_ORDER, categoryOf } from "../config";
 import { loadOptimizerParams, saveOptimizerParams } from "../persistence";
 import type {
@@ -29,7 +16,6 @@ import type {
   SelectedSkillMap,
   SkillCategory,
 } from "../types";
-import { weaponSkillsOf } from "../weapon";
 import { useSearchSets } from "./use-search-sets";
 
 const EMPTY_SKILLS: GroupedSkills = {
@@ -64,17 +50,14 @@ const buildPool = (
 type UseLoadoutOptimizerArgs = {
   skills?: GroupedSkills;
   isLoadingSkills?: boolean;
-  /** Weapons, Artian rules and bonus names the equipped weapon is resolved against. */
-  weaponCatalog: WeaponCatalog;
 };
 
 export const useLoadoutOptimizer = ({
   skills = EMPTY_SKILLS,
   isLoadingSkills = false,
-  weaponCatalog,
 }: UseLoadoutOptimizerArgs) => {
   // Search params are restored from localStorage so a returning user keeps the
-  // skills / rank / weapon they last picked (see `../persistence`).
+  // skills, rank and starting Set/Group pieces they last picked.
   const [persisted] = useState(loadOptimizerParams);
 
   const [selected, setSelected] = useState<SelectedSkillMap>(persisted.selected);
@@ -82,18 +65,11 @@ export const useLoadoutOptimizer = ({
   const [activeTab, setActiveTab] = useState<SkillCategory>("armor");
   const [expanded, setExpanded] = useState<Set<number>>(new Set());
   const [rank, setRank] = useState<Rank>(persisted.rank);
-  // The equipped weapon (a catalog weapon, plus a Gogma Artian's rolled bonuses and any Artian
-  // configuration). Its Set/Group Bonuses are the search's Pre-owned Piece Count.
-  const [weapon, setWeaponSelection] = useState(persisted.weapon);
-  // Weapon type picked in the UI. Only matters while no weapon is equipped.
-  const [chosenWeaponKind, setChosenWeaponKind] = useState<WeaponKind | null>(
-    null,
-  );
-  const { weapons, artianRules, skillCatalog } = weaponCatalog;
+  const [weaponSkills, setWeaponSkills] = useState(persisted.weaponSkills);
 
   useEffect(() => {
-    saveOptimizerParams({ selected, rank, weapon });
-  }, [selected, rank, weapon]);
+    saveOptimizerParams({ selected, rank, weaponSkills });
+  }, [selected, rank, weaponSkills]);
 
   const { results, status, error, search } = useSearchSets();
   const isSearching = status === "searching";
@@ -133,54 +109,10 @@ export const useLoadoutOptimizer = ({
 
   const clearAll = useCallback(() => setSelected({}), []);
 
-  // ── Weapon ───────────────────────────────────────────────────────────────
-  // Saved state may name a weapon the catalog no longer has, or pair bonuses with a weapon that
-  // cannot carry them (only a Gogma Artian does); clean up once the catalog can say so.
-  useEffect(() => {
-    if (weapons.length === 0) return;
-    setWeaponSelection((current) => {
-      if (current.weaponId && !weapons.some((item) => item.id === current.weaponId)) {
-        return equipWeapon(current, "", weapons, artianRules);
-      }
-      return dropStrayBonuses(current, weapons);
-    });
-  }, [weapons, artianRules]);
-
-  /** Switching weapon type drops an equipped weapon of another type. */
-  const setWeaponKind = useCallback(
-    (kind: WeaponKind) => {
-      setChosenWeaponKind(kind);
-      setWeaponSelection((current) => {
-        const equipped = weapons.find((item) => item.id === current.weaponId);
-        return equipped && equipped.kind !== kind
-          ? equipWeapon(current, "", weapons, artianRules)
-          : current;
-      });
-    },
-    [weapons, artianRules],
-  );
-
-  /** Empty `weaponId` unequips the weapon. */
-  const setWeapon = useCallback(
-    (weaponId: string) =>
-      setWeaponSelection((current) =>
-        equipWeapon(current, weaponId, weapons, artianRules),
-      ),
-    [weapons, artianRules],
-  );
-
-  const setWeaponCustomization = useCallback(
-    (customization: ArtianCustomization) =>
-      setWeaponSelection((current) =>
-        withWeaponCustomization(current, customization),
-      ),
-    [],
-  );
-
-  /** Set (or clear, with `null`) a Gogma Artian's rolled Set or Group Bonus, by id. */
-  const setWeaponBonus = useCallback(
-    (kind: "setBonusId" | "groupBonusId", bonusId: string | null) =>
-      setWeaponSelection((current) => withWeaponBonus(current, kind, bonusId)),
+  // ── Weapon's starting Set/Group pieces ────────────────────────────────────
+  const setWeaponSkill = useCallback(
+    (kind: "set" | "group", name: string | null) =>
+      setWeaponSkills((current) => ({ ...current, [kind]: name })),
     [],
   );
 
@@ -194,18 +126,11 @@ export const useLoadoutOptimizer = ({
   }, []);
 
   // ── Search ────────────────────────────────────────────────────────────────
-  // The weapon's bonuses come from the catalog; searching before it loads would silently drop them.
-  const isWeaponPending = Boolean(weapon.weaponId) && weapons.length === 0;
-  const weaponSkills = useMemo(
-    () => weaponSkillsOf(weapon, weapons, skillCatalog?.response.bonuses ?? []),
-    [weapon, weapons, skillCatalog],
-  );
-
   const runSearch = useCallback(() => {
-    if (isSearching || isWeaponPending) return;
+    if (isSearching) return;
     setExpanded(new Set());
     void search(selected, rank, weaponSkills);
-  }, [search, selected, rank, weaponSkills, isSearching, isWeaponPending]);
+  }, [search, selected, rank, weaponSkills, isSearching]);
 
   // ── Derived view data ─────────────────────────────────────────────────────
   const pool = useMemo(
@@ -218,19 +143,11 @@ export const useLoadoutOptimizer = ({
     [selected],
   );
 
-  const weaponRow = useMemo(
-    () => buildWeaponRowFor(weapon, weapons, chosenWeaponKind, [], artianRules),
-    [weapon, weapons, chosenWeaponKind, artianRules],
-  );
-
-  // A Gogma Artian's rolled bonuses are picked from the shared bonus catalog.
+  // Search starting pieces use the same set/group skill names shown in the pool.
   const weaponBonusOptions = useMemo(
-    () => skillCatalog?.bonuses ?? { set: [], group: [] },
-    [skillCatalog],
+    () => ({ set: skills.setSkills, group: skills.groupSkills }),
+    [skills.setSkills, skills.groupSkills],
   );
-
-  /** A weapon rule the API would reject on save, as a sentence; `null` when fine. */
-  const weaponProblem = findWeaponProblem(weaponRow.artian, weapon);
 
   const requestedNames = useMemo(
     () => new Set(Object.keys(selected)),
@@ -238,7 +155,7 @@ export const useLoadoutOptimizer = ({
   );
 
   const selectedCount = selectedList.length;
-  const canSearch = selectedCount > 0 && !isSearching && !isWeaponPending;
+  const canSearch = selectedCount > 0 && !isSearching;
   const isSearchActive = searchQuery.trim().length > 0;
 
   return {
@@ -258,12 +175,8 @@ export const useLoadoutOptimizer = ({
     error,
     isSearching,
     rank,
-    weapon,
-    weaponRow,
     weaponSkills,
     weaponBonusOptions,
-    weaponProblem,
-    isLoadingWeapons: weaponCatalog.isLoading,
     canSearch,
     // actions
     setSearchQuery,
@@ -275,10 +188,7 @@ export const useLoadoutOptimizer = ({
     toggleExpand,
     runSearch,
     setRank,
-    setWeaponKind,
-    setWeapon,
-    setWeaponCustomization,
-    setWeaponBonus,
+    setWeaponSkill,
   };
 };
 

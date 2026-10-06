@@ -1,4 +1,5 @@
 import { useTalismans } from "@/features/talismans/hooks/use-talismans";
+import { useCustomWeapons } from "@/features/custom-weapons/hooks/use-custom-weapons";
 import { toast } from "@/hooks/use-toast";
 import { useBlocker, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -48,6 +49,7 @@ export const useBuildEditor = (buildId?: string) => {
   const navigate = useNavigate();
   const catalog = useCatalog();
   const talismans = useTalismans();
+  const customWeapons = useCustomWeapons();
   const existing = useSavedBuild(buildId);
   const { createBuild, replaceBuild } = useBuildApi();
 
@@ -195,6 +197,27 @@ export const useBuildEditor = (buildId?: string) => {
         ),
       },
     }));
+
+  /** Copy a saved Artian roll into this build as a snapshot. */
+  const setSavedWeapon = (savedWeaponId: string) => {
+    const saved = customWeapons.weapons.find((weapon) => weapon.id === savedWeaponId);
+    if (!saved) return;
+    const base = catalog.weapons.find((weapon) => weapon.id === saved.weaponId);
+    if (base) setChosenWeaponKind(base.kind);
+    setDraft((current) => ({
+      ...current,
+      composition: {
+        ...current.composition,
+        weapon: {
+          weaponId: saved.weaponId,
+          decorations: [],
+          setBonusId: saved.setBonusId,
+          groupBonusId: saved.groupBonusId,
+          customization: saved.customization,
+        },
+      },
+    }));
+  };
 
   /** Replace the Artian / Gogma Artian configuration of the equipped weapon. */
   const setWeaponCustomization = (customization: ArtianCustomization) =>
@@ -408,12 +431,18 @@ export const useBuildEditor = (buildId?: string) => {
     isLoadingBuild: Boolean(buildId) && existing.isLoading,
     loadError: buildId ? existing.error : null,
     bonusOptions,
+    savedWeapons: customWeapons.weapons,
+    isLoadingSavedWeapons: customWeapons.isLoading,
+    excludedWeaponIds: catalog.weapons.filter((weapon) => weapon.artian).map((weapon) => weapon.id),
+    weaponCatalog: catalog.weapons,
+    artianRules: catalog.artianRules,
     patchDraft,
     selectGear,
     assignDecoration,
     setWeaponBonus,
     setWeaponKind,
     setWeapon,
+    setSavedWeapon,
     setWeaponCustomization,
     assignWeaponDecoration,
     setHasRevisionConflict,

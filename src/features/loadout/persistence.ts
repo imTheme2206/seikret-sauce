@@ -1,6 +1,6 @@
 /**
- * Persists the optimizer's *search parameters* (selected skills, rank, equipped
- * weapon) to localStorage so a returning user does not have to re-pick
+ * Persists the optimizer's *search parameters* (selected skills, rank, starting
+ * Set/Group pieces) to localStorage so a returning user does not have to re-pick
  * them every visit.
  *
  * Deliberately excludes transient UI state (search query, active tab, expanded
@@ -12,15 +12,13 @@
  * to "empty selection" instead of breaking the page.
  */
 
-import { EMPTY_WEAPON_SELECTION } from "@/features/builds/weapon-selection";
-import { parseWeaponSelection } from "@/features/builds/working-build";
-import type { EditorWeaponSelection } from "@/features/builds/types";
 import { CATEGORY_CONFIG } from "./config";
 import type {
   Rank,
   SelectedSkill,
   SelectedSkillMap,
   SkillCategory,
+  WeaponSkills,
 } from "./types";
 
 /** Bump the suffix when the persisted shape changes incompatibly. */
@@ -31,13 +29,13 @@ const RANKS: Rank[] = ["low", "high", "master"];
 export type OptimizerParams = {
   selected: SelectedSkillMap;
   rank: Rank;
-  weapon: EditorWeaponSelection;
+  weaponSkills: WeaponSkills;
 };
 
 export const DEFAULT_OPTIMIZER_PARAMS: OptimizerParams = {
   selected: {},
   rank: "high",
-  weapon: EMPTY_WEAPON_SELECTION,
+  weaponSkills: { set: null, group: null },
 };
 
 const isRecord = (value: unknown): value is Record<string, unknown> => {
@@ -78,15 +76,12 @@ const parseSelected = (raw: unknown): SelectedSkillMap => {
   return selected;
 };
 
-/**
- * Entries written before the optimizer equipped real weapons stored bare bonus names
- * (`{ set, group }`). Those cannot be mapped to a weapon, so they parse to "no weapon";
- * the skills and rank stored beside them are kept. A bonus or configuration without a
- * weapon is meaningless (only a Gogma Artian carries bonuses) and is dropped too.
- */
-const parseWeapon = (raw: unknown): EditorWeaponSelection => {
-  const weapon = parseWeaponSelection(raw);
-  return weapon.weaponId ? { ...weapon, decorations: [] } : EMPTY_WEAPON_SELECTION;
+const parseWeaponSkills = (raw: unknown): WeaponSkills => {
+  if (!isRecord(raw)) return DEFAULT_OPTIMIZER_PARAMS.weaponSkills;
+  return {
+    set: typeof raw.set === "string" ? raw.set : null,
+    group: typeof raw.group === "string" ? raw.group : null,
+  };
 };
 
 /** Coerce arbitrary stored JSON into a usable params object. */
@@ -98,7 +93,9 @@ export const parseOptimizerParams = (raw: unknown): OptimizerParams => {
   return {
     selected: parseSelected(raw.selected),
     rank,
-    weapon: parseWeapon(raw.weapon),
+    // Supports the current shape and the earlier bare `{ weapon: { set, group } }`
+    // shape. Equipped weapon objects from the previous release safely parse empty.
+    weaponSkills: parseWeaponSkills(raw.weaponSkills ?? raw.weapon ?? raw),
   };
 };
 

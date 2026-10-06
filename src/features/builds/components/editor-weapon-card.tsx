@@ -15,23 +15,13 @@ import type {
   DecorationAssignment,
   EditorWeaponRow,
   EditorWeaponSelection,
-  Weapon,
   WeaponKind,
 } from "../types";
-import {
-  formatAffinity,
-  formatDamage,
-  formatSpecial,
-  titleCase,
-} from "../weapon-rows";
 import { ArtianCustomizationPanel } from "./artian-customization-panel";
 import { DecorationSlotGrid } from "./decoration-slot-grid";
 import { GearPicker } from "./gear-picker";
-import { GearSkillLine } from "./gear-skill-line";
 import { HunterPanel } from "./hunter-panel";
 import { RarityPips } from "./rarity-pips";
-import { SharpnessBar } from "./sharpness-bar";
-import { SlotPips } from "./slot-pips";
 import type { BonusOption } from "./weapon-bonus-row";
 
 type EditorWeaponCardProps = {
@@ -46,6 +36,12 @@ type EditorWeaponCardProps = {
   onDecoration?: (assignment: DecorationAssignment) => void;
   /** Stack the weapon picker above its stats at any width, for narrow containers. */
   compact?: boolean;
+  /** The forge page edits rolls; build editors apply saved rolls as presets. */
+  customizationEditable?: boolean;
+  /** Artian bases must enter the build through the saved weapon preset picker. */
+  excludedWeaponIds?: string[];
+  /** Saved preset name when the equipped build snapshot matches a preset. */
+  selectedName?: string;
   onCustomize: (config: ArtianCustomization) => void;
   onBonus: (kind: "setBonusId" | "groupBonusId", bonusId: string | null) => void;
 };
@@ -68,108 +64,7 @@ const WeaponImage = ({
   );
 };
 
-type StatProps = {
-  label: string;
-  children: React.ReactNode;
-};
-
-const Stat = ({ label, children }: StatProps) => (
-  <div className="min-w-0">
-    <Typography as="dt" className="text-xs text-muted-foreground">
-      {label}
-    </Typography>
-    <Typography as="dd" className="mt-0.5 text-sm font-medium tabular-nums">
-      {children}
-    </Typography>
-  </div>
-);
-
-type WeaponStatsProps = {
-  weapon: Weapon;
-  slots: EditorWeaponRow["slots"];
-  customization: React.ReactNode;
-  onDecoration?: (assignment: DecorationAssignment) => void;
-};
-
-const WeaponStats = ({
-  weapon,
-  slots,
-  customization,
-  onDecoration,
-}: WeaponStatsProps) => (
-  <div className="min-w-0 space-y-4 p-4 sm:p-5">
-    <section aria-label="Weapon stats">
-      <dl className="grid grid-cols-2 gap-x-4 gap-y-3 sm:grid-cols-3">
-        <Stat label="Raw (display)">{formatDamage(weapon)}</Stat>
-        <Stat label="Affinity">{formatAffinity(weapon.affinity)}</Stat>
-        <Stat label="Element / status">
-          {weapon.specials.length > 0
-            ? weapon.specials.map(formatSpecial).join(", ")
-            : "None"}
-        </Stat>
-        {weapon.elderseal && (
-          <Stat label="Elderseal">{titleCase(weapon.elderseal)}</Stat>
-        )}
-        {weapon.defenseBonus > 0 && (
-          <Stat label="Defense bonus">+{weapon.defenseBonus}</Stat>
-        )}
-        {weapon.series && <Stat label="Series">{weapon.series}</Stat>}
-      </dl>
-    </section>
-
-    {weapon.sharpness && (
-      <section aria-label="Sharpness" className="space-y-1.5">
-        <Typography as="h3" className="text-sm font-semibold text-foreground">
-          Sharpness
-        </Typography>
-        <SharpnessBar sharpness={weapon.sharpness} />
-      </section>
-    )}
-
-    {customization}
-
-    <section
-      aria-label="Weapon decoration slots"
-      className="border-t border-border pt-4"
-    >
-      <Typography
-        as="h3"
-        className="mb-3 text-sm font-semibold text-foreground"
-      >
-        Decoration slots
-      </Typography>
-      {slots.length > 0 && onDecoration ? (
-        <DecorationSlotGrid
-          slots={slots}
-          label="Weapon"
-          onDecoration={onDecoration}
-        />
-      ) : (
-        <SlotPips slots={weapon.slots} />
-      )}
-    </section>
-
-    <section aria-label="Weapon skills" className="border-t border-border pt-4">
-      <Typography as="h3" className="text-sm font-semibold text-foreground">
-        Weapon skills
-      </Typography>
-      {weapon.skills.length > 0 ? (
-        <GearSkillLine
-          skills={weapon.skills}
-          bonuses={[]}
-          stacked
-          className="mt-2"
-        />
-      ) : (
-        <Typography className="mt-2 text-sm text-muted-foreground">
-          No skills on this weapon.
-        </Typography>
-      )}
-    </section>
-  </div>
-);
-
-/** The weapon row: pick a weapon type, then a weapon of that type, and see its stats (customizable for Artian weapons). */
+/** The weapon row: choose a weapon, then manage its build settings and decorations. */
 export const EditorWeaponCard = ({
   row,
   selection,
@@ -179,10 +74,24 @@ export const EditorWeaponCard = ({
   onSelect,
   onDecoration,
   compact = false,
+  customizationEditable = true,
+  excludedWeaponIds = [],
+  selectedName,
   onCustomize,
   onBonus,
 }: EditorWeaponCardProps) => {
   const { weapon } = row;
+  const excluded = new Set(excludedWeaponIds);
+  const selectableGroups = row.groups
+    .map((group) => ({
+      ...group,
+      options: group.options.filter(
+        (option) =>
+          !excluded.has(option.id) ||
+          (option.id === weapon?.id && row.value === option.id),
+      ),
+    }))
+    .filter((group) => group.options.length > 0);
   const kindLabel = row.kind ? weaponKindConfig(row.kind).label : "weapon";
 
   const trigger = (
@@ -204,7 +113,7 @@ export const EditorWeaponCard = ({
           as="span"
           className="block break-words text-sm font-semibold leading-snug text-foreground"
         >
-          {weapon?.name ?? `No ${kindLabel.toLowerCase()} equipped`}
+          {selectedName ?? weapon?.name ?? `No ${kindLabel.toLowerCase()} equipped`}
         </Typography>
         {weapon && (
           <span className="mt-1.5 block">
@@ -264,7 +173,7 @@ export const EditorWeaponCard = ({
         {row.kind ? (
           <GearPicker
             value={row.value}
-            groups={row.groups}
+            groups={selectableGroups}
             placeholder={`Select ${kindLabel.toLowerCase()}`}
             emptyLabel="Unequip weapon"
             searchPlaceholder={`Search ${kindLabel.toLowerCase()}, skill or element…`}
@@ -287,24 +196,35 @@ export const EditorWeaponCard = ({
       </div>
 
       {weapon && (
-        <WeaponStats
-          weapon={weapon}
-          slots={row.slots}
-          customization={
-            row.artian && (
-              <ArtianCustomizationPanel
-                panel={row.artian}
-                setBonusId={selection.setBonusId}
-                groupBonusId={selection.groupBonusId}
-                setBonusOptions={setBonusOptions}
-                groupBonusOptions={groupBonusOptions}
-                onChange={onCustomize}
-                onBonus={onBonus}
+        <div className="min-w-0 space-y-4 p-4 sm:p-5">
+          {row.artian && customizationEditable && (
+            <ArtianCustomizationPanel
+              panel={row.artian}
+              setBonusId={selection.setBonusId}
+              groupBonusId={selection.groupBonusId}
+              setBonusOptions={setBonusOptions}
+              groupBonusOptions={groupBonusOptions}
+              onChange={onCustomize}
+              onBonus={onBonus}
+            />
+          )}
+          <section aria-label="Weapon decoration slots">
+            <Typography as="h3" className="mb-3 text-sm font-semibold text-foreground">
+              Decoration slots
+            </Typography>
+            {onDecoration ? (
+              <DecorationSlotGrid
+                slots={row.slots}
+                label="Weapon"
+                onDecoration={onDecoration}
               />
-            )
-          }
-          onDecoration={onDecoration}
-        />
+            ) : (
+              <Typography className="text-sm text-muted-foreground">
+                {row.slots.length} available slots
+              </Typography>
+            )}
+          </section>
+        </div>
       )}
     </HunterPanel>
   );

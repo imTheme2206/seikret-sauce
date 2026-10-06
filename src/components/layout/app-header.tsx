@@ -7,6 +7,7 @@ import { ChevronDown } from "lucide-react";
 const NAV_LINKS = [
   { to: "/optimizer", label: "Loadout Optimizer", shortLabel: "Optimizer" },
   { to: "/talismans", label: "My Talismans", shortLabel: "Talismans" },
+  { to: "/custom-weapons", label: "My Weapons", shortLabel: "Weapons" },
   { to: "/monsters", label: "Monsters", shortLabel: "Monsters" },
 ] as const;
 
@@ -21,8 +22,7 @@ export const AppHeader = () => {
         <span className="hidden font-display text-base font-bold tracking-[0.12em] sm:inline">SEIKRET SAUCE</span>
       </Link>
 
-      {/* Equal-width tabs: fixed columns from `sm`, equal fractions of the free space below it. */}
-      <nav aria-label="Primary navigation" className="grid h-full min-w-0 flex-1 grid-cols-4 items-stretch sm:ml-5 sm:flex-none sm:grid-cols-[repeat(4,10rem)]">
+      <nav aria-label="Primary navigation" className="grid h-full min-w-0 flex-1 grid-cols-5 items-stretch overflow-x-auto sm:ml-5 sm:grid-cols-[repeat(5,minmax(7rem,1fr))]">
         {NAV_LINKS.map((link) => (
           <Link
             key={link.to}

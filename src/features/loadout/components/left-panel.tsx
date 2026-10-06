@@ -39,7 +39,7 @@ export const LeftPanel = ({ controller, className }: LeftPanelProps) => {
           disabled={c.isSearching}
         />
 
-        <WeaponSelector controller={c} compact disabled={c.isSearching} />
+        <WeaponSelector controller={c} disabled={c.isSearching} />
       </div>
 
       <div className="flex min-h-0 flex-1 flex-col px-5 pt-4">

@@ -29,7 +29,14 @@ import {
   Share2,
   Sparkles,
 } from "lucide-react";
+import { Link } from "@tanstack/react-router";
 import { useEffect, useRef } from "react";
+import {
+  matchingSavedWeapon,
+  savedWeaponIdFromOptionValue,
+  savedWeaponOptionValue,
+  savedWeaponPickerGroups,
+} from "@/features/custom-weapons/picker-options";
 import { ScreenError, ScreenLoader } from "../components/builds-states";
 import { EditorGearRowCard } from "../components/editor-gear-row";
 import { EditorWeaponCard } from "../components/editor-weapon-card";
@@ -47,6 +54,26 @@ import {
 /** `/builds/new` and `/builds/$buildId/edit`. */
 export const BuildEditorPage = ({ buildId }: { buildId?: string }) => {
   const controller = useBuildEditor(buildId);
+  const currentWeapon = controller.draft.composition.weapon;
+  const selectedSavedWeapon = matchingSavedWeapon(
+    currentWeapon,
+    controller.savedWeapons,
+  );
+  const weaponPickerRow = {
+    ...controller.weaponRow,
+    value: selectedSavedWeapon
+      ? savedWeaponOptionValue(selectedSavedWeapon.id)
+      : controller.weaponRow.value,
+    groups: [
+      ...controller.weaponRow.groups,
+      ...savedWeaponPickerGroups(
+        controller.savedWeapons,
+        controller.weaponCatalog,
+        controller.weaponRow.kind,
+        controller.artianRules,
+      ),
+    ],
+  };
   const nameInputRef = useRef<HTMLInputElement>(null);
   const equipmentErrorRef = useRef<HTMLParagraphElement>(null);
 
@@ -120,16 +147,28 @@ export const BuildEditorPage = ({ buildId }: { buildId?: string }) => {
                   />
                 ))}
                 <EditorWeaponCard
-                  row={controller.weaponRow}
+                  row={weaponPickerRow}
                   selection={controller.draft.composition.weapon}
+                  customizationEditable={false}
+                  excludedWeaponIds={controller.excludedWeaponIds}
+                  selectedName={selectedSavedWeapon?.name}
                   setBonusOptions={controller.bonusOptions.set}
                   groupBonusOptions={controller.bonusOptions.group}
                   onKindChange={controller.setWeaponKind}
-                  onSelect={controller.setWeapon}
+                  onSelect={(value) => {
+                    const savedWeaponId = savedWeaponIdFromOptionValue(value);
+                    if (savedWeaponId) controller.setSavedWeapon(savedWeaponId);
+                    else controller.setWeapon(value);
+                  }}
                   onDecoration={controller.assignWeaponDecoration}
                   onCustomize={controller.setWeaponCustomization}
                   onBonus={controller.setWeaponBonus}
                 />
+                {controller.weaponRow.artian && (
+                  <Typography className="px-1 text-xs text-muted-foreground">
+                    This Artian roll is saved in this build as a snapshot. To apply a different saved roll, choose it above; saved weapons can be managed in <Link to="/custom-weapons" className="font-medium text-primary underline-offset-4 hover:underline">My Weapons</Link>.
+                  </Typography>
+                )}
                 {/* Bonuses now belong to a Gogma Artian's panel; the row only serves a bonus-only selection. */}
                 {!controller.draft.composition.weapon.weaponId &&
                   (controller.draft.composition.weapon.setBonusId ||
@@ -155,6 +194,7 @@ export const BuildEditorPage = ({ buildId }: { buildId?: string }) => {
             <HunterStatusPanel
               status={controller.hunterStatus}
               subtitle="Live equipment totals"
+              weapon={controller.weaponRow.weapon}
             />
           </aside>
         </main>
@@ -489,6 +529,7 @@ const MobileBuildSummary = ({
         <HunterStatusPanel
           status={controller.hunterStatus}
           subtitle="Live equipment totals"
+          weapon={controller.weaponRow.weapon}
           className="border-0"
         />
       </CollapsibleContent>

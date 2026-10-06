@@ -32,12 +32,9 @@ export type SelectedSkill = {
 export type SelectedSkillMap = Record<string, SelectedSkill>;
 
 /**
- * The Set and/or Group Skill names an equipped weapon contributes a Pre-owned Piece
- * toward. They are *derived* from the equipped weapon (only a Gogma Artian carries
- * bonuses, see `weapon.ts`), never stored. The two are tracked independently — a
- * weapon may carry a Set Skill, a Group Skill, both, or neither (see CONTEXT.md).
- * Each contributes one piece, feeding `initialSetCounts`/`initialGroupCounts`.
- * `null` means none of that kind.
+ * Set/Group Skill pieces the user asks search to count as already owned on their
+ * weapon. Each contributes one piece through `initialSetCounts` or
+ * `initialGroupCounts`; `null` means no starting piece of that kind.
  */
 export type WeaponSkills = {
   set: string | null;

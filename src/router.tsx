@@ -7,6 +7,7 @@ import { HomePage } from "./features/home";
 import { LoadoutOptimizer } from "./features/loadout";
 import { MonstersPage } from "./features/monsters";
 import { TalismansTab } from "./features/talismans";
+import { CustomWeaponsPage } from "./features/custom-weapons";
 import {
   BuildDetailPage,
   BuildEditorPage,
@@ -51,6 +52,12 @@ const talismansRoute = createRoute({
   getParentRoute: () => pageLayoutRoute,
   path: "/talismans",
   component: TalismansTab,
+});
+
+const customWeaponsRoute = createRoute({
+  getParentRoute: () => pageLayoutRoute,
+  path: "/custom-weapons",
+  component: CustomWeaponsPage,
 });
 
 const monstersRoute = createRoute({
@@ -100,6 +107,7 @@ const routeTree = rootRoute.addChildren([
   pageLayoutRoute.addChildren([
     indexRoute,
     talismansRoute,
+    customWeaponsRoute,
     monstersRoute,
     buildsRoute,
     sharedBuildsRoute,

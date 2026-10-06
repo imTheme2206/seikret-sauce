@@ -1,16 +1,8 @@
-import { expect, mock, test } from "bun:test";
+import { expect, test } from "bun:test";
 import { renderToStaticMarkup } from "react-dom/server";
 import type { Weapon } from "../types";
 import type { HunterStatusSkill } from "../hunter-status";
 
-// Link needs a router; the panel only uses it for a plain anchor to /monsters.
-const realRouter = await import("@tanstack/react-router");
-mock.module("@tanstack/react-router", () => ({
-  ...realRouter,
-  Link: ({ to, children }: { to: string; children: React.ReactNode }) => (
-    <a href={to}>{children}</a>
-  ),
-}));
 const { EfrPanelView } = await import("./efr-panel");
 
 const weapon = {
@@ -55,10 +47,11 @@ test("without a weapon it shows an empty state and no numbers", () => {
   expect(html).not.toContain("Effective raw");
 });
 
-test("without a target part it links to the Monsters page", () => {
+test("without a target part it offers an in-place target picker", () => {
   const html = render({ target: null });
   expect(html).toContain("Pick a target monster part");
-  expect(html).toContain('href="/monsters"');
+  expect(html).toContain("Choose target");
+  expect(html).not.toContain('href="/monsters"');
   expect(html).not.toContain("Effective raw");
 });
 
