@@ -1,4 +1,3 @@
-import { Swords } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -7,8 +6,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Typography } from "@/components/ui/typography";
-import { HunterPanel } from "./hunter-panel";
+import { Swords } from "lucide-react";
 import type { EditorWeaponSelection, SkillCatalog } from "../types";
+import { HunterPanel } from "./hunter-panel";
 
 /** Sentinel for "none" — Radix Select forbids an empty-string item value. */
 const NONE = "__none__";
@@ -19,7 +19,10 @@ type WeaponBonusRowProps = {
   value: EditorWeaponSelection;
   setBonusOptions: BonusOption[];
   groupBonusOptions: BonusOption[];
-  onChange: (kind: "setBonusId" | "groupBonusId", bonusId: string | null) => void;
+  onChange: (
+    kind: "setBonusId" | "groupBonusId",
+    bonusId: string | null,
+  ) => void;
 };
 
 /** One labelled Select for a single kind of weapon bonus contribution, by id. */

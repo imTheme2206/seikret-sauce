@@ -139,6 +139,9 @@ export const BuildCard = ({
         <section className="border-b border-border p-5 lg:border-r lg:border-b-0">
           <PanelHeading icon={Swords}>Complete equipment set</PanelHeading>
           <div className="grid gap-px overflow-hidden border border-border bg-border sm:grid-cols-2">
+            <EquippedWeaponCell
+              weapon={build.composition.positions.weapon}
+            />
             {POSITION_KEYS.map((position) => {
               const piece = build.composition.positions[position];
               const rarity =
@@ -197,9 +200,6 @@ export const BuildCard = ({
                 </div>
               );
             })}
-            <EquippedWeaponCell
-              weapon={build.composition.positions.weapon}
-            />
           </div>
         </section>
 

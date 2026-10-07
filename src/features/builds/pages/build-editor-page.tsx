@@ -110,7 +110,7 @@ export const BuildEditorPage = ({ buildId }: { buildId?: string }) => {
       <ScreenError
         icon={FileQuestion}
         title="Could not open this equipment record"
-        body="It may have been deleted, or the link may be incomplete."
+        body="The saved build or equipment catalog is unavailable. Try again later."
       />
     );
   }
@@ -134,18 +134,6 @@ export const BuildEditorPage = ({ buildId }: { buildId?: string }) => {
             <section aria-labelledby="equipment-heading">
               <EquipmentHeading controller={controller} errorRef={equipmentErrorRef} />
               <div className="grid gap-3">
-                {controller.rows.map((row) => (
-                  <EditorGearRowCard
-                    key={row.position}
-                    row={row}
-                    onSelect={(value) =>
-                      controller.selectGear(row.position, value)
-                    }
-                    onDecoration={(assignment) =>
-                      controller.assignDecoration(row.position, assignment)
-                    }
-                  />
-                ))}
                 <EditorWeaponCard
                   row={weaponPickerRow}
                   selection={controller.draft.composition.weapon}
@@ -180,6 +168,18 @@ export const BuildEditorPage = ({ buildId }: { buildId?: string }) => {
                       onChange={controller.setWeaponBonus}
                     />
                   )}
+                {controller.rows.map((row) => (
+                  <EditorGearRowCard
+                    key={row.position}
+                    row={row}
+                    onSelect={(value) =>
+                      controller.selectGear(row.position, value)
+                    }
+                    onDecoration={(assignment) =>
+                      controller.assignDecoration(row.position, assignment)
+                    }
+                  />
+                ))}
               </div>
             </section>
 

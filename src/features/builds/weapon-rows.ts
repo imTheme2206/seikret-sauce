@@ -6,7 +6,6 @@
 
 import { buildArtianPanel, effectiveWeapon } from "./artian";
 import { gearKeywords, groupBy, toEditorSlots } from "./gear-rows";
-import { toWeaponSlots } from "./utils";
 import type {
   ArtianRules,
   BuildDraft,
@@ -18,6 +17,7 @@ import type {
   Weapon,
   WeaponKind,
 } from "./types";
+import { toWeaponSlots } from "./utils";
 
 /** "thunder" -> "Thunder", "sleep-gas" -> "Sleep Gas". */
 export const titleCase = (value: string): string =>
@@ -33,7 +33,7 @@ export const formatAffinity = (affinity: number): string =>
 
 /** "Thunder 150" / "Paralysis 100 (hidden)"; display damage, as the game shows it. */
 export const formatSpecial = (special: Weapon["specials"][number]): string =>
-  `${titleCase(special.name)} ${special.damage.display}${special.hidden ? " (hidden)" : ""}`;
+  `${special.damage.display}${special.hidden ? " (hidden)" : ""}`;
 
 /** Raw damage with the in-game display value, e.g. `140 (462)`. */
 export const formatDamage = (weapon: Weapon): string =>

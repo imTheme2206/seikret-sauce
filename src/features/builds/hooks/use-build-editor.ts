@@ -77,13 +77,18 @@ export const useBuildEditor = (buildId?: string) => {
   }, [buildId, draft]);
 
   useEffect(() => {
-    if (existing.build && hydratedId !== existing.build.id) {
-      const hydrated = draftFromBuild(existing.build);
+    if (existing.build && !catalog.isLoading && !catalog.error && hydratedId !== existing.build.id) {
+      const hydrated = draftFromBuild(existing.build, {
+        armors: catalog.armors,
+        decorations: catalog.decorations,
+        weapons: catalog.weapons,
+        bonuses: catalog.skillCatalog?.response.bonuses,
+      });
       setDraft(hydrated);
       setBaseline(hydrated);
       setHydratedId(existing.build.id);
     }
-  }, [existing.build, hydratedId]);
+  }, [existing.build, hydratedId, catalog.isLoading, catalog.error, catalog.armors, catalog.decorations, catalog.weapons, catalog.skillCatalog]);
 
   // Drafts and saved builds from before the Gogma-only bonus rule may pair bonuses with another weapon.
   useEffect(() => {
@@ -428,8 +433,8 @@ export const useBuildEditor = (buildId?: string) => {
     hasRevisionConflict,
     isSaving,
     isLoadingCatalog: catalog.isLoading,
-    isLoadingBuild: Boolean(buildId) && existing.isLoading,
-    loadError: buildId ? existing.error : null,
+    isLoadingBuild: Boolean(buildId) && !existing.error && !catalog.error && (existing.isLoading || catalog.isLoading || Boolean(existing.build && hydratedId !== existing.build.id)),
+    loadError: buildId ? existing.error ?? catalog.error : null,
     bonusOptions,
     savedWeapons: customWeapons.weapons,
     isLoadingSavedWeapons: customWeapons.isLoading,

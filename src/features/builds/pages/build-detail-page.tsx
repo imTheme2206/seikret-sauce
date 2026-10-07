@@ -119,6 +119,7 @@ export const BuildDetailPage = ({ buildId }: BuildDetailPageProps) => {
 
           <div className="grid gap-5 lg:grid-cols-[1.25fr_.75fr]">
             <div className="grid gap-3">
+              <EquippedWeaponRow weapon={build.composition.positions.weapon} />
               {POSITION_KEYS.map((position) => (
                 <EquippedGearRow
                   key={position}
@@ -126,7 +127,6 @@ export const BuildDetailPage = ({ buildId }: BuildDetailPageProps) => {
                   piece={build.composition.positions[position]}
                 />
               ))}
-              <EquippedWeaponRow weapon={build.composition.positions.weapon} />
             </div>
             <HunterStatusPanel
               status={hunterStatus}

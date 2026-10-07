@@ -28,44 +28,70 @@ import type {
 
 const toAssignments = (
   piece: Pick<SnapshotPiece, "decorations"> | SnapshotWeapon,
+  catalog: Decoration[] = [],
+  type?: Decoration["type"],
 ): DecorationAssignment[] => {
-  return (piece.decorations ?? []).map(({ slotIndex, decorationId }) => ({
+  return (piece.decorations ?? []).map(({ slotIndex, decorationId, name, slotSize }) => ({
     slotIndex,
-    decorationId,
+    decorationId: catalog.find((item) => item.id === decorationId)?.id
+      ?? catalog.find((item) => item.name === name && item.type === type && item.slotSize === slotSize)?.id
+      ?? decorationId,
   }));
 };
 
-/** Rehydrates the editor from a saved build; unknown pieces simply come back empty. */
-export const draftFromBuild = (build: SavedBuild): BuildDraft => {
+type DraftCatalog = {
+  armors: Armor[];
+  decorations: Decoration[];
+  weapons?: Weapon[];
+  bonuses?: SkillCatalog["bonuses"];
+};
+
+/** Rehydrates the editor, resolving old catalog IDs by saved identity after a catalog refresh. */
+export const draftFromBuild = (build: SavedBuild, catalog?: DraftCatalog): BuildDraft => {
   const { positions } = build.composition;
   const composition: BuildDraft["composition"] = { ...EMPTY_DRAFT.composition };
 
   for (const position of ARMOR_POSITIONS) {
     const piece = positions[position];
     if (!piece) continue;
+    const armor = catalog?.armors.find((item) => item.id === piece.armorId)
+      ?? catalog?.armors.find((item) => item.name === piece.name && item.type === position);
     composition[position] = {
-      armorId: piece.armorId,
-      decorations: toAssignments(piece),
+      armorId: armor?.id ?? piece.armorId,
+      decorations: toAssignments(piece, catalog?.decorations, "armor"),
     };
   }
 
   const talisman = positions.talisman;
   if (talisman) {
+    const guild = talisman.source === "scraped"
+      ? catalog?.armors.find((item) => item.id === talisman.talismanId)
+        ?? catalog?.armors.find((item) => item.name === talisman.name && item.type === "talisman")
+      : undefined;
     composition.talisman = {
       source: talisman.source,
-      talismanId: talisman.talismanId,
-      decorations: toAssignments(talisman),
+      talismanId: guild?.id ?? talisman.talismanId,
+      decorations: toAssignments(talisman, catalog?.decorations, "armor"),
     };
   }
 
   // A legacy bonus-only weapon has no `weaponId`; it hydrates as bonuses alone.
+  const savedWeapon = positions.weapon;
+  const weapon = savedWeapon?.weaponId
+    ? catalog?.weapons?.find((item) => item.id === savedWeapon.weaponId)
+      ?? catalog?.weapons?.find((item) => item.name === savedWeapon.name && item.kind === savedWeapon.kind)
+    : undefined;
+  const resolveBonus = (bonus: SnapshotWeapon["setBonus"] | undefined, kind: "set" | "group") =>
+    catalog?.bonuses?.find((item) => item.id === bonus?.bonusId)?.id
+      ?? catalog?.bonuses?.find((item) => item.name === bonus?.name && item.kind === kind)?.id
+      ?? bonus?.bonusId ?? null;
   composition.weapon = {
-    weaponId: positions.weapon?.weaponId ?? null,
-    decorations: positions.weapon ? toAssignments(positions.weapon) : [],
-    setBonusId: positions.weapon?.setBonus?.bonusId ?? null,
-    groupBonusId: positions.weapon?.groupBonus?.bonusId ?? null,
+    weaponId: weapon?.id ?? savedWeapon?.weaponId ?? null,
+    decorations: savedWeapon ? toAssignments(savedWeapon, catalog?.decorations, "weapon") : [],
+    setBonusId: resolveBonus(savedWeapon?.setBonus, "set"),
+    groupBonusId: resolveBonus(savedWeapon?.groupBonus, "group"),
     // Snapshots saved before ADR-0014 (or for plain weapons) carry no configuration.
-    customization: positions.weapon?.customization?.config ?? null,
+    customization: savedWeapon?.customization?.config ?? null,
   };
 
   return {

@@ -3,8 +3,9 @@ import rulesJson from "./__fixtures__/artian-rules.json";
 import { calculateBuild } from "./calculator";
 import { draftFromBuild, snapshotFromDraft } from "./draft";
 import { EMPTY_DRAFT } from "./config";
+import { buildGearRows } from "./gear-rows";
 import { toCreateBody } from "./utils";
-import type { ArtianRules, BuildDraft, Decoration, SavedBuild, Weapon } from "./types";
+import type { Armor, ArtianRules, BuildDraft, Decoration, SavedBuild, Weapon } from "./types";
 
 const weapon: Weapon = {
   id: "gs-1",
@@ -33,6 +34,27 @@ const jewel: Decoration = {
   skills: [{ skillId: "crit", name: "Critical Eye", level: 1 }],
 };
 
+const helm: Armor = {
+  id: "current-helm",
+  name: "Hope Mask Alpha",
+  type: "head",
+  rank: "high",
+  rarity: 8,
+  defense: 40,
+  resistances: { fire: 0, water: 0, thunder: 0, ice: 0, dragon: 0 },
+  slots: [1],
+  skills: [{ skillId: "current-skill", name: "Attack Boost", level: 2 }],
+  bonuses: [],
+};
+
+const armorJewel: Decoration = {
+  id: "current-jewel",
+  name: "Attack Jewel",
+  type: "armor",
+  slotSize: 1,
+  skills: [{ skillId: "current-skill", name: "Attack Boost", level: 1 }],
+};
+
 const buildWith = (weaponPosition: SavedBuild["composition"]["positions"]["weapon"]): SavedBuild => ({
   id: "b1",
   name: "Test",
@@ -57,6 +79,35 @@ const buildWith = (weaponPosition: SavedBuild["composition"]["positions"]["weapo
     skillDefinitions: {},
     bonusDefinitions: {},
   },
+});
+
+test("editing a build restores armor and skill totals after catalog IDs change", () => {
+  const saved = buildWith(null);
+  saved.composition.positions.head = {
+    ...helm,
+    armorId: "old-helm",
+    type: "head",
+    skills: [{ skillId: "old-skill", name: "Attack Boost", level: 2 }],
+    decorations: [{
+      slotIndex: 0,
+      decorationId: "old-jewel",
+      name: armorJewel.name,
+      slotSize: 1,
+      skills: [{ skillId: "old-skill", name: "Attack Boost", level: 1 }],
+    }],
+  };
+
+  const draft = draftFromBuild(saved, { armors: [helm], decorations: [armorJewel] });
+  expect(draft.composition.head).toEqual({
+    armorId: helm.id,
+    decorations: [{ slotIndex: 0, decorationId: armorJewel.id }],
+  });
+  const head = buildGearRows(draft, [helm], [armorJewel], []).find((row) => row.position === "head");
+  expect(head?.name).toBe(helm.name);
+  expect(head?.skills).toEqual(helm.skills);
+  expect(head?.slots[0]?.selectedId).toBe(armorJewel.id);
+  const snapshot = snapshotFromDraft(draft, [helm], [armorJewel], undefined, []);
+  expect(calculateBuild(snapshot).skills).toEqual({ "Attack Boost": 3 });
 });
 
 describe("weapon in the draft <-> snapshot translation", () => {
