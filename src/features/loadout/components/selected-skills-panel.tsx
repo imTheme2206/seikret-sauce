@@ -18,7 +18,10 @@ export const SelectedSkillsPanel = ({
   >
     <div className="flex min-h-14 items-center justify-between gap-2 border-b border-border px-4">
       <div className="flex items-baseline gap-2">
-        <h2 id="selected-skills-heading" className="font-display text-base font-semibold tracking-wide">
+        <h2
+          id="selected-skills-heading"
+          className="font-display text-base font-semibold tracking-wide"
+        >
           Requirements
         </h2>
         <span className="text-xs tabular-nums text-muted-foreground">
@@ -39,15 +42,22 @@ export const SelectedSkillsPanel = ({
       )}
     </div>
 
-    <div className="min-h-0 flex-1 overflow-y-auto">
+    <div className="min-h-0 max-h-150 flex-1 overflow-y-auto">
       {c.selectedList.length === 0 ? (
         <div className="flex h-full min-h-40 flex-col items-center justify-center gap-3 px-6 py-8 text-center">
-          <ListPlus className="size-5 text-muted-foreground" aria-hidden="true" />
+          <ListPlus
+            className="size-5 text-muted-foreground"
+            aria-hidden="true"
+          />
           <p className="text-sm leading-6 text-muted-foreground">
             Pick skills from the list to set what this loadout must have.
           </p>
           <p className="text-xs text-muted-foreground">
-            Press <kbd className="rounded-sm border border-border px-1.5 py-0.5 font-mono text-[11px] text-foreground">/</kbd> to search skills
+            Press{" "}
+            <kbd className="rounded-sm border border-border px-1.5 py-0.5 font-mono text-[11px] text-foreground">
+              /
+            </kbd>{" "}
+            to search skills
           </p>
         </div>
       ) : (
@@ -110,7 +120,10 @@ export const SelectedSkillsPanel = ({
         {c.isSearching ? "Finding loadouts…" : "Find loadouts"}
       </Button>
       {c.selectedCount === 0 && (
-        <p id={SEARCH_HINT_ID} className="mt-2 text-center text-xs text-muted-foreground">
+        <p
+          id={SEARCH_HINT_ID}
+          className="mt-2 text-center text-xs text-muted-foreground"
+        >
           Add at least one skill to search.
         </p>
       )}

@@ -50,6 +50,22 @@ export const EMPTY_CUSTOMIZATION: ArtianCustomization = {
   reinforcements: [],
 };
 
+/** Fresh forge roll: every newly forged weapon starts with all three parts assigned. */
+export const initialArtianCustomization = (): ArtianCustomization => ({
+  ...EMPTY_CUSTOMIZATION,
+  attackParts: 3,
+  reinforcements: [],
+});
+
+/** Complete a legacy partial split by assigning its unclaimed parts to Attack. */
+export const completeArtianBonusParts = (
+  config: ArtianCustomization,
+): ArtianCustomization => {
+  const assigned = config.attackParts + config.affinityParts;
+  if (assigned >= 3) return config;
+  return { ...config, attackParts: config.attackParts + (3 - assigned) };
+};
+
 const isBowgun = (kind: WeaponKind): boolean =>
   kind === "light-bowgun" || kind === "heavy-bowgun";
 

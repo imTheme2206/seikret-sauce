@@ -75,6 +75,34 @@ export const ELEMENTS: ElementConfig[] = [
   { key: "dragon", label: "Dragon", abbr: "DRA", color: "hsl(280,40%,62%)", icon: "/images/elements/dragon.png" },
 ];
 
+export type SpecialEffectKey =
+  | keyof ElementalDefenses
+  | "poison"
+  | "paralysis"
+  | "sleep"
+  | "blast";
+
+export type SpecialEffectConfig = {
+  key: SpecialEffectKey;
+  label: string;
+  abbr: string;
+  color: string;
+  icon: string;
+  kind: "element" | "status";
+};
+
+/** Element and status colors/icons shared by weapon stats and monster weaknesses. */
+export const SPECIAL_EFFECTS: SpecialEffectConfig[] = [
+  ...ELEMENTS.map((element) => ({ ...element, kind: "element" as const })),
+  { key: "poison", label: "Poison", abbr: "PSN", color: "hsl(282,38%,68%)", icon: "/images/status/poison.png", kind: "status" },
+  { key: "paralysis", label: "Paralysis", abbr: "PAR", color: "hsl(48,85%,58%)", icon: "/images/status/paralysis.png", kind: "status" },
+  { key: "sleep", label: "Sleep", abbr: "SLP", color: "hsl(216,62%,65%)", icon: "/images/status/sleep.png", kind: "status" },
+  { key: "blast", label: "Blast", abbr: "BLT", color: "hsl(29,43%,58%)", icon: "/images/status/blast.png", kind: "status" },
+];
+
+export const SPECIAL_EFFECT_BY_KEY: Record<SpecialEffectKey, SpecialEffectConfig> =
+  Object.fromEntries(SPECIAL_EFFECTS.map((effect) => [effect.key, effect])) as Record<SpecialEffectKey, SpecialEffectConfig>;
+
 /** In-game defense shield icon. */
 export const DEFENSE_ICON = "/images/defense.png";
 

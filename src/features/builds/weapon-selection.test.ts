@@ -69,17 +69,44 @@ describe("equipWeapon", () => {
   });
 
   test("a plain weapon, or unequipping, clears bonuses and configuration", () => {
-    for (const id of ["gs-1", "artian", ""]) {
+    for (const id of ["gs-1", ""]) {
       const next = equipWeapon(gogma, id, weapons, rules);
       expect(next.weaponId).toBe(id || null);
       expect(next.setBonusId).toBeNull();
       expect(next.groupBonusId).toBeNull();
       expect(next.customization).toBeNull();
     }
+    expect(equipWeapon(gogma, "artian", weapons, rules).customization).toMatchObject({
+      attackParts: 3,
+      affinityParts: 0,
+    });
   });
 
   test("re-picking the same weapon keeps its jewels", () => {
     expect(equipWeapon(gogma, "gogma-a", weapons, rules).decorations).toEqual(gogma.decorations);
+  });
+
+  test("a new Artian forge roll assigns all three bonus parts to attack", () => {
+    const selection = equipWeapon(EMPTY_WEAPON_SELECTION, "artian", weapons, rules);
+    expect(selection.customization).toMatchObject({
+      attackParts: 3,
+      affinityParts: 0,
+    });
+  });
+
+  test("same-family legacy rolls complete their part split when equipped", () => {
+    const legacy = {
+      ...gogma,
+      customization: {
+        ...gogma.customization!,
+        attackParts: 1,
+        affinityParts: 0,
+      },
+    };
+    expect(equipWeapon(legacy, "gogma-b", weapons, rules).customization).toMatchObject({
+      attackParts: 3,
+      affinityParts: 0,
+    });
   });
 });
 

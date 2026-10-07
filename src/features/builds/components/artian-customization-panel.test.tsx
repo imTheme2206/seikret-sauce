@@ -44,6 +44,9 @@ const render = (weapon: Weapon, issueConfig?: Parameters<typeof buildArtianPanel
 
 test("a Gogma Artian panel shows its focus, five reinforcement slots and both bonuses", () => {
   const html = render(gogma);
+  expect(html).toContain("Artian settings");
+  expect(html).toContain("Artian bonus part split");
+  expect(html).toContain('type="checkbox"');
   expect(html).toContain("Gogma Artian · Affinity Focus");
   expect(html).toContain("Reinforcement 5 type");
   expect(html).not.toContain("Reinforcement 6 type");

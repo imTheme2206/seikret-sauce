@@ -1,17 +1,8 @@
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { SkillBonusSelect } from "@/features/skills/skill-bonus-select";
 import { Typography } from "@/components/ui/typography";
 import { Swords } from "lucide-react";
 import type { EditorWeaponSelection, SkillCatalog } from "../types";
 import { HunterPanel } from "./hunter-panel";
-
-/** Sentinel for "none" — Radix Select forbids an empty-string item value. */
-const NONE = "__none__";
 
 export type BonusOption = SkillCatalog["bonuses"][number];
 
@@ -32,13 +23,18 @@ export const BonusSelect = ({
   value,
   options,
   onChange,
+  category,
 }: {
   label: string;
   placeholder: string;
   value: string | null;
   options: BonusOption[];
   onChange: (bonusId: string | null) => void;
+  category?: "set" | "group";
 }) => {
+  const skillCategory =
+    category ?? options[0]?.kind ?? (label.toLowerCase().includes("group") ? "group" : "set");
+
   return (
     <label className="block">
       <Typography
@@ -47,22 +43,19 @@ export const BonusSelect = ({
       >
         {label}
       </Typography>
-      <Select
-        value={value ?? NONE}
-        onValueChange={(v) => onChange(v === NONE ? null : v)}
-      >
-        <SelectTrigger className="w-full rounded-none bg-background/70">
-          <SelectValue placeholder={placeholder} />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value={NONE}>{placeholder}</SelectItem>
-          {options.map((bonus) => (
-            <SelectItem key={bonus.id} value={bonus.id}>
-              {bonus.name}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
+      <SkillBonusSelect
+        label={label}
+        placeholder={placeholder}
+        value={value}
+        options={options.map((bonus) => ({
+          value: bonus.id,
+          label: bonus.name,
+          icon: bonus.icon,
+        }))}
+        category={skillCategory}
+        onChange={onChange}
+        className="rounded-none"
+      />
     </label>
   );
 };

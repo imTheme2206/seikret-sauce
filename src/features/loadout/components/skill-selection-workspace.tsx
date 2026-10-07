@@ -10,7 +10,7 @@ export const SkillSelectionWorkspace = ({
 }) => (
   <section
     aria-labelledby="skill-selection-heading"
-    className="mb-6 grid gap-8 lg:h-[calc(100dvh-14rem)] lg:min-h-[560px] lg:grid-cols-[minmax(0,1fr)_340px]"
+    className="mb-6 grid gap-8 lg:h-[calc(100dvh-16rem)] lg:min-h-140 lg:grid-cols-[minmax(0,1fr)_340px]"
   >
     <div className="flex min-h-0 min-w-0 flex-col">
       <div className="mb-5 flex flex-wrap items-end justify-between gap-4">

@@ -31,7 +31,7 @@ export const titleCase = (value: string): string =>
 export const formatAffinity = (affinity: number): string =>
   `${affinity > 0 ? "+" : ""}${affinity}%`;
 
-/** "Thunder 150" / "Paralysis 100 (hidden)"; display damage, as the game shows it. */
+/** Display damage, with the hidden-element marker when applicable. */
 export const formatSpecial = (special: Weapon["specials"][number]): string =>
   `${special.damage.display}${special.hidden ? " (hidden)" : ""}`;
 
@@ -44,7 +44,7 @@ export const weaponSummary = (weapon: Weapon): string =>
   [
     `Raw ${formatDamage(weapon)}`,
     `Affinity ${formatAffinity(weapon.affinity)}`,
-    ...weapon.specials.map(formatSpecial),
+    ...weapon.specials.map((special) => `${titleCase(special.name)} ${formatSpecial(special)}`),
   ].join(" · ");
 
 export const weaponOption = (weapon: Weapon): GearOption => ({

@@ -1,3 +1,3 @@
 [serve.static]
-plugins = ["bun-plugin-tailwind"]
+plugins = ["bun-plugin-tailwind", "./plugins/tanstack-router.ts"]
 env = "BUN_PUBLIC_*"

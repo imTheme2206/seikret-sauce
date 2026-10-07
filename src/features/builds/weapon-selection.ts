@@ -5,7 +5,11 @@
  * Artian, and a configuration only carries over within the same Artian family.
  */
 
-import { normalizeCustomization } from "./artian";
+import {
+  completeArtianBonusParts,
+  initialArtianCustomization,
+  normalizeCustomization,
+} from "./artian";
 import type {
   ArtianCustomization,
   ArtianRules,
@@ -45,10 +49,13 @@ export const equipWeapon = (
     decorations: weaponId === previous.weaponId ? previous.decorations : [],
     setBonusId: keepsBonuses ? previous.setBonusId : null,
     groupBonusId: keepsBonuses ? previous.groupBonusId : null,
-    customization:
-      to?.artian && rules && previous.customization && sameFamily
-        ? normalizeCustomization(to, to.artian, previous.customization, rules)
-        : null,
+    customization: to?.artian && rules
+      ? previous.customization && sameFamily
+        ? completeArtianBonusParts(
+            normalizeCustomization(to, to.artian, previous.customization, rules),
+          )
+        : initialArtianCustomization()
+      : null,
   };
 };
 

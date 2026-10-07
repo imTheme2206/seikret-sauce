@@ -1,6 +1,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Typography } from "@/components/ui/typography";
 import type { MonsterWeakness } from "../types";
+import { weaknessSpecialEffect, WeaknessIcon } from "./monster-type-icon";
 
 type WeaknessListProps = {
   weaknesses: MonsterWeakness[];
@@ -42,19 +43,32 @@ export const WeaknessList = ({ weaknesses }: WeaknessListProps) => {
             >
               {label}
             </Typography>
-            {items.map((weakness) => (
-              <Badge
-                key={`${weakness.kind}-${weakness.name}`}
-                variant={kind === "element" ? "default" : "secondary"}
-                aria-label={`${titleCase(weakness.name)}, weakness level ${weakness.level}${weakness.condition ? ` (${weakness.condition})` : ""}`}
-              >
-                {titleCase(weakness.name)}
-                <Typography as="span" className="opacity-70">
-                  {"+".repeat(Math.max(1, weakness.level))}
-                  {weakness.condition ? "*" : ""}
-                </Typography>
-              </Badge>
-            ))}
+            {items.map((weakness) => {
+              const specialEffect = weaknessSpecialEffect(weakness.name);
+              return (
+                <Badge
+                  key={`${weakness.kind}-${weakness.name}`}
+                  variant="outline"
+                  aria-label={`${titleCase(weakness.name)}, weakness level ${weakness.level}${weakness.condition ? ` (${weakness.condition})` : ""}`}
+                  style={
+                    specialEffect
+                      ? {
+                          color: specialEffect.color,
+                          borderColor: specialEffect.color,
+                        }
+                      : undefined
+                  }
+                  className="gap-1.5"
+                >
+                  <WeaknessIcon weakness={weakness} className="size-3.5 shrink-0" />
+                  <span>{titleCase(weakness.name)}</span>
+                  <Typography as="span" className="opacity-70">
+                    {"+".repeat(Math.max(1, weakness.level))}
+                    {weakness.condition ? "*" : ""}
+                  </Typography>
+                </Badge>
+              );
+            })}
           </div>
         );
       })}

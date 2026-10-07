@@ -140,7 +140,7 @@ const WeaponDetail = ({ weapon }: { weapon: SnapshotWeapon }) => {
             weapon.affinity !== undefined
               ? `Affinity ${formatAffinity(weapon.affinity)}`
               : null,
-            ...specials.map(formatSpecial),
+            ...specials.map((special) => `${titleCase(special.name)} ${formatSpecial(special)}`),
           ]
             .filter(Boolean)
             .join(" · ")}

@@ -9,7 +9,9 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Typography } from "@/components/ui/typography";
+import { ELEMENTS } from "@/lib/mh-wilds";
 import { cn } from "@/lib/utils";
+import { Crosshair, Heart } from "lucide-react";
 import { useMemo, useState } from "react";
 import {
   DAMAGE_TYPES,
@@ -20,6 +22,7 @@ import {
   WEAK_POINT_THRESHOLD,
 } from "../hitzone";
 import type { DamageType, MonsterPart } from "../types";
+import { DamageTypeIcon } from "./monster-type-icon";
 
 type HitzoneTableProps = {
   parts: MonsterPart[];
@@ -57,11 +60,15 @@ export const HitzoneTable = ({
           aria-label="Damage type"
           className="flex-wrap"
         >
-          {DAMAGE_TYPES.map(({ type, label }) => (
-            <ToggleGroupItem key={type} value={type} aria-label={label}>
-              {label}
-            </ToggleGroupItem>
-          ))}
+          {DAMAGE_TYPES.map(({ type, label }) => {
+            const element = ELEMENTS.find((entry) => entry.key === type);
+            return (
+              <ToggleGroupItem key={type} value={type} aria-label={label}>
+                <DamageTypeIcon type={type} className="size-4 shrink-0" />
+                <span style={element ? { color: element.color } : undefined}>{label}</span>
+              </ToggleGroupItem>
+            );
+          })}
         </ToggleGroup>
       </div>
 
@@ -69,19 +76,32 @@ export const HitzoneTable = ({
         <TableHeader>
           <TableRow>
             <TableHead>Part</TableHead>
-            <TableHead className="text-right">HP</TableHead>
-            {DAMAGE_TYPES.map(({ type, label }) => (
-              <TableHead
-                key={type}
-                className={cn(
-                  "text-right",
-                  type === damageType && "text-primary",
-                )}
-                aria-sort={type === damageType ? "descending" : undefined}
-              >
-                {label}
-              </TableHead>
-            ))}
+            <TableHead className="text-right">
+              <span className="inline-flex items-center justify-end gap-1.5">
+                <Heart className="size-3.5 shrink-0" aria-hidden="true" />
+                HP
+              </span>
+            </TableHead>
+            {DAMAGE_TYPES.map(({ type, label }) => {
+              const element = ELEMENTS.find((entry) => entry.key === type);
+              return (
+                <TableHead
+                  key={type}
+                  className={cn(
+                    "text-right",
+                    type === damageType && "text-primary",
+                  )}
+                  aria-sort={type === damageType ? "descending" : undefined}
+                >
+                  <span className="inline-flex items-center justify-end gap-1.5">
+                    <DamageTypeIcon type={type} className="size-3.5 shrink-0" />
+                    <span style={element ? { color: element.color } : undefined}>
+                      {label}
+                    </span>
+                  </span>
+                </TableHead>
+              );
+            })}
             <TableHead className="text-right">Target</TableHead>
           </TableRow>
         </TableHeader>
@@ -122,6 +142,7 @@ export const HitzoneTable = ({
                     aria-label={`Target ${labels.get(part.id)}`}
                     onClick={() => onSelectPart(isSelected ? null : part.id)}
                   >
+                    <Crosshair className="size-3.5" aria-hidden="true" />
                     {isSelected ? "Targeted" : "Target"}
                   </Button>
                 </TableCell>
@@ -132,6 +153,7 @@ export const HitzoneTable = ({
       </Table>
 
       <Typography className="text-xs text-muted-foreground">
+        <Crosshair className="mr-1 inline size-3.5 align-[-2px]" aria-hidden="true" />
         Highlighted cells are weak points: a multiplier of{" "}
         {formatMultiplier(WEAK_POINT_THRESHOLD)} or more for the selected damage type.
       </Typography>

@@ -1,15 +1,12 @@
 import { Search } from "lucide-react";
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 import { Input } from "@/components/ui/input";
+import { useHotkeys } from "@/hooks/use-hotkeys";
 
 type SkillSearchBarProps = {
   value: string;
   onChange: (value: string) => void;
 };
-
-const isTypingTarget = (target: EventTarget | null) =>
-  target instanceof HTMLElement &&
-  (target.isContentEditable || ["INPUT", "TEXTAREA", "SELECT"].includes(target.tagName));
 
 /** Filters the visible skill catalog. `/` focuses it from anywhere; Esc clears it. */
 export const SkillSearchBar = ({
@@ -18,17 +15,21 @@ export const SkillSearchBar = ({
 }: SkillSearchBarProps) => {
   const inputRef = useRef<HTMLInputElement>(null);
 
-  useEffect(() => {
-    const onKeyDown = (event: KeyboardEvent) => {
-      const input = inputRef.current;
+  useHotkeys([
+    {
+      key: "/",
       // Desktop and drawer each mount a bar; only the visible one answers.
-      if (event.key !== "/" || isTypingTarget(event.target) || !input?.offsetParent) return;
-      event.preventDefault();
-      input.focus();
-    };
-    window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
-  }, []);
+      enabled: () => Boolean(inputRef.current?.offsetParent),
+      handler: () => inputRef.current?.focus(),
+    },
+    {
+      key: "Escape",
+      target: inputRef,
+      allowWhileTyping: true,
+      enabled: () => Boolean(value),
+      handler: () => onChange(""),
+    },
+  ]);
 
   return (
     <div className="relative shrink-0">
@@ -38,12 +39,6 @@ export const SkillSearchBar = ({
         type="search"
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        onKeyDown={(e) => {
-          if (e.key === "Escape" && value) {
-            e.preventDefault();
-            onChange("");
-          }
-        }}
         placeholder="Search skills"
         aria-label="Search skills"
         aria-keyshortcuts="/"

@@ -30,7 +30,8 @@ import {
   Sparkles,
 } from "lucide-react";
 import { Link } from "@tanstack/react-router";
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
+import { useHotkeys } from "@/hooks/use-hotkeys";
 import {
   matchingSavedWeapon,
   savedWeaponIdFromOptionValue,
@@ -89,20 +90,9 @@ export const BuildEditorPage = ({ buildId }: { buildId?: string }) => {
       });
     }
   };
-  const handleSaveRef = useRef(handleSave);
-  handleSaveRef.current = handleSave;
-
-  // ⌘S / Ctrl+S saves, matching every other editor.
-  useEffect(() => {
-    const onKeyDown = (event: KeyboardEvent) => {
-      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "s") {
-        event.preventDefault();
-        void handleSaveRef.current();
-      }
-    };
-    window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
-  }, []);
+  useHotkeys([
+    { key: "s", mod: true, allowWhileTyping: true, handler: handleSave },
+  ]);
 
   if (controller.isLoadingBuild) return <ScreenLoader />;
   if (controller.loadError) {

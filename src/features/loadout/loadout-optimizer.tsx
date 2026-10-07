@@ -75,10 +75,7 @@ export const LoadoutOptimizer = () => {
           </Button>
         </div>
 
-        <div
-          ref={resultsRef}
-          className="min-h-[calc(100dvh-4rem)] scroll-mt-5"
-        >
+        <div ref={resultsRef} className="min-h-[calc(100dvh-4rem)] scroll-mt-5">
           <ResultsPanel
             results={controller.results}
             status={controller.status}

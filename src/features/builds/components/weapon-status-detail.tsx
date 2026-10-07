@@ -1,7 +1,7 @@
-import { ElementIcon } from "@/components/gear/stat-icons";
+import { SpecialEffectIcon } from "@/components/gear/stat-icons";
 import { StatField } from "@/components/ui/stat-field";
 import { Typography } from "@/components/ui/typography";
-import { ELEMENTS } from "@/lib/mh-wilds";
+import { SPECIAL_EFFECTS } from "@/lib/mh-wilds";
 import { cn } from "@/lib/utils";
 import type { Weapon } from "../types";
 import {
@@ -27,15 +27,15 @@ type WeaponStatusDetailProps = {
 };
 
 const WeaponSpecial = ({ special }: { special: Weapon["specials"][number] }) => {
-  const element = special.kind === "element"
-    ? ELEMENTS.find((entry) => entry.key === special.name.toLowerCase())
-    : undefined;
+  const effect = SPECIAL_EFFECTS.find(
+    (entry) => entry.key === special.name.toLowerCase(),
+  );
 
   return (
     <span className="inline-flex items-center gap-1.5">
-      {element && <ElementIcon element={element} />}
-      <span style={element ? { color: element.color } : undefined}>
-        {formatSpecial(special)}
+      {effect && <SpecialEffectIcon effect={effect} />}
+      <span style={effect ? { color: effect.color } : undefined}>
+        {effect ? `${effect.label} ` : ""}{formatSpecial(special)}
       </span>
     </span>
   );

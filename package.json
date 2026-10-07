@@ -10,26 +10,26 @@
     "build": "bun run build.ts"
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2.110.0",
-    "@tanstack/react-router": "^1.170.17",
+    "@supabase/supabase-js": "^2.117.2",
+    "@tanstack/react-router": "^1.170.41",
     "bun-plugin-tailwind": "^0.0.15",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
-    "lucide-react": "^1.21.0",
+    "lucide-react": "^1.52.0",
     "openapi-typescript-fetch": "^2.2.1",
-    "radix-ui": "^1.6.0",
-    "react": "^19",
-    "react-dom": "^19",
-    "swr": "^2.4.2",
-    "tailwind-merge": "^3.3.1",
-    "tailwindcss": "^4.1.11",
+    "radix-ui": "^1.7.0",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "swr": "^2.5.1",
+    "tailwind-merge": "^3.7.0",
+    "tailwindcss": "^4.3.3",
     "tailwindcss-animate": "^1.0.7",
     "vaul": "^1.1.2"
   },
   "devDependencies": {
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
     "@types/bun": "latest"
   }
 }

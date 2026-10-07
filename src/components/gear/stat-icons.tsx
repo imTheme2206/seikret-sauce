@@ -1,4 +1,8 @@
-import { DEFENSE_ICON, type ElementConfig } from "@/lib/mh-wilds";
+import {
+  DEFENSE_ICON,
+  type ElementConfig,
+  type SpecialEffectConfig,
+} from "@/lib/mh-wilds";
 import { cn } from "@/lib/utils";
 
 type StatIconProps = {
@@ -15,6 +19,20 @@ export const ElementIcon = ({
 }: StatIconProps & { element: ElementConfig }) => (
   <img
     src={element.icon}
+    alt={label ?? ""}
+    aria-hidden={label ? undefined : true}
+    className={cn("size-4 shrink-0 object-contain", className)}
+  />
+);
+
+/** In-game element or status glyph. */
+export const SpecialEffectIcon = ({
+  effect,
+  className,
+  label,
+}: StatIconProps & { effect: SpecialEffectConfig }) => (
+  <img
+    src={effect.icon}
     alt={label ?? ""}
     aria-hidden={label ? undefined : true}
     className={cn("size-4 shrink-0 object-contain", className)}
